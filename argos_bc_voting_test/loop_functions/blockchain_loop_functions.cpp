@@ -122,28 +122,30 @@ void CBlockchainVotingLoopFunctions::PreinitMiner() {
   genesisPathStream << baseDirRaw << "/genesis/genesis" << basePort << ".json";
   string genesisPath = genesisPathStream.str();
 
-  std::ostringstream fullCommandStream;
-  std::string minerAddress;
-  std::string newAcc = Geth_Wrapper::createAccountInit(robotId, nodeInt, basePort, blockchainPath);
-  string genesisTemplate = Geth_Wrapper::readAllFromFile(genesisRaw);
-  genesisTemplate = Geth_Wrapper::replaceAll(genesisTemplate, "ADDRESS", newAcc);
-  std::ofstream out(genesisPath.c_str());
-  out << genesisTemplate;
-  out.close();
-  /* Initialize the miner */
-  Geth_Wrapper::geth_init(minerId, minerNode, basePort, blockchainPath, genesisPath);
-  //cout << "[LoopFunctions::PreinitMiner]geth_init" << endl;
-  //cout << "Now Im here";
-  sleep(1);
-  Geth_Wrapper::start_geth(minerId, minerNode, basePort, blockchainPath);
-  //cout << "[LoopFunctions::PreinitMiner]start_geth" << endl;
-  //Geth_Wrapper::createAccount(minerId, minerNode, basePort, blockchainPath);
-  //cout << "[LoopFunctions::PreinitMiner]createAccount" << endl;
+  // std::ostringstream fullCommandStream;
+  // std::string minerAddress;
+  // std::string newAcc = Geth_Wrapper::createAccountInit(robotId, nodeInt, basePort, blockchainPath);
+  // string genesisTemplate = Geth_Wrapper::readAllFromFile(genesisRaw);
+  // genesisTemplate = Geth_Wrapper::replaceAll(genesisTemplate, "ADDRESS", newAcc);
+  // std::ofstream out(genesisPath.c_str());
+  // out << genesisTemplate;
+  // out.close();
+  // /* Initialize the miner */
+  // Geth_Wrapper::geth_init(minerId, minerNode, basePort, blockchainPath, genesisPath);
+  // //cout << "[LoopFunctions::PreinitMiner]geth_init" << endl;
+  // //cout << "Now Im here";
+  // sleep(1);
+  // Geth_Wrapper::start_geth(minerId, minerNode, basePort, blockchainPath);
+  // //cout << "[LoopFunctions::PreinitMiner]start_geth" << endl;
+  // //Geth_Wrapper::createAccount(minerId, minerNode, basePort, blockchainPath);
+  // //cout << "[LoopFunctions::PreinitMiner]createAccount" << endl;
+  
+  Geth_Wrapper::initGethNode(minerId, minerNode, basePort, blockchainPath, genesisPath);
   minerAddress = Geth_Wrapper::getCoinbase(minerId, minerNode, basePort, blockchainPath);
   minerAddressGlobal = minerAddress;
-  //cout << "[LoopFunctions::PreinitMiner]getCoinbase, minerAddress=" << minerAddress << endl;
-  //Geth_Wrapper::prepare_for_new_genesis(minerId, minerNode, basePort, blockchainPath);
-  //cout << "[LoopFunctions::PreinitMiner]prepare_for_new_genesis" << endl;
+  // //cout << "[LoopFunctions::PreinitMiner]getCoinbase, minerAddress=" << minerAddress << endl;
+  // //Geth_Wrapper::prepare_for_new_genesis(minerId, minerNode, basePort, blockchainPath);
+  // //cout << "[LoopFunctions::PreinitMiner]prepare_for_new_genesis" << endl;
 }
 
 void CBlockchainVotingLoopFunctions::PreallocateEther() {
@@ -227,7 +229,7 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   std::string minerAddress;
 
   /* Start geth again after the preallocation */
-  cout << "[LoopFunctions::InitEthereum]geth_init,start_geth,unlockAcc,getCoinbase,start_mining" << endl;
+  cout << "[LoopFunctions::InitEthereum]unlockAccount and begin deploy contract" << endl;
   //Geth_Wrapper::geth_init(minerId, minerNode, basePort, blockchainPath, genesisPath);
   //sleep(1);
   //Geth_Wrapper::start_geth(minerId, minerNode, basePort, blockchainPath);
@@ -237,13 +239,14 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
 
   /* Deploy contract */
   cout << "[LoopFunctions::InitEthereum]deploy_contract: " << txHash << endl;
-  string interfacePath = baseDirLoop + "interface.txt";
-  interface = Geth_Wrapper::readStringFromFile(interfacePath);
-  string dataPath = baseDirLoop + "data.txt";
-  string templatePath = baseDirLoop + "contractTemplate.txt";
+  //string interfacePath = baseDirLoop + "interface.txt";
+  //interface = Geth_Wrapper::readStringFromFile(interfacePath);
+  //string dataPath = baseDirLoop + "data.txt";
+  //string templatePath = baseDirLoop + "contractTemplate.txt";
+  string scriptFilePath = baseDirRaw + "/voting.js";
   string txHash;
-  txHash = Geth_Wrapper::deploy_contract(minerId, interfacePath, dataPath, templatePath, minerNode, blockchainPath);
-  //Geth_Wrapper::stop_mining(minerId, minerNode, blockchainPath);
+  //txHash = Geth_Wrapper::deploy_contract(minerId, interfacePath, dataPath, templatePath, minerNode, blockchainPath);
+  txHash = Geth_Wrapper::deploy_contract_script(minerId, "", minerNode, blockchainPath);
   int u = 0;
   do {
     contractAddress = Geth_Wrapper::getContractAddress(minerId, txHash, minerNode, blockchainPath);
@@ -271,7 +274,7 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
     // cout << "Checking BC length" << endl;
     // sleep(1);
     // } while (l2 < (l1 + 3));
-  // Geth_Wrapper::stop_mining(minerId, minerNode, blockchainPath);
+  Geth_Wrapper::stop_mining(minerId, minerNode, blockchainPath);
   
   // bool etherReceived;
   // for (int t = 0; t < maxTime; ++t) {
@@ -342,8 +345,10 @@ void CBlockchainVotingLoopFunctions::setContractAddressAndDistributeEther(string
 
     /* Set the smart contract address for the robot */
     cController.setContractAddress(contractAddress);
-    string e = cController.getEnode();
-    Geth_Wrapper::add_peer(minerId, e, minerNode, basePort, blockchainPath);
+    //string e = cController.getEnode();
+    //Geth_Wrapper::add_peer(minerId, e, minerNode, basePort, blockchainPath);
+	string e = Geth_Wrapper::get_enode(minerId, minerNode, basePort, blockchainPath);
+	Geth_Wrapper::add_peer(robotId, e, cController.getNodeInt(), basePort, blockchainPath);
   }
 }
 
@@ -589,7 +594,7 @@ bool CBlockchainVotingLoopFunctions::IsExperimentFinished() {
 }
 
 void CBlockchainVotingLoopFunctions::Destroy(){
-  /* Clean up Ethereum stuff  */
+  //Clean up Ethereum stuff
   //if (!useClassicalApproach) {
       // Kill all geth processes
       string bckiller = "bash " + blockchainPath + "/bckillerccall";

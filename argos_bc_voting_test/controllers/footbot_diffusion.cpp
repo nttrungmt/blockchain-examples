@@ -4,6 +4,7 @@
 #include <argos3/core/utility/configuration/argos_configuration.h>
 /* 2D vector definition */
 #include <argos3/core/utility/math/vector2.h>
+#include <random>
 
 using namespace std;
 
@@ -135,12 +136,12 @@ void CBlockchainVotingController::ControlStep() {
    //if (!simulationParams.useClassicalApproach) {
      if (beginning) {
        // TODO: start_geth should be removed again; added it because of problem with kill geth
-       Geth_Wrapper::start_geth(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
+       //Geth_Wrapper::start_geth(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
        Geth_Wrapper::unlockAccount(robotId, "test", nodeInt, simulationParams.basePort, simulationParams.blockchainPath); // TODO: Also remove again
-       Geth_Wrapper::start_mining_bg(robotId, 1, nodeInt, simulationParams.blockchainPath);
+       //Geth_Wrapper::start_mining_bg(robotId, 1, nodeInt, simulationParams.blockchainPath);
        //registerRobot(); // TODO: remove this again, it's not in the original code but I added it due to problems with the registration
        //updateRegistration();
-       Geth_Wrapper::stop_mining_bg(robotId, nodeInt, simulationParams.blockchainPath);
+       //Geth_Wrapper::stop_mining_bg(robotId, nodeInt, simulationParams.blockchainPath);
        beginning = false;
      }
    //}
@@ -331,12 +332,32 @@ void CBlockchainVotingController::Explore() {
 		//Geth_Wrapper::NumberToString(simulationParams.decision_rule),
 		//Geth_Wrapper::NumberToString(bwh.blockNumber),
 		//bwh.hash};
-	  int emptyArgs[0] = {};
+	  //int emptyArgs[0] = {};
     //  string voteResult;
     //  int args3[1] = {bwh.blockNumber};
       //Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "vote", args, 4, opinionInt, nodeInt, simulationParams.blockchainPath);
       //Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "vote", emptyArgs, 4, opinionInt, nodeInt, simulationParams.blockchainPath);
     //}
+	
+	int num1 = rand() % 100 + 0;
+	int num2 = rand() % 3 + 0;
+	if(num1 >= 50) {
+		cout << "RobotId: " << robotId << " randomNumber:" << num << end;
+		cout << "Begin submit voting transaction" << endl;
+		string strColor;
+		if(num2 == 0) 
+			strColor = "RED";
+		else if(num2 == 1)
+			strColor = "GREEN";
+		else 
+			strColor = "BLUE";
+		string args[1] = {strColor};
+		Geth_Wrapper::unlockAccount(robotId, "test", nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
+		Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "voteForCandidate", args, 1, 70, nodeInt, simulationParams.blockchainPath);
+		Geth_Wrapper::start_mining(robotId, 1, nodeInt, simulationParams.blockchainPath);
+		exec_geth_cmd_helper(robotId, "admin.sleepBlocks(1)", nodeInt, simulationParams.blockchainPath);
+		Geth_Wrapper::stop_mining(robotId, nodeInt, simulationParams.blockchainPath);
+	}
     
     // /* Assigning a new exploration time, for the next exploration state */
     // m_sStateData.remainingExplorationTime = Ceil(m_pcRNG->Exponential((Real)simulationParams.sigma));
@@ -485,19 +506,20 @@ void CBlockchainVotingController::fromLoopFunctionResPrepare(){
     genesisPathStream << simulationParams.baseDirRaw << "/genesis/genesis" << simulationParams.basePort  << ".json";
     string genesisPath = genesisPathStream.str();    
     
-    std::string newAcc = Geth_Wrapper::createAccountInit(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
-    string genesisTemplate = Geth_Wrapper::readAllFromFile(genesisRaw);
-    genesisTemplate = Geth_Wrapper::replaceAll(genesisTemplate, "ADDRESS", newAcc);
-    std::ofstream out(genesisPath.c_str());
-    out << genesisTemplate;
-    out.close();
+    // std::string newAcc = Geth_Wrapper::createAccountInit(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
+    // string genesisTemplate = Geth_Wrapper::readAllFromFile(genesisRaw);
+    // genesisTemplate = Geth_Wrapper::replaceAll(genesisTemplate, "ADDRESS", newAcc);
+    // std::ofstream out(genesisPath.c_str());
+    // out << genesisTemplate;
+    // out.close();
     
-    Geth_Wrapper::geth_init(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath, genesisPath);
-    Geth_Wrapper::start_geth(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
+    // Geth_Wrapper::geth_init(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath, genesisPath);
+    // Geth_Wrapper::start_geth(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
     //Geth_Wrapper::createAccount(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
+	Geth_Wrapper::initGethNode(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath, genesisPath);
     coinbaseAddresses[robotId] = Geth_Wrapper::getCoinbase(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
     address = coinbaseAddresses[robotId];
-    //Geth_Wrapper::prepare_for_new_genesis(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);      
+    //Geth_Wrapper::prepare_for_new_genesis(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
   //}
 }
 

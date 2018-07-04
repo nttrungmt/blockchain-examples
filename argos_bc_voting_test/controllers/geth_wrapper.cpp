@@ -20,14 +20,33 @@
 
 using namespace std;
 
-string Geth_Wrapper::datadir_base =  "~/Documents/eth_data/data";
-const string Geth_Wrapper::genesis = "~/genesis/genesis1.json ";
-const string Geth_Wrapper::genesisTemplate = "~/genesis/genesis_template.json ";
-const int Geth_Wrapper::rpc_base_port = 8300;
+//string Geth_Wrapper::datadir_base =  "~/Documents/eth_data/data";
+//const string Geth_Wrapper::genesis = "~/genesis/genesis1.json ";
+//const string Geth_Wrapper::genesisTemplate = "~/genesis/genesis_template.json ";
+//const int Geth_Wrapper::rpc_base_port = 8300;
 const int Geth_Wrapper::ipc_base_port = 33500;
 const int Geth_Wrapper::maxtrials = 3000;
-const string Geth_Wrapper::rack = "3";
+//const string Geth_Wrapper::rack = "3";
 bool Geth_Wrapper::gethStaticErrorOccurred = false;
+
+void Geth_Wrapper::initGethNode(int i, nodeInt, int basePort, string datadirBase, string genesisPath) {
+  geth_init(i, nodeInt, basePort, datadirBase, genesisPath);
+  start_geth(i, nodeInt, basePort, datadirBase);
+  //create account if not exists
+  string strAccounts = exec_geth_cmd_helper(i, "eth.accounts", nodeInt, datadirBase);
+  if("[]".compare(strAccounts)) {
+	  createAccount(i, nodeInt, basePort, datadirBase);
+  }
+  //check ether and do mining if need
+  long long nEther = check_ether(i, nodeInt, datadirBase);
+  unlockAccount(i, "test", nodeInt, basePort, datadirBase);
+  start_mining(i, 4, nodeInt, datadirBase);
+  while(nEther <= 0) {
+	  exec_geth_cmd_helper(i, "admin.sleepBlocks(5)", nodeInt, datadirBase);
+	  nEther = check_ether(i, nodeInt, datadirBase);
+  }
+  stop_mining(i, nodeInt, datadirBase);
+}
 
 void Geth_Wrapper::geth_init(int i, int nodeInt, int basePort, string datadirBase, string genesisPath) {
   cout << "DEBUG-- geth_init for robot " << i << endl;
@@ -183,6 +202,26 @@ string Geth_Wrapper::deploy_contract(int i, string interfacePath, string dataPat
   
   //throw;
   gethStaticErrorOccurred = true;
+}
+
+static Geth_Wrapper::string deploy_contract_script(int i, string scriptFilename, int nodeInt, string datadirBase) {
+  // Get smart contract interface
+  cout << "Current balance: " << check_balance(i, nodeInt, datadirBase) << endl;
+  cout << "Current ether: " << check_ether(i, nodeInt, datadirBase) << endl;
+  
+  string txHashRaw = exec_geth_cmd(i, "loadScript(\"" + scriptFilename + "\")", nodeInt, datadirBase);
+  if(DEBUG) {
+    cout << "DEBUG -- deploy_contract: txHashRaw: " << txHashRaw << endl;
+  }
+  string txHash;
+  istringstream f(txHashRaw);
+  getline(f, txHash);
+  cout << "txHash: " << txHash << endl; 
+  /* If a transaction hash was generated, i.e., neither true nor false nor Error were found */
+  if (txHash.find("true") == string::npos && txHash.find("false") == string::npos 
+      && txHash.find("Error") == string::npos && txHash.find("Fatal") == string::npos) {
+    return txHash;
+  }
 }
 
 // Get contract address from transaction receipt

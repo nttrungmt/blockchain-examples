@@ -23,6 +23,9 @@ public:
 	static bool gethStaticErrorOccurred;
 	
 public:
+    //init and create account, init ether if need
+	static void initGethNode(int i, nodeInt, int basePort, string datadirBase, string genesisPath);
+	
 	// Initialize geth
 	static void geth_init(int i, int nodeInt, int basePort, string datadirBase, string genesisPath);
 	// Run geth for robot i
@@ -38,6 +41,8 @@ public:
 	
 	/* Deploy contract using robot number i */
 	static string deploy_contract(int i, string interfacePath, string dataPath, string templatePath, int nodeInt, string datadirBase);
+	
+	static string deploy_contract_script(int i, int nodeInt, string datadirBase, string script_file_path);
 
 	// Get contract address from transaction receipt
 	static string getContractAddress(int i, string txHash, int nodeInt, string datadirBase);
