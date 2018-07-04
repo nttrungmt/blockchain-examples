@@ -1,0 +1,152 @@
+//Node0:
+$geth0 --datadir "./data0" init genesis.json
+$geth0 --datadir "./data0" --networkid 1234 --nodiscover console
+
+//Node1:
+$geth0 --datadir "./data1" init genesis.json
+$geth0 --datadir "./data1" --networkid 1234 --nodiscover console
+
+//add node0 peer at node 1:
+> admin.addPeer("enode://e4664981a20b0a9836efbb308c1dc11c87fd546a64562b3354b0a4c8a05f38ab245250df79cdf175b1a09ec763964bd1f9d802aaacf39683b9ad49b0bd2eb186@127.0.0.1:30303?discport=0")
+true
+> admin.peers
+[{
+    caps: ["eth/62", "eth/63"],
+    id: "e4664981a20b0a9836efbb308c1dc11c87fd546a64562b3354b0a4c8a05f38ab245250df79cdf175b1a09ec763964bd1f9d802aaacf39683b9ad49b0bd2eb186",
+    name: "Geth/v1.6.0-unstable-eee96a5b/linux/go1.8.7",
+    network: {
+      localAddress: "127.0.0.1:55685",
+      remoteAddress: "127.0.0.1:30303"
+    },
+    protocols: {
+      eth: {
+        difficulty: 1024,
+        head: "0xdb0fefca6a786116bae95b5f9d9f485826ad17473800c5e2e5b32be75fde6a9f",
+        version: 63
+      }
+    }
+}]
+
+//create new user at node 0:
+> personal.newAccount("test")
+"0x4dce3b9841aee3f249ec8c14e294b163aa12d186"
+INFO [07-03|11:39:27] New wallet appeared                      url=keystore:///home/trung/blockcha… status=Locked
+> personal.listAccounts
+["0x4dce3b9841aee3f249ec8c14e294b163aa12d186"]
+
+//check balance, ether at node 0:
+>eth.getBalance(eth.coinbase)
+0
+> web3.fromWei(eth.getBalance(eth.coinbase),"ether")
+0
+
+//try to do mining to have gas and ether
+>personal.unlockAccount(eth.coinbase, "test")
+true
+>miner.start(4)
+...
+>miner.stop()
+> eth.getBalance(eth.coinbase)
+2.98484375e+21
+> web3.fromWei(eth.getBalance(eth.coinbase),"ether")
+2984.84375
+
+//unlockAccount and deploy contract
+>personal.unlockAccount(eth.coinbase, "test")
+true
+>loadScript("/home/trung/blockchain-test/SimpleStorage/SimpleStorage.js")
+INFO [07-03|12:18:26] Submitted contract creation              fullhash=0xfc3f6d823e4cef74682fa06bfb237d26b2006316cf3f329d8e70b681c736c99c contract=0x0ba5a2a72faa9f90a4d766a117a118c2def89b4d
+error: null
+transactionHash: 0xfc3f6d823e4cef74682fa06bfb237d26b2006316cf3f329d8e70b681c736c99c
+address: undefined
+null
+true
+>miner.start(4)
+//wait for sometimes until the contract mined
+address: 0x2b806250aff623e10eae6c4b8144b84aac7f24af
+Contract mined! address: 0x2b806250aff623e10eae6c4b8144b84aac7f24af transactionHash: 0x8e99acc932fd08e58f369e7fb6ab4385ebe51f083cda6069063a102f1327c269
+
+//test contract methods
+> simplestorage.address
+"0x2b806250aff623e10eae6c4b8144b84aac7f24af"
+> simplestorage.get()
+0
+> simplestorage.set(5,{from: eth.accounts[0], gas: 3000000})
+INFO [07-03|12:39:28] Submitted transaction                    fullhash=0x5dc3170cfbd92da5e01fd57b3f50055e5200761a9196460c9f1b7e983a8ea2b3 recipient=0x2b806250aff623e10eae6c4b8144b84aac7f24af
+"0x5dc3170cfbd92da5e01fd57b3f50055e5200761a9196460c9f1b7e983a8ea2b3"
+>miner.start(1)
+> miner.stop()
+true
+> simplestorage.get()
+5
+> loadScript("/home/trung/blockchain-test/SimpleStorage/SimpleStorage_callGet.js")
+5
+true
+> loadScript("/home/trung/blockchain-test/SimpleStorage/SimpleStorage_callSet.js")
+INFO [07-03|12:51:07] Submitted transaction                    fullhash=0x2e3b61c8365dd95b3a010e9208b92f6ac8b624d587ce7ded4884d9da8fd060f3 recipient=0x2b806250aff623e10eae6c4b8144b84aac7f24af
+true
+> miner.start(1)
+> miner.stop()
+true
+> loadScript("/home/trung/blockchain-test/SimpleStorage/SimpleStorage_callGet.js")
+5
+true
+
+////Perform test on node 1;
+> personal.newAccount("test")
+"0xd56756586606472bdda6d22d386aec8bc900bfe0"INFO [07-03|13:12:26] New wallet appeared                      url=keystore:///home/trung/blockcha… status=Locked
+
+> personal.listAccounts
+["0xd56756586606472bdda6d22d386aec8bc900bfe0"]
+> eth.getBalance(eth.coinbase)
+0
+> web3.fromWei(eth.getBalance(eth.coinbase),"ether")
+0
+> eth.coinbase
+"0xd56756586606472bdda6d22d386aec8bc900bfe0"
+> loadScript("/home/trung/blockchain-test/SimpleStorage/SimpleStorage_callGet.js")
+5
+true
+> personal.unlockAccount(eth.coinbase, "test")
+true
+> loadScript("/home/trung/blockchain-test/SimpleStorage/SimpleStorage_callSet.js")
+err: Error: Insufficient funds for gas * price + value
+false
+>miner.start(1)
+INFO [07-03|13:14:53] Pre-generation of ethash DAG on          dir=/home/trung/.ethash0000
+trueINFO [07-03|13:14:53] Starting mining operation (CPU=1 TOT=2)
+
+
+INFO [07-03|13:14:53] Checking DAG availability                dir=/home/trung/.ethash0000
+> INFO [07-03|13:14:53] commit new work on block 564 with 0 txs & 0 uncles. Took 173.8µs
+
+INFO [07-03|13:14:53] Generating DAG for epoch 0 (size 1073739904) (0000000000000000000000000000000000000000000000000000000000000000)
+INFO [07-03|13:14:54] Done generating DAG for epoch 0, it took 1.0062s
+INFO [07-03|13:14:58] 🔨  mined potential block #564 [c1b4cc0b…], waiting for 5 blocks to confirm
+INFO [07-03|13:14:58] commit new work on block 565 with 0 txs & 0 uncles. Took 185.1µs
+
+INFO [07-03|13:14:58] 🔨  mined potential block #565 [ef025152…], waiting for 5 blocks to confirm
+INFO [07-03|13:14:58] commit new work on block 566 with 0 txs & 0 uncles. Took 185.7µs
+
+INFO [07-03|13:15:00] 🔨  mined potential block #566 [49644df1…], waiting for 5 blocks to confirm
+INFO [07-03|13:15:00] commit new work on block 567 with 0 txs & 0 uncles. Took 231µs
+
+INFO [07-03|13:15:03] 🔨  mined potential block #567 [aaa02a0f…], waiting for 5 blocks to confirm
+INFO [07-03|13:15:03] commit new work on block 568 with 0 txs & 0 uncles. Took 222.1µs
+
+
+> INFO [07-03|13:15:05] 🔨  mined potential block #568 [1d29585c…], waiting for 5 blocks to confirm
+INFO [07-03|13:15:05] commit new work on block 569 with 0 txs & 0 uncles. Took 193.5µs
+
+> miner.stop()
+true
+> eth.getBalance(eth.coinbase)
+25000000000000000000
+> web3.fromWei(eth.getBalance(eth.coinbase),"ether")
+25
+> loadScript("/home/trung/blockchain-test/SimpleStorage/SimpleStorage_callSet.js")
+INFO [07-03|13:15:51] Submitted transaction                    fullhash=0x952928d5ad24fa2c4b12287daedf4987e5809740ec18d87623e9880a1786bc81 recipient=0x2b806250aff623e10eae6c4b8144b84aac7f24af
+true
+> loadScript("/home/trung/blockchain-test/SimpleStorage/SimpleStorage_callGet.js")
+5
+true

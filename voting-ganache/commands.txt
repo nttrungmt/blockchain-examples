@@ -1,0 +1,52 @@
+Terminal 1:
+$ganache-cli
+
+Terminal 2:
+geth0 attach http://127.0.0.1:8545 console
+
+> eth.accounts
+["0xb828e38c43207ac20bd0cfd920ee75e750ac8982", "0x7c1d9645fff82cb22b5984f65b336753827882b6", "0x23190fef6775b40b7ad32f8dcde11281f2a8c00f", "0x61115d2faa1e3d60ace4ed46c2dd217c6da63ce5", "0x8d298370efcc2d2c484b53190415cb96f38babb1", "0xaee79fdf3a24e9929a4abecda07c5ab52a7dc38d", "0x6b1a5427bc105c0dc38e486d262dc877e9d69c18", "0x94cde6f2fc4b2533ee8461362a753eee5c4da4c4", "0xbca5111058069c82462fd328157a465f4582dda9", "0x89f335040294119ac8f5038d7915e8432e7a0eee"]
+> eth.coinbase
+"0xb828e38c43207ac20bd0cfd920ee75e750ac8982"
+> eth.getBalance(eth.coinbase)
+100000000000000000000
+> web3.fromWei(eth.getBalance(eth.coinbase),"ether")
+100
+> personal.unlockAccount(eth.coinbase, "test")
+true
+> loadScript('/home/trung/test-blockchain/voting-ganache/voting.js')
+
+null [object Object]
+true
+> null [object Object]
+Contract mined! address: 0xd855414f5dc9a4159ad505452e313a16e0035fb2 transactionHash: 0xd5e9cddc331dac0114e3b5b74abd1b28ae0a95eac7c485511cf54d05d246313a
+null [object Object]
+Contract mined! address: 0x6c0ef19f949a1305366e1c2c2fd127be1aa12150 transactionHash: 0xb8a502c936af471927be3184b6a4ea033363489a7a1de4a6aa6deb468396a400
+
+> deployedContract.address
+"0x6c0ef19f949a1305366e1c2c2fd127be1aa12150"
+> deployedContract.totalVotesFor.call('Rama')
+0
+> deployedContract.voteForCandidate('Rama',{from: web3.eth.accounts[0]})
+"0x2a88010adc74c89d43a971a2b221c2d8188f4293fad8df1a7c9722abab2cc220"
+> deployedContract.voteForCandidate('Rama',{from: web3.eth.accounts[0]})
+"0x92a95f2953d023367ca24fce1b7fe0be7c5cab360d9ec56ff796ad6122f183a4"
+> deployedContract.voteForCandidate('Rama',{from: web3.eth.accounts[0]})
+"0xc4332c2f086ab923c398df935461fe9f957e37dfaa225b8f78a2809b7838acda"
+> deployedContract.totalVotesFor.call('Rama')
+3
+> deployedContract.totalVotesFor.call('Nick')
+0
+
+> loadScript('/home/trung/test-blockchain/voting-ganache/getVotesForRama.js')
+Address: 0x6c0ef19f949a1305366e1c2c2fd127be1aa12150
+4
+true
+> loadScript('/home/trung/test-blockchain/voting-ganache/voteForRama.js')
+true
+> loadScript('/home/trung/test-blockchain/voting-ganache/getVotesForRama.js')
+Address: 0x6c0ef19f949a1305366e1c2c2fd127be1aa12150
+5
+true
+
+
