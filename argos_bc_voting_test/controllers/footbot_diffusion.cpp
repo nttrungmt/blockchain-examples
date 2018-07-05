@@ -156,19 +156,19 @@ void CBlockchainVotingController::ControlStep() {
    /* Two different behaviours, depending on if they are diffusing or exploring */
    //switch(m_sStateData.State) {    
 	//case SStateData::STATE_EXPLORING: {
-		/* For a fully connected network (debugging) */
-		set<int> currentNeighbors;
+		///* For a fully connected network (debugging) */
+		//set<int> currentNeighbors;
         // Fully connected
 		//for (UInt8 i = 0; i <= 19; i++) {
 		//  currentNeighbors.insert(i);
 		//}
 		//if (!simulationParams.useClassicalApproach) {
-			UpdateNeighbors(currentNeighbors);
-			if (mining) {
-				cout << " STOP MINING -- robot" << robotId << endl;
-				mining = false;
-				Geth_Wrapper::stop_mining_bg(robotId, nodeInt, simulationParams.blockchainPath);
-			}
+			//UpdateNeighbors(currentNeighbors);
+			//if (mining) {
+			//	cout << " STOP MINING -- robot" << robotId << endl;
+			//	mining = false;
+			//	Geth_Wrapper::stop_mining_bg(robotId, nodeInt, simulationParams.blockchainPath);
+			//}
 		//}
 		Explore();
 		//break;
@@ -339,11 +339,11 @@ void CBlockchainVotingController::Explore() {
       //Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "vote", emptyArgs, 4, opinionInt, nodeInt, simulationParams.blockchainPath);
     //}
 	
-	int num1 = rand() % 100 + 0;
-	int num2 = rand() % 3 + 0;
-	if(num1 >= 50) {
-		cout << "RobotId: " << robotId << " randomNumber:" << num << end;
-		cout << "Begin submit voting transaction" << endl;
+	int num1 = std::rand() % 100 + 0;
+	int num2 = std::rand() % 3 + 0;
+	if(num1 >= 90) {
+		std::cout << "RobotId: " << robotId << " num1:" << num1 << " num2:" << num2 << std::endl;
+		std::cout << "Begin submit voting transaction" << std::endl;
 		string strColor;
 		if(num2 == 0) 
 			strColor = "RED";
@@ -353,9 +353,9 @@ void CBlockchainVotingController::Explore() {
 			strColor = "BLUE";
 		string args[1] = {strColor};
 		Geth_Wrapper::unlockAccount(robotId, "test", nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
-		Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "voteForCandidate", args, 1, 70, nodeInt, simulationParams.blockchainPath);
+		Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "voteForCandidate", args, 1, -1, nodeInt, simulationParams.blockchainPath);
 		Geth_Wrapper::start_mining(robotId, 1, nodeInt, simulationParams.blockchainPath);
-		exec_geth_cmd_helper(robotId, "admin.sleepBlocks(1)", nodeInt, simulationParams.blockchainPath);
+		Geth_Wrapper::exec_geth_cmd_helper(robotId, "admin.sleepBlocks(1)", nodeInt, simulationParams.blockchainPath);
 		Geth_Wrapper::stop_mining(robotId, nodeInt, simulationParams.blockchainPath);
 	}
     
@@ -496,14 +496,17 @@ void CBlockchainVotingController::fromLoopFunctionResPrepare(){
   /* Ethereum */
   //if (!simulationParams.useClassicalApproach) {
     //nodeInt = robotIdToNode[robotId];       
-    interface = Geth_Wrapper::readStringFromFile(simulationParams.baseDir + simulationParams.interfacePath);
-    
+    //interface = Geth_Wrapper::readStringFromFile(simulationParams.baseDir + simulationParams.interfacePath);
+    interface = Geth_Wrapper::readStringFromFile(simulationParams.baseDirRaw + "/Voting.abi");
+    cout << "Interface: " << interface << endl;    
+
     /* Find out on which cluster node this robot's geth process should be executed */
     ostringstream genesisRawStream;
     genesisRawStream << simulationParams.baseDirRaw << "/genesis/genesis_template.json";
     string genesisRaw = genesisRawStream.str();
     ostringstream genesisPathStream;
-    genesisPathStream << simulationParams.baseDirRaw << "/genesis/genesis" << simulationParams.basePort  << ".json";
+    //genesisPathStream << simulationParams.baseDirRaw << "/genesis/genesis" << simulationParams.basePort  << ".json";
+    genesisPathStream << simulationParams.baseDirRaw << "/genesis/genesis.json";
     string genesisPath = genesisPathStream.str();    
     
     // std::string newAcc = Geth_Wrapper::createAccountInit(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
@@ -528,7 +531,8 @@ void CBlockchainVotingController::fromLoopFunctionResStart(){
     int robotId = Geth_Wrapper::Id2Int(GetId());
 
     ostringstream genesisPathStream;
-    genesisPathStream << simulationParams.baseDirRaw << "/genesis/genesis" << simulationParams.basePort  << ".json";
+    //genesisPathStream << simulationParams.baseDirRaw << "/genesis/genesis" << simulationParams.basePort  << ".json";
+    genesisPathStream << simulationParams.baseDirRaw << "/genesis/genesis.json";
     string genesisPath = genesisPathStream.str();
     
     //Geth_Wrapper::geth_init(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath, genesisPath);

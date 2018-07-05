@@ -24,7 +24,7 @@ public:
 	
 public:
     //init and create account, init ether if need
-	static void initGethNode(int i, nodeInt, int basePort, string datadirBase, string genesisPath);
+	static void initGethNode(int i, int nodeInt, int basePort, string datadirBase, string genesisPath);
 	
 	// Initialize geth
 	static void geth_init(int i, int nodeInt, int basePort, string datadirBase, string genesisPath);

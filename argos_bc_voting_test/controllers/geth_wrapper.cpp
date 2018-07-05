@@ -29,12 +29,12 @@ const int Geth_Wrapper::maxtrials = 3000;
 //const string Geth_Wrapper::rack = "3";
 bool Geth_Wrapper::gethStaticErrorOccurred = false;
 
-void Geth_Wrapper::initGethNode(int i, nodeInt, int basePort, string datadirBase, string genesisPath) {
+void Geth_Wrapper::initGethNode(int i, int nodeInt, int basePort, string datadirBase, string genesisPath) {
   geth_init(i, nodeInt, basePort, datadirBase, genesisPath);
   start_geth(i, nodeInt, basePort, datadirBase);
   //create account if not exists
   string strAccounts = exec_geth_cmd_helper(i, "eth.accounts", nodeInt, datadirBase);
-  if("[]".compare(strAccounts)) {
+  if(strAccounts.find("[]") == 0 || strAccounts.find("null") == 0) {
 	  createAccount(i, nodeInt, basePort, datadirBase);
   }
   //check ether and do mining if need
@@ -57,7 +57,7 @@ void Geth_Wrapper::geth_init(int i, int nodeInt, int basePort, string datadirBas
   string str_datadir = datadirStream.str();
   ostringstream fullCommandStream;
 
-  fullCommandStream << "geth" << nodeInt << " --verbosity 1" << " --datadir " << str_datadir << " init " << genesisPath;
+  fullCommandStream << "geth" << nodeInt << " --verbosity 3" << " --datadir " << str_datadir << " init " << genesisPath;
   
   string commandStream = fullCommandStream.str();
 
@@ -77,7 +77,7 @@ void Geth_Wrapper::start_geth(int i, int nodeInt, int basePort, string datadirBa
   
   /* Run geth command on this node  */
   //string username = getUsername();
-  fullCommandStream << "geth" << nodeInt << " --verbosity 1 --networkid 2 --nodiscover ";
+  fullCommandStream << "geth" << nodeInt << " --verbosity 3 --networkid 1234 --nodiscover ";
   
   std::ostringstream datadirStream;
   datadirStream << datadirBase << i << + "/";
@@ -204,7 +204,7 @@ string Geth_Wrapper::deploy_contract(int i, string interfacePath, string dataPat
   gethStaticErrorOccurred = true;
 }
 
-static Geth_Wrapper::string deploy_contract_script(int i, string scriptFilename, int nodeInt, string datadirBase) {
+string Geth_Wrapper::deploy_contract_script(int i, int nodeInt, string datadirBase, string scriptFilename) {
   // Get smart contract interface
   cout << "Current balance: " << check_balance(i, nodeInt, datadirBase) << endl;
   cout << "Current ether: " << check_ether(i, nodeInt, datadirBase) << endl;
@@ -519,14 +519,18 @@ void Geth_Wrapper::smartContractInterfaceBg(int i, string interface, string cont
 void Geth_Wrapper::smartContractInterfaceStringBg(int i, string interface, string contractAddress,
 				   string func, string args[], int argc, int v, int nodeInt, string datadirBase) {
   ostringstream fullCommandStream;
-  fullCommandStream << "var cC = web3.eth.contract(" << interface << ");var c = cC.at(" << contractAddress << ");c." << func << "(";
+  fullCommandStream << "var cC = web3.eth.contract(" << interface << ");var c = cC.at(" << contractAddress << ");c." << func << "(";    
   for(int k = 0; k < argc; k++) {
-    fullCommandStream << args[k] << ",";  
+    fullCommandStream << "\"" << args[k] << "\",";  
   }
-  fullCommandStream << "{" << "value: " << v << ", from: eth.coinbase, gas: '3000000'});";
+  fullCommandStream << "{";
+  if(v > 0) {
+    fullCommandStream << "value: " << v << ",";
+  }
+  fullCommandStream << " from: eth.coinbase, gas: 3000000});";
   
   string fullCommand = fullCommandStream.str();
-  //cout << "Executing full command: " << fullCommand << endl;
+  cout << "Executing full command: " << fullCommand << endl;
   exec_geth_cmd_background(i, fullCommand, nodeInt, datadirBase);
   //cout << "Result received from SC is: " << res << endl;
 }

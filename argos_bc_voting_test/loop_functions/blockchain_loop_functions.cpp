@@ -119,7 +119,8 @@ void CBlockchainVotingLoopFunctions::PreinitMiner() {
   genesisRawStream << baseDirRaw << "/genesis/genesis1.json";
   string genesisRaw = genesisRawStream.str();
   ostringstream genesisPathStream;
-  genesisPathStream << baseDirRaw << "/genesis/genesis" << basePort << ".json";
+  //genesisPathStream << baseDirRaw << "/genesis/genesis" << basePort << ".json";
+  genesisPathStream << baseDirRaw << "/genesis/genesis.json";
   string genesisPath = genesisPathStream.str();
 
   // std::ostringstream fullCommandStream;
@@ -141,7 +142,7 @@ void CBlockchainVotingLoopFunctions::PreinitMiner() {
   // //cout << "[LoopFunctions::PreinitMiner]createAccount" << endl;
   
   Geth_Wrapper::initGethNode(minerId, minerNode, basePort, blockchainPath, genesisPath);
-  minerAddress = Geth_Wrapper::getCoinbase(minerId, minerNode, basePort, blockchainPath);
+  string minerAddress = Geth_Wrapper::getCoinbase(minerId, minerNode, basePort, blockchainPath);
   minerAddressGlobal = minerAddress;
   // //cout << "[LoopFunctions::PreinitMiner]getCoinbase, minerAddress=" << minerAddress << endl;
   // //Geth_Wrapper::prepare_for_new_genesis(minerId, minerNode, basePort, blockchainPath);
@@ -238,7 +239,7 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   Geth_Wrapper::start_mining(minerId, 4, minerNode, blockchainPath);
 
   /* Deploy contract */
-  cout << "[LoopFunctions::InitEthereum]deploy_contract: " << txHash << endl;
+  cout << "[LoopFunctions::InitEthereum]deploy_contract" << endl;
   //string interfacePath = baseDirLoop + "interface.txt";
   //interface = Geth_Wrapper::readStringFromFile(interfacePath);
   //string dataPath = baseDirLoop + "data.txt";
@@ -246,7 +247,7 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   string scriptFilePath = baseDirRaw + "/voting.js";
   string txHash;
   //txHash = Geth_Wrapper::deploy_contract(minerId, interfacePath, dataPath, templatePath, minerNode, blockchainPath);
-  txHash = Geth_Wrapper::deploy_contract_script(minerId, "", minerNode, blockchainPath);
+  txHash = Geth_Wrapper::deploy_contract_script(minerId, minerNode, blockchainPath, scriptFilePath);
   int u = 0;
   do {
     contractAddress = Geth_Wrapper::getContractAddress(minerId, txHash, minerNode, blockchainPath);
