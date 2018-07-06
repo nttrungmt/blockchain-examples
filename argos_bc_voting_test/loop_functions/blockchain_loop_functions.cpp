@@ -234,6 +234,8 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   //Geth_Wrapper::geth_init(minerId, minerNode, basePort, blockchainPath, genesisPath);
   //sleep(1);
   //Geth_Wrapper::start_geth(minerId, minerNode, basePort, blockchainPath);
+  string command = "mkdir " + blockchainPath;
+  system(command.c_str());
   Geth_Wrapper::unlockAccount(minerId, "test", minerNode, basePort, blockchainPath);
   minerAddress = Geth_Wrapper::getCoinbase(minerId, minerNode, basePort, blockchainPath);
   Geth_Wrapper::start_mining(minerId, 4, minerNode, blockchainPath);
@@ -598,6 +600,8 @@ void CBlockchainVotingLoopFunctions::Destroy(){
   //Clean up Ethereum stuff
   //if (!useClassicalApproach) {
       // Kill all geth processes
+      //Geth_Wrapper::kill_geth_thread(minerId, minerNode, basePort, blockchainPath);
+      Geth_Wrapper::kill_geth_thread(minerId, basePort, minerNode, blockchainPath);
       string bckiller = "bash " + blockchainPath + "/bckillerccall";
       Geth_Wrapper::exec(bckiller.c_str());
       // Remove blockchain folders

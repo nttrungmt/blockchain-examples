@@ -83,6 +83,9 @@ public:
 	static void smartContractInterfaceBg(int i, string interface, string contractAddress, string func, int args[], int argc, int v, int nodeInt, string datadirBase);
 	static void smartContractInterfaceStringBg(int i, string interface, string contractAddress, string func, string args[], int argc, int v, int nodeInt, string datadirBase);
 
+       static string smartContractInterfaceFuncScript(int i, string interface, string contractAddress, string func, string args[], int argc, int v, int nodeInt, string datadirBase);
+       static string smartContractInterfaceFuncCallScript(int i, string interface, string contractAddress, string func, string args[], int argc, int v, int nodeInt, string datadirBase);
+
 	/* Kill geth thread based on robot number i */
 	static string kill_geth_thread(int i);
 	static void kill_geth_thread(int i, int basePort, int nodeInt, string datadirBase);

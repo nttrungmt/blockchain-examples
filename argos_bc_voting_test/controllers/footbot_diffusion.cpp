@@ -52,6 +52,8 @@ void CBlockchainVotingController::SimulationState::Init(TConfigurationNode& t_no
 
 CBlockchainVotingController::CBlockchainVotingController() :
    nodeInt(0),
+   beginning(false),
+   mining(false),
    m_pcWheels (NULL),
    m_fWheelVelocity (10.0f),
    m_pcRABA (NULL),
@@ -337,13 +339,12 @@ void CBlockchainVotingController::Explore() {
     //  int args3[1] = {bwh.blockNumber};
       //Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "vote", args, 4, opinionInt, nodeInt, simulationParams.blockchainPath);
       //Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "vote", emptyArgs, 4, opinionInt, nodeInt, simulationParams.blockchainPath);
-    //}
-	
+    //}	
 	int num1 = std::rand() % 100 + 0;
 	int num2 = std::rand() % 3 + 0;
-	if(num1 >= 90) {
+	if(num1 >= 95) {
 		std::cout << "RobotId: " << robotId << " num1:" << num1 << " num2:" << num2 << std::endl;
-		std::cout << "Begin submit voting transaction" << std::endl;
+		//std::cout << "Begin submit voting transaction" << std::endl;
 		string strColor;
 		if(num2 == 0) 
 			strColor = "RED";
@@ -353,9 +354,10 @@ void CBlockchainVotingController::Explore() {
 			strColor = "BLUE";
 		string args[1] = {strColor};
 		Geth_Wrapper::unlockAccount(robotId, "test", nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
-		Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "voteForCandidate", args, 1, -1, nodeInt, simulationParams.blockchainPath);
+		//Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "voteForCandidate", args, 1, -1, nodeInt, simulationParams.blockchainPath);
+                Geth_Wrapper::smartContractInterfaceFuncScript(robotId, interface, contractAddress, "voteForCandidate", args, 1, -1, nodeInt, simulationParams.blockchainPath);
 		Geth_Wrapper::start_mining(robotId, 1, nodeInt, simulationParams.blockchainPath);
-		Geth_Wrapper::exec_geth_cmd_helper(robotId, "admin.sleepBlocks(1)", nodeInt, simulationParams.blockchainPath);
+		Geth_Wrapper::exec_geth_cmd_helper(robotId, "admin.sleepBlocks(5)", nodeInt, simulationParams.blockchainPath);
 		Geth_Wrapper::stop_mining(robotId, nodeInt, simulationParams.blockchainPath);
 	}
     
@@ -453,6 +455,14 @@ void CBlockchainVotingController::TurnLeds(){
   // }
 }
 
+void CBlockchainVotingController::Destroy(){
+  int robotId = Geth_Wrapper::Id2Int(GetId());
+  //if(mining) {
+  //  Geth_Wrapper::stop_mining(robotId, nodeInt, simulationParams.blockchainPath);
+  //}
+  Geth_Wrapper::kill_geth_thread(robotId, simulationParams.basePort, nodeInt, simulationParams.blockchainPath);
+}
+
 /****************************************/
 /****************************************/
 // void CBlockchainVotingController::killGethAndRemoveFolders(string bcPath, string regenFile){
@@ -498,7 +508,7 @@ void CBlockchainVotingController::fromLoopFunctionResPrepare(){
     //nodeInt = robotIdToNode[robotId];       
     //interface = Geth_Wrapper::readStringFromFile(simulationParams.baseDir + simulationParams.interfacePath);
     interface = Geth_Wrapper::readStringFromFile(simulationParams.baseDirRaw + "/Voting.abi");
-    cout << "Interface: " << interface << endl;    
+    //cout << "Interface: " << interface << endl;    
 
     /* Find out on which cluster node this robot's geth process should be executed */
     ostringstream genesisRawStream;
@@ -519,7 +529,7 @@ void CBlockchainVotingController::fromLoopFunctionResPrepare(){
     // Geth_Wrapper::geth_init(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath, genesisPath);
     // Geth_Wrapper::start_geth(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
     //Geth_Wrapper::createAccount(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
-	Geth_Wrapper::initGethNode(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath, genesisPath);
+    Geth_Wrapper::initGethNode(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath, genesisPath);
     coinbaseAddresses[robotId] = Geth_Wrapper::getCoinbase(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
     address = coinbaseAddresses[robotId];
     //Geth_Wrapper::prepare_for_new_genesis(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
@@ -540,6 +550,8 @@ void CBlockchainVotingController::fromLoopFunctionResStart(){
     enodes[robotId] = Geth_Wrapper::get_enode(robotId, nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
     enode = enodes[robotId];
     Geth_Wrapper::unlockAccount(robotId, "test", nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
+    //Geth_Wrapper::start_mining(robotId, 1, nodeInt, simulationParams.blockchainPath);
+    //mining = true;
   //}
 }
 

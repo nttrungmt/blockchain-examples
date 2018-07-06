@@ -141,7 +141,7 @@ public:
     * so the function could have been omitted. It's here just for
     * completeness.
     */
-   virtual void Destroy() {}
+   virtual void Destroy();
 
    inline Movement & GetMovement() {
       return movement;
