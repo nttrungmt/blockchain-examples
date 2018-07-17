@@ -21,6 +21,7 @@
   <!-- *************** -->
   <!-- * Controllers * -->
   <!-- *************** -->
+  <!-- build/controllers/footbot_foraging/libfootbot_foraging -->
   <controllers>
     <footbot_foraging_controller id="ffc"                                  
 								  library="build/controllers/footbot_foraging/libfootbot_foraging">
@@ -32,16 +33,16 @@
       </actuators>
       <sensors>
         <footbot_proximity implementation="default" show_rays="true" />
-        <!--epuck_motor_ground implementation="rot_z_only" /-->
-        <!--epuck_proximity implementation="default" show_rays="false" /-->
         <footbot_light implementation="rot_z_only" show_rays="false" />
         <footbot_motor_ground implementation="rot_z_only" />
+        <range_and_bearing implementation="medium" medium="rab" />
+        <!--epuck_motor_ground implementation="rot_z_only" /-->
+        <!--epuck_proximity implementation="default" show_rays="false" /-->
         <!--epuck_range_and_bearing implementation="medium" medium="rab" show_rays="true"/-->
-		<range_and_bearing implementation="medium" medium="rab" />
       </sensors>
       <!--<params alpha="7.5" delta="0.1" velocity="5" />-->
-	  <params>
-	    <diffusion go_straight_angle_range="-5:5"
+      <params>
+        <diffusion go_straight_angle_range="-5:5"
                    delta="0.1" />
         <wheel_turning hard_turn_angle_threshold="90"
                        soft_turn_angle_threshold="70"
@@ -117,26 +118,26 @@
   <!-- *********************** -->
   <!-- * Arena configuration * -->
   <!-- *********************** -->
-  <arena size="3, 5, 1" center="0,0,0.5">
+  <arena size="5, 5, 1" center="0,0,0.5">
      <floor id="floor"
            source="loop_functions"
            pixels_per_meter="50" />
     <!-- Place four boxes in a rectangle to delimit the arena -->
-    <box id="wall_north" size="2,0.1,0.5" movable="false">
+    <box id="wall_north" size="4,0.1,0.5" movable="false">
       <body position="0,2,0" orientation="0,0,0" />
     </box>
-    <box id="wall_south" size="2,0.1,0.5" movable="false">
+    <box id="wall_south" size="4,0.1,0.5" movable="false">
       <body position="0,-2,0" orientation="0,0,0" />
     </box>
     <box id="wall_east" size="0.1,4,0.5" movable="false">
-      <body position="1,0,0" orientation="0,0,0" />
+      <body position="2,0,0" orientation="0,0,0" />
     </box>
     <box id="wall_west" size="0.1,4,0.5" movable="false">
-      <body position="-1,0,0" orientation="0,0,0" />
+      <body position="-2,0,0" orientation="0,0,0" />
     </box>
 
     <distribute>
-      <position method="uniform" min="-1,-0.25,0" max="1,0.25,0" />
+      <position method="uniform" min="-2,-0.25,0" max="2,0.25,0" />
       <orientation method="gaussian" mean="0,0,0" std_dev="360,0,0" />
       <entity quantity="2" max_trials="20">
         <foot-bot id="fb">
@@ -146,80 +147,86 @@
     </distribute>
     
 	<light id="light_1"
-           position="-0.8,-1.8,0.0"
+           position="-1.8,-1.6,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="6.0"
            medium="leds" />
 	<light id="light_2"
-           position="-0.6,-1.8,0.0"
+           position="-1.4,-1.6,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="6.0"
            medium="leds" />
     <light id="light_3"
-           position="-0.4,-1.8,0.0"
+           position="-1.0,-1.6,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="6.0"
            medium="leds" />
 	<light id="light_4"
-           position="-0.2,-1.8,0.0"
+           position="-0.6,-1.6,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="6.0"
            medium="leds" />
     <light id="light_5"
-           position="0.0,-1.8,0.0"
+           position="0.2,-1.6,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="6.0"
            medium="leds" />
 	<light id="light_6"
-           position="0.2,-1.8,0.0"
+           position="0.2,-1.6,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="6.0"
            medium="leds" />
     <light id="light_7"
-           position="0.4,-1.8,0.0"
+           position="0.6,-1.6,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="6.0"
            medium="leds" />
 	<light id="light_8"
-           position="0.6,-1.8,0.0"
+           position="1.0,-1.6,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="6.0"
            medium="leds" />
 	<light id="light_9"
-           position="0.8,-1.8,0.0"
+           position="1.4,-1.6,0.0"
+           orientation="0,0,0"
+           color="yellow"
+           intensity="6.0"
+           medium="leds" />
+	<light id="light_10"
+           position="1.8,-1.6,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="6.0"
            medium="leds" />
 	
-	<light id="light_10"
-           position="-0.8,1.75,0.0"
-           orientation="0,0,0"
-           color="blue"
-           intensity="3.0"
-           medium="leds" />
 	<light id="light_11"
-           position="-0.2,1.75,0.0"
+           position="-1.2,1.6,0.0"
            orientation="0,0,0"
            color="blue"
            intensity="3.0"
            medium="leds" />
-    <light id="light_12"
-           position="0.2,1.75,0.0"
+	<light id="light_12"
+           position="-0.4,1.6,0.0"
            orientation="0,0,0"
            color="blue"
            intensity="3.0"
            medium="leds" />
-	<light id="light_13"
-           position="0.8,1.75,0.0"
+    <light id="light_13"
+           position="0.4,1.6,0.0"
+           orientation="0,0,0"
+           color="blue"
+           intensity="3.0"
+           medium="leds" />
+	<light id="light_14"
+           position="1.2,1.6,0.0"
            orientation="0,0,0"
            color="blue"
            intensity="3.0"
