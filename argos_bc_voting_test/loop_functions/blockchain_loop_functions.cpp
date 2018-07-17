@@ -79,22 +79,10 @@ CColor CBlockchainVotingLoopFunctions::GetFloorColor(const CVector2& c_position_
    return CColor::WHITE;
 }
 
-void CBlockchainVotingLoopFunctions::fillSettings(TConfigurationNode& tEnvironment) {
+void CBlockchainVotingLoopFunctions::fillSettings(TConfigurationNode& tEnvironment) {  
+  cout << "[LoopFunctions::fillSettings]" << endl;
   try
-    {
-      /* Get a pointer to the floor entity */
-      m_pcFloor = &GetSpace().GetFloorEntity();
-	  /* Get the number of food items we want to be scattered from XML */
-      //GetNodeAttribute(tForaging, "radius", m_fFoodSquareRadius);
-      //m_fFoodSquareRadius *= m_fFoodSquareRadius;
-	  m_fFoodSquareRadius = 0.01;
-	  /* Distribute uniformly the items in the environment */
-      for(UInt32 i = 0; i < 3; ++i) {
-         m_cFoodPos.push_back(
-            CVector2(m_pcRNG->Uniform(m_cForagingArenaSideX),
-                     m_pcRNG->Uniform(m_cForagingArenaSideY)));
-      }
-	  
+    {	  
       /* Retrieving information about arena */
       // GetNodeAttribute(tEnvironment, "number_of_red_cells", colorOfCell[0]);
       // GetNodeAttribute(tEnvironment, "number_of_white_cells", colorOfCell[1]);
@@ -150,6 +138,7 @@ void CBlockchainVotingLoopFunctions::fillSettings(TConfigurationNode& tEnvironme
 }
 
 void CBlockchainVotingLoopFunctions::PreinitMiner() {
+  cout << "[LoopFunctions::PreinitMiner]" << endl;
   /* Change mining difficulty and rebuild geth */
   ostringstream genesisRawStream;
   genesisRawStream << baseDirRaw << "/genesis/genesis1.json";
@@ -186,6 +175,7 @@ void CBlockchainVotingLoopFunctions::PreinitMiner() {
 }
 
 void CBlockchainVotingLoopFunctions::PreallocateEther() {
+  cout << "[LoopFunctions::PreallocateEther]" << endl;
   ostringstream genesisBlockStream;
   genesisBlockStream << "{\n\"nonce\": \"0x0000000000000001\",\n\"mixhash\": \"0x0000000000000000000000000000000000000000000000000000000000000000\",\n\"difficulty\": \"0x1000\",\n\"alloc\": {\n";
 
@@ -254,6 +244,7 @@ void CBlockchainVotingLoopFunctions::AssignNewStateAndPosition() {
 
 /* Set up the miner, deploy the smart contract, etc. */
 void CBlockchainVotingLoopFunctions::InitEthereum() {
+  cout << "[LoopFunctions::InitEthereum]" << endl;
   ostringstream genesisRawStream;
   genesisRawStream << baseDirRaw << "/genesis/genesis1.json";
   string genesisRaw = genesisRawStream.str();
@@ -275,6 +266,8 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   Geth_Wrapper::unlockAccount(minerId, "test", minerNode, basePort, blockchainPath);
   minerAddress = Geth_Wrapper::getCoinbase(minerId, minerNode, basePort, blockchainPath);
   Geth_Wrapper::start_mining(minerId, 4, minerNode, blockchainPath);
+
+  interface = Geth_Wrapper::readAllFromFile(baseDirRaw + "/Voting.abi");
 
   /* Deploy contract */
   cout << "[LoopFunctions::InitEthereum]deploy_contract" << endl;
@@ -372,6 +365,7 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
 }
 
 void CBlockchainVotingLoopFunctions::setContractAddressAndDistributeEther(string contractAddress, string minerAddress) {
+  cout << "[LoopFunctions::setContractAddressAndDistributeEther]" << endl;
   CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
   for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
     /* Get handle to e-puck entity and controller */
@@ -555,11 +549,26 @@ bool CBlockchainVotingLoopFunctions::InitRobots() {
 }
 
 void CBlockchainVotingLoopFunctions::Init(TConfigurationNode& t_node) {
+   cout << "[CBlockchainVotingLoopFunctions::Init] Starting..." << endl;
+
    TConfigurationNode& tEnvironment = GetNode(t_node, "cells");
    fillSettings(tEnvironment);
    
    m_pcRNG = CRandom::CreateRNG("argos");
    
+   /* Get a pointer to the floor entity */
+   m_pcFloor = &GetSpace().GetFloorEntity();
+   /* Get the number of food items we want to be scattered from XML */
+   //GetNodeAttribute(tForaging, "radius", m_fFoodSquareRadius);
+   //m_fFoodSquareRadius *= m_fFoodSquareRadius;
+   m_fFoodSquareRadius = 0.01;
+   /* Distribute uniformly the items in the environment */
+   for(UInt32 i = 0; i < 3; ++i) {
+      m_cFoodPos.push_back(
+      CVector2(m_pcRNG->Uniform(m_cForagingArenaSideX),
+               m_pcRNG->Uniform(m_cForagingArenaSideY)));
+   }
+
    InitRobots();
    
    // /*
@@ -670,6 +679,7 @@ void CBlockchainVotingLoopFunctions::PreStep() {
     cell = (UInt32) 40*cell + ((x+0.009)*10000)/(Real)ENVIRONMENT_CELL_DIMENSION;
 	
 	bool bDone = false;
+        CColor cColor = CColor::WHITE;
 	for(size_t i = 0; i < m_cFoodPos.size() && !bDone; ++i) {
 	   if((cPos - m_cFoodPos[i]).SquareLength() < m_fFoodSquareRadius) {
 		  ///* If so, we move that item out of sight */
@@ -680,9 +690,18 @@ void CBlockchainVotingLoopFunctions::PreStep() {
 		  ///* The floor texture must be updated */
 		  //m_pcFloor->SetChanged();
 		  /* We are done */
+		  if(i==0)
+			cColor = CColor::RED;
+		  else if(i==1)
+			cColor = CColor::GREEN;
+		  else
+			cColor = CColor::BLUE;
 		  bDone = true;
+		  break;
 	   }
 	}
+        //cout << "Before calling cController.setColor" << endl;
+	cController.setColor(cColor);
     
     /* Get parameters of the robot: color, state, opinion and movement datas*/
     //CBlockchainVotingController::CollectedData& collectedData = cController.GetColData();
@@ -716,6 +735,33 @@ void CBlockchainVotingLoopFunctions::PostStep() {
          // m_tWaypoints[pcFB].push_back(pcFB->GetEmbodiedEntity().GetOriginAnchor().Position);
       // }
    // }
+  CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
+  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
+    /* Get handle to e-puck entity and controller */
+    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);    
+    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
+    long long m_lStepCnt = cController.GetStepCnt();
+    if(m_lStepCnt % 100 == 0) {
+      ostringstream strVotes;
+      string args[1] = {"RED"};
+      string resRed = Geth_Wrapper::smartContractInterfaceStringCall(minerId, interface, contractAddress, "totalVotesFor", args, 1, -1, minerNode, blockchainPath);
+      strVotes << "Votes: RED=" << resRed;
+
+      args[0] = "GREEN";
+      string resGreen = Geth_Wrapper::smartContractInterfaceStringCall(minerId, interface, contractAddress, "totalVotesFor", args, 1, -1, minerNode, blockchainPath);
+      strVotes << " - GREEN=" << resGreen;
+
+      args[0] = "BLUE";
+      string resBlue = Geth_Wrapper::smartContractInterfaceStringCall(minerId, interface, contractAddress, "totalVotesFor", args, 1, -1, minerNode, blockchainPath);
+      strVotes << " - BLUE=" << resBlue;
+      string strTmp = strVotes.str();
+      strTmp = Geth_Wrapper::replaceAll(strTmp, "\n", "");
+      strTmp = Geth_Wrapper::replaceAll(strTmp, "true", "");
+      strTmp = Geth_Wrapper::replaceAll(strTmp, "undefined", "");
+      std::cerr << strTmp << endl;
+      break;
+    }
+  }
 }
 
 /* Implement random walk */

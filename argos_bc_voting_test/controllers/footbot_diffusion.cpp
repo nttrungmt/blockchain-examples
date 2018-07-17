@@ -6,6 +6,7 @@
 #include <argos3/core/utility/math/vector2.h>
 #include <random>
 
+using namespace argos;
 using namespace std;
 
 map<int, string> enodes;
@@ -52,6 +53,8 @@ void CBlockchainVotingController::SimulationState::Init(TConfigurationNode& t_no
 
 CBlockchainVotingController::CBlockchainVotingController() :
    nodeInt(0),
+   m_cColor(CColor::WHITE),
+   m_lStepCnt(0),
    beginning(false),
    mining(false),
    m_pcWheels (NULL),
@@ -62,7 +65,8 @@ CBlockchainVotingController::CBlockchainVotingController() :
    m_cAlpha (10.0f),
    m_fDelta(0.5f),
    m_pcProximity(NULL),
-   m_pcLight(NULL),
+   //m_pcLight(NULL),
+   //m_pcGround(NULL),
    m_pcRNG(NULL),
    m_cGoStraightAngleRange(-ToRadians(m_cAlpha),
 						  ToRadians(m_cAlpha)) {}
@@ -80,8 +84,10 @@ void CBlockchainVotingController::Init(TConfigurationNode& t_node) {
   m_pcRABA = GetActuator<CCI_EPuckRangeAndBearingActuator>("epuck_range_and_bearing");
   
   m_pcProximity = GetSensor <CCI_EPuckProximitySensor>("epuck_proximity");
-  m_pcLight     = GetSensor <CCI_FootBotLightSensor>("footbot_light");
-  m_pcRABS = GetSensor  <CCI_EPuckRangeAndBearingSensor>("epuck_range_and_bearing");
+  //m_pcLight     = GetSensor <CCI_FootBotLightSensor>("footbot_light");
+  m_pcRABS      = GetSensor <CCI_EPuckRangeAndBearingSensor>("epuck_range_and_bearing");
+  //m_pcGround    = GetSensor <CCI_FootBotMotorGroundSensor>("footbot_motor_ground" );
+  //m_pcGround    = GetSensor <CCI_EPuckGroundSensor>("epuck_motor_ground" );
   m_pcRNG = CRandom::CreateRNG("argos");
   m_cGoStraightAngleRange.Set(-ToRadians(m_cAlpha), ToRadians(m_cAlpha));
   GetNodeAttributeOrDefault(t_node, "velocity", m_fWheelVelocity, m_fWheelVelocity);
@@ -104,10 +110,10 @@ void CBlockchainVotingController::Init(TConfigurationNode& t_node) {
 /****************************************/
  
 void CBlockchainVotingController::UpdateState() {
-   /* Reset state flags */
-   m_sStateData.InNest = false;
-   /* Read stuff from the ground sensor */
-   const CCI_FootBotMotorGroundSensor::TReadings& tGroundReads = m_pcGround->GetReadings();
+   ///* Reset state flags */
+   //m_sStateData.InNest = false;
+   ///* Read stuff from the ground sensor */
+   //const CCI_EPuckGroundSensor::TReadings& tGroundReads = m_pcGround->GetReadings();
    /*
     * You can say whether you are in the nest by checking the ground sensor
     * placed close to the wheel motors. It returns a value between 0 and 1.
@@ -120,38 +126,40 @@ void CBlockchainVotingController::UpdateState() {
     * (readings 2 and 3) to tell us whether we are on gray: if so, the
     * robot is completely in the nest, otherwise it's outside.
     */
-   if(tGroundReads[2].Value > 0.25f &&
+   /*if(tGroundReads[2].Value > 0.25f &&
       tGroundReads[2].Value < 0.75f &&
       tGroundReads[3].Value > 0.25f &&
       tGroundReads[3].Value < 0.75f) {
-      m_sStateData.InNest = true;
-   }
+      //m_sStateData.InNest = true;
+   }*/
 }
  
 /****************************************/
 /****************************************/
  
 CVector2 CBlockchainVotingController::CalculateVectorToLight() {
-   /* Get readings from light sensor */
-   const CCI_FootBotLightSensor::TReadings& tLightReads = m_pcLight->GetReadings();
-   /* Sum them together */
-   CVector2 cAccumulator;
-   for(size_t i = 0; i < tLightReads.size(); ++i) {
-      cAccumulator += CVector2(tLightReads[i].Value, tLightReads[i].Angle);
-   }
-   /* If the light was perceived, return the vector */
-   if(cAccumulator.Length() > 0.0f) {
-      return CVector2(1.0f, cAccumulator.Angle());
-   }
-   /* Otherwise, return zero */
-   else {
+   ///* Get readings from light sensor */
+   //const CCI_FootBotLightSensor::TReadings& tLightReads = m_pcLight->GetReadings();
+   ///* Sum them together */
+   //CVector2 cAccumulator;
+   //for(size_t i = 0; i < tLightReads.size(); ++i) {
+   //   cAccumulator += CVector2(tLightReads[i].Value, tLightReads[i].Angle);
+   //}
+   ///* If the light was perceived, return the vector */
+   //if(cAccumulator.Length() > 0.0f) {
+   //   return CVector2(1.0f, cAccumulator.Angle());
+   //}
+   ///* Otherwise, return zero */
+   //else {
       return CVector2();
-   }
+   //}
 }
 
 /****************************************/
 /****************************************/
 void CBlockchainVotingController::ControlStep() {
+   m_lStepCnt++;
+   
    int robotId = Geth_Wrapper::Id2Int(GetId());
    //if (!simulationParams.useClassicalApproach) {
      if (beginning) {
@@ -358,7 +366,7 @@ void CBlockchainVotingController::Explore() {
       //Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "vote", args, 4, opinionInt, nodeInt, simulationParams.blockchainPath);
       //Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "vote", emptyArgs, 4, opinionInt, nodeInt, simulationParams.blockchainPath);
     //}	
-	int num1 = std::rand() % 100 + 0;
+	/*int num1 = std::rand() % 100 + 0;
 	int num2 = std::rand() % 3 + 0;
 	if(num1 >= 95) {
 		std::cout << "RobotId: " << robotId << " num1:" << num1 << " num2:" << num2 << std::endl;
@@ -377,7 +385,7 @@ void CBlockchainVotingController::Explore() {
 		Geth_Wrapper::start_mining(robotId, 1, nodeInt, simulationParams.blockchainPath);
 		Geth_Wrapper::exec_geth_cmd_helper(robotId, "admin.sleepBlocks(5)", nodeInt, simulationParams.blockchainPath);
 		Geth_Wrapper::stop_mining(robotId, nodeInt, simulationParams.blockchainPath);
-	}
+	}*/
     
     // /* Assigning a new exploration time, for the next exploration state */
     // m_sStateData.remainingExplorationTime = Ceil(m_pcRNG->Exponential((Real)simulationParams.sigma));
@@ -397,7 +405,51 @@ void CBlockchainVotingController::Explore() {
       // throw;
     // }
     // m_sStateData.diffusingDurationTime = m_sStateData.remainingDiffusingTime;
-  //}  
+  //}
+
+  /*if(m_lStepCnt % 100 == 0) {
+    ostringstream strVotes;
+    string args[1] = {"RED"};
+    string resRed = Geth_Wrapper::smartContractInterfaceStringCall(robotId, interface, contractAddress, "totalVotesFor", args, 1, -1, nodeInt, simulationParams.blockchainPath);
+    strVotes << "Votes: RED=" << resRed;
+
+    args[0] = "GREEN";
+    string resGreen = Geth_Wrapper::smartContractInterfaceStringCall(robotId, interface, contractAddress, "totalVotesFor", args, 1, -1, nodeInt, simulationParams.blockchainPath);
+    strVotes << " - GREEN=" << resGreen;
+
+    args[0] = "BLUE";
+    string resBlue = Geth_Wrapper::smartContractInterfaceStringCall(robotId, interface, contractAddress, "totalVotesFor", args, 1, -1, nodeInt, simulationParams.blockchainPath);
+    strVotes << " - BLUE=" << resBlue;
+    string strTmp = strVotes.str();
+    strTmp = Geth_Wrapper::replaceAll(strTmp, "\n", "");
+    strTmp = Geth_Wrapper::replaceAll(strTmp, "true", "");
+    strTmp = Geth_Wrapper::replaceAll(strTmp, "undefined", "");
+    std::cerr << strTmp << endl;
+  }*/  
+}
+
+void CBlockchainVotingController::setColor(CColor color) {
+     if(m_cColor == CColor::WHITE 
+         && (color == CColor::RED || color == CColor::GREEN || color == CColor::BLUE)) {        
+	string strColor;
+	if(color == CColor::RED) 
+		strColor = "RED";
+	else if(color == CColor::GREEN)
+		strColor = "GREEN";
+	else 
+		strColor = "BLUE";
+        cout << "setColor starting..." << strColor << endl;
+	string args[1] = {strColor};        
+        int robotId = Geth_Wrapper::Id2Int(GetId());
+	Geth_Wrapper::unlockAccount(robotId, "test", nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
+	//Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "voteForCandidate", args, 1, -1, nodeInt, simulationParams.blockchainPath);
+        Geth_Wrapper::smartContractInterfaceFuncScript(robotId, interface, contractAddress, "voteForCandidate", args, 1, -1, nodeInt, simulationParams.blockchainPath);
+	Geth_Wrapper::start_mining(robotId, 1, nodeInt, simulationParams.blockchainPath);
+	Geth_Wrapper::exec_geth_cmd_helper(robotId, "admin.sleepBlocks(5)", nodeInt, simulationParams.blockchainPath);
+	Geth_Wrapper::stop_mining(robotId, nodeInt, simulationParams.blockchainPath);
+     }
+     
+     m_cColor = color;
 }
 
 /************************************************** RANDOM WALK ************************************************/
@@ -454,23 +506,28 @@ void CBlockchainVotingController::Move(){
 AGGIUNGERECOLORI 
 */
 void CBlockchainVotingController::TurnLeds(){
-  // switch(opinion.actualOpinion) {
-  // case 1: {
-    // opinion.actualOpCol = CColor::WHITE;
-    // m_pcLEDs->SetAllColors(CColor::WHITE);
-    // break;
-  // }
-  // case 2: {
-    // opinion.actualOpCol = CColor::BLACK;
-    // m_pcLEDs->SetAllColors(CColor::BLACK);
-    // break;
-  // }
-  // case 3: {
-    // opinion.actualOpCol = CColor::GREEN;
-    // m_pcLEDs->SetAllColors(CColor::GREEN);
-    // break;
-  // }
-  // }
+   //cout << "Called TurnLeds..." << endl;
+   /*switch(m_cColor) {
+   case CColor::RED: {
+     //opinion.actualOpCol = CColor::RED;
+     m_pcLEDs->SetAllColors(CColor::RED);
+     break;
+   }
+   case CColor::GREEN: {
+     //opinion.actualOpCol = CColor::GREEN;
+     m_pcLEDs->SetAllColors(CColor::GREEN);
+     break;
+   }
+   case CColor::BLUE: {
+     //opinion.actualOpCol = CColor::BLUE;
+     m_pcLEDs->SetAllColors(CColor::BLUE);
+     break;
+   }
+   default:
+     m_pcLEDs->SetAllColors(CColor::WHITE);
+     break;
+   }*/
+   m_pcLEDs->SetAllColors(m_cColor);
 }
 
 void CBlockchainVotingController::Destroy(){

@@ -72,6 +72,8 @@ private:
 	bool gethStaticErrorOccurred;
 	bool incorrectParameters;
 	bool m_bExperimentFinished;
+
+        std::string interface;
 	
 	UInt32 LAMDA,turn; // Parameters for the randomWalk: Lamda is the exponential mean and turn is the uniform parameter
 	

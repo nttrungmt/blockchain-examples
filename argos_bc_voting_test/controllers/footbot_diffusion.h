@@ -38,6 +38,7 @@
 #include <argos3/plugins/robots/e-puck/control_interface/ci_epuck_wheels_actuator.h>
 /* Definition of the foot-bot light sensor */
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_light_sensor.h>
+#include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_motor_ground_sensor.h>
 
 #include <argos3/core/utility/math/rng.h>
 #include <argos3/core/utility/math/vector2.h>
@@ -176,10 +177,15 @@ public:
    inline CColor& GetColor() {
       return m_cColor;
    }
-   
-   inline void setColor(CColor color) {
-     m_cColor = color;
+
+   inline long long GetStepCnt() {
+      return m_lStepCnt;
    }
+   
+   //inline void setColor(CColor color) {
+   //  m_cColor = color;
+   //}
+   void setColor(CColor color);
    
    void UpdateNeighbors(std::set<int> newNeighbors);
    void registerRobot(); // Tell the smart contract the robot's public key
@@ -217,8 +223,10 @@ private:
    CDegrees m_cAlpha;                         // OBST. AVOID.
    Real m_fDelta;                             // OBST. AVOID.
    CCI_EPuckProximitySensor* m_pcProximity;   // OBST. AVOID.
-   /* Pointer to the foot-bot light sensor */
-   CCI_FootBotLightSensor* m_pcLight;
+   ///* Pointer to the foot-bot light sensor */
+   //CCI_FootBotLightSensor* m_pcLight;
+   ///* Pointer to the foot-bot motor ground sensor */
+   //CCI_EPuckGroundSensor* m_pcGround;
    CRange<CRadians> m_cGoStraightAngleRange;  // OBST. AVOID.
       
    CRandom::CRNG* m_pcRNG;
@@ -246,6 +254,8 @@ private:
    int byzantineStyle;
    bool threadCurrentlyRunning;
    int eventTrials;
+
+   long long m_lStepCnt;
 };
 
 #endif

@@ -41,7 +41,7 @@ void Geth_Wrapper::initGethNode(int i, int nodeInt, int basePort, string datadir
   long long nEther = check_ether(i, nodeInt, datadirBase);
   unlockAccount(i, "test", nodeInt, basePort, datadirBase);
   start_mining(i, 4, nodeInt, datadirBase);
-  while(nEther <= 0) {
+  while(nEther <= 100) {
 	  exec_geth_cmd_helper(i, "admin.sleepBlocks(5)", nodeInt, datadirBase);
 	  nEther = check_ether(i, nodeInt, datadirBase);
   }
@@ -467,11 +467,16 @@ string Geth_Wrapper::smartContractInterfaceCall(int i, string interface, string 
   for(int k = 0; k < argc; k++) {
     fullCommandStream << args[k] << ",";  
   }
-  fullCommandStream << "{" << "value: " << v << ", from: eth.coinbase, gas: '3000000'});";
+  fullCommandStream << "{"; 
+  if(v > 0) {    
+    fullCommandStream << "value: " << v << ", ";
+    fullCommandStream << "from: eth.coinbase, gas: '3000000'";
+  }
+  fullCommandStream << "});";
   string fullCommand = fullCommandStream.str();
 
   string res = exec_geth_cmd(i, fullCommand, nodeInt, datadirBase);
-  cout << "Result received from SC is: " << res << endl;
+  //cout << "Result received from SC is: " << res << endl;
 
   return res;
 }
@@ -481,13 +486,20 @@ string Geth_Wrapper::smartContractInterfaceStringCall(int i, string interface, s
   ostringstream fullCommandStream;
   fullCommandStream << "var cC = web3.eth.contract(" << interface << ");var c = cC.at(" << contractAddress << ");c." << func << ".call(";
   for(int k = 0; k < argc; k++) {
-    fullCommandStream << args[k] << ",";  
+    //fullCommandStream << args[k] << ",";  
+    fullCommandStream << "\"" << args[k] << "\",";
   }
-  fullCommandStream << "{" << "value: " << v << ", from: eth.coinbase, gas: '3000000'});";
+  //fullCommandStream << "{" << "value: " << v << ", from: eth.coinbase, gas: '3000000'});";
+  fullCommandStream << "{"; 
+  if(v > 0) {    
+    fullCommandStream << "value: " << v << ", ";
+    fullCommandStream << "from: eth.coinbase, gas: '3000000'";
+  }
+  fullCommandStream << "});";
   string fullCommand = fullCommandStream.str();
 
   string res = exec_geth_cmd(i, fullCommand, nodeInt, datadirBase);
-  cout << "Result received from SC is: " << res << endl;
+  //cout << "Result received from SC is: " << res << endl;
 
   return res;
 }
@@ -504,7 +516,7 @@ void Geth_Wrapper::smartContractInterfaceBg(int i, string interface, string cont
   fullCommandStream << "{" << "value: " << v << ", from: eth.coinbase, gas: '3000000'});";
   string fullCommand = fullCommandStream.str();
 
-  cout << "REGISTRATION ROBOT" << endl;
+  //cout << "REGISTRATION ROBOT" << endl;
   cout << fullCommand << endl;
   
   exec_geth_cmd_background(i, fullCommand, nodeInt, datadirBase);
@@ -550,21 +562,23 @@ string Geth_Wrapper::smartContractInterfaceFuncScript(int i, string interface, s
   out.close();
 
   string res = exec_geth_cmd(i, "loadScript(\"" + tmpPath + "\")", nodeInt, datadirBase);
-  cout << "[smartContractInterfaceFuncScript] res: " << res << endl;
+  //cout << "[smartContractInterfaceFuncScript] res: " << res << endl;
 
   return res;
 }
 
 string Geth_Wrapper::smartContractInterfaceFuncCallScript(int i, string interface, string contractAddress, string func, string args[], int argc, int v, int nodeInt, string datadirBase) {
   ostringstream fullCommandStream;
-  fullCommandStream << "var cC = web3.eth.contract(" << interface << ");var c = cC.at(" << contractAddress << ");c." << func << ".call(";
+  fullCommandStream << "var cC = web3.eth.contract(" << interface << ");var c = cC.at(" << contractAddress << ");console.log(c." << func << ".call(";
   for(int k = 0; k < argc; k++) {
     fullCommandStream << "\"" << args[k] << "\",";  
   }
-  fullCommandStream << "{";
-  if(v > 0) 
+  fullCommandStream << "{"; 
+  if(v > 0) {    
     fullCommandStream << "value: " << v << ", ";
-  fullCommandStream << "from: eth.coinbase, gas: '3000000'});";
+    fullCommandStream << "from: eth.coinbase, gas: '3000000'";
+  }
+  fullCommandStream << "}));";
   string fullCommand = fullCommandStream.str();
 
   string tmpPath = datadirBase + "/" + func + ".js";
@@ -573,8 +587,7 @@ string Geth_Wrapper::smartContractInterfaceFuncCallScript(int i, string interfac
   out.close();
 
   string res = exec_geth_cmd(i, "loadScript(\"" + tmpPath + "\")", nodeInt, datadirBase);
-  cout << "[smartContractInterfaceFuncCallScript] res: " << res << endl;
-
+  //cout << "[smartContractInterfaceFuncCallScript] res: " << res << endl;
   return res;
 }
 

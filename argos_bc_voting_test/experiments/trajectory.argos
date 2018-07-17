@@ -32,9 +32,10 @@
       </actuators>
       <sensors>
         <!--<footbot_proximity implementation="default" show_rays="true" />-->
-		<!--epuck_motor_ground implementation="rot_z_only" /-->
+	<!--epuck_motor_ground implementation="rot_z_only" /-->
         <epuck_proximity implementation="default" show_rays="false" />
-		<footbot_light implementation="rot_z_only" show_rays="false" />
+	<!--<footbot_light implementation="rot_z_only" show_rays="false" />-->
+        <!--footbot_motor_ground implementation="rot_z_only" /-->
         <epuck_range_and_bearing implementation="medium" medium="rab" show_rays="true"/>
       </sensors>
       <!--<params alpha="7.5" delta="0.1" velocity="5" />-->
@@ -43,16 +44,16 @@
 		   lamda="100"
 		   turn="45"
 		   exitFlag="true"
-		   base_dir="/home/trung/blockchain-examples/argos_bc_voting_test/controllers/"
+		   base_dir="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/controllers/"
 		   use_multiple_nodes="true"
 		   use_background_geth_calls="true"
 		   interface_path="interface.txt"
-		   mapping_path="/home/trung/blockchain-examples/argos_bc_voting_test/config0.txt"
-		   base_dir_raw="/home/trung/blockchain-examples/argos_bc_voting_test"
+		   mapping_path="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/config0.txt"
+		   base_dir_raw="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test"
 		   base_port="33000"
-		   blockchain_path="/home/trung/blockchain-examples/argos_bc_voting_test/eth_data/data"
+		   blockchain_path="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/eth_data/data"
 		   use_classical_approach="false"
-		   regenerate_file="/home/trung/blockchain-examples/argos_bc_voting_test/regenerate0.sh"/> 
+		   regenerate_file="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/regenerate0.sh"/> 
 		   <!-- Sigma and G must be inserted in seconds, not in ticks; 
 			  1 = Voter model; 2 = Direct comparison; 3 = Majority Rule--> 
       </params>
@@ -70,8 +71,8 @@
 	  number_of_robots="2"
 	  number_of_runs="1"
       
-	  base_dir_loop="/home/trung/blockchain-examples/argos_bc_voting_test/controllers/"
-	  base_dir_raw="/home/trung/blockchain-examples/argos_bc_voting_test"
+	  base_dir_loop="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/controllers/"
+	  base_dir_raw="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test"
 	  data_dir="data/experiment1_decision1-node0-20-06-2018/"
       lamda="100"
 	  turn="45"
@@ -83,8 +84,8 @@
 	  base_port="33000"
 	  use_classical_approach="false"
 	  subswarm_consensus="false"
-	  regenerate_file="/home/trung/blockchain-examples/argos_bc_voting_test/regenerate0.sh"
-	  blockchain_path="/home/trung/blockchain-examples/argos_bc_voting_test/eth_data/data"/>
+	  regenerate_file="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/regenerate0.sh"
+	  blockchain_path="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/eth_data/data"/>
   </loop_functions>
 
   <!-- *********************** -->
