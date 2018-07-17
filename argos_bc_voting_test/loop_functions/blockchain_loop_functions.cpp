@@ -43,6 +43,9 @@ std::string interface; // Smart contract interface
 /****************************************/
 /****************************************/
 CBlockchainVotingLoopFunctions::CBlockchainVotingLoopFunctions() :
+    m_cForagingArenaSideX(-0.9f, 1.7f),
+    m_cForagingArenaSideY(-1.7f, 1.7f),
+    m_pcFloor(NULL),
 	zeroOne(0.0f,1.0f),
 	//bigRange(0.0f,30000.0f),
 	//arenaSizeRangeX(0.0f, ARENA_SIZE_X),
@@ -56,9 +59,42 @@ CBlockchainVotingLoopFunctions::CBlockchainVotingLoopFunctions() :
 {
 }
 
+/****************************************/
+/****************************************/
+ 
+CColor CBlockchainVotingLoopFunctions::GetFloorColor(const CVector2& c_position_on_plane) {
+   //if(c_position_on_plane.GetX() < -1.0f) {
+   //   return CColor::GRAY50;
+   //}
+   for(UInt32 i = 0; i < m_cFoodPos.size(); ++i) {
+      if((c_position_on_plane - m_cFoodPos[i]).SquareLength() < m_fFoodSquareRadius) {
+		  if(i==0)
+			return CColor::RED;
+		  else if (i==1)
+			return CColor::GREEN;
+		  else 
+			return CColor::BLUE;
+      }
+   }
+   return CColor::WHITE;
+}
+
 void CBlockchainVotingLoopFunctions::fillSettings(TConfigurationNode& tEnvironment) {
   try
     {
+      /* Get a pointer to the floor entity */
+      m_pcFloor = &GetSpace().GetFloorEntity();
+	  /* Get the number of food items we want to be scattered from XML */
+      //GetNodeAttribute(tForaging, "radius", m_fFoodSquareRadius);
+      //m_fFoodSquareRadius *= m_fFoodSquareRadius;
+	  m_fFoodSquareRadius = 0.01;
+	  /* Distribute uniformly the items in the environment */
+      for(UInt32 i = 0; i < 3; ++i) {
+         m_cFoodPos.push_back(
+            CVector2(m_pcRNG->Uniform(m_cForagingArenaSideX),
+                     m_pcRNG->Uniform(m_cForagingArenaSideY)));
+      }
+	  
       /* Retrieving information about arena */
       // GetNodeAttribute(tEnvironment, "number_of_red_cells", colorOfCell[0]);
       // GetNodeAttribute(tEnvironment, "number_of_white_cells", colorOfCell[1]);
@@ -560,6 +596,13 @@ void CBlockchainVotingLoopFunctions::Reset() {
     string regenerateFolders = "bash " + regenerateFile;
     Geth_Wrapper::exec(regenerateFolders.c_str());    
   //}
+  
+  /* Distribute uniformly the items in the environment */
+  for(UInt32 i = 0; i < m_cFoodPos.size(); ++i) {
+     m_cFoodPos[i].Set(m_pcRNG->Uniform(m_cForagingArenaSideX),
+                       m_pcRNG->Uniform(m_cForagingArenaSideY));
+  }
+  
   InitRobots();
 }
 
@@ -613,14 +656,29 @@ void CBlockchainVotingLoopFunctions::PreStep() {
     CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);    
     CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
     
-    Real x = cEpuck. GetEmbodiedEntity().GetOriginAnchor().Position.GetX(); // X coordinate of the robot
-    Real y = cEpuck. GetEmbodiedEntity().GetOriginAnchor().Position.GetY(); // Y coordinate of the robot
+    Real x = cEpuck.GetEmbodiedEntity().GetOriginAnchor().Position.GetX(); // X coordinate of the robot
+    Real y = cEpuck.GetEmbodiedEntity().GetOriginAnchor().Position.GetY(); // Y coordinate of the robot
     
     CVector2 cPos;
     cPos.Set(x,y);	// Vector position of the robot
     /* Figure out in which cell (EG: which is the index of the array grid) the robot is */
     UInt32 cell = (UInt32) ((y+0.009)*10000)/(Real)ENVIRONMENT_CELL_DIMENSION;
     cell = (UInt32) 40*cell + ((x+0.009)*10000)/(Real)ENVIRONMENT_CELL_DIMENSION;
+	
+	bool bDone = false;
+	for(size_t i = 0; i < m_cFoodPos.size() && !bDone; ++i) {
+	   if((cPos - m_cFoodPos[i]).SquareLength() < m_fFoodSquareRadius) {
+		  ///* If so, we move that item out of sight */
+		  //m_cFoodPos[i].Set(100.0f, 100.f);
+		  ///* The foot-bot is now carrying an item */
+		  //sFoodData.HasFoodItem = true;
+		  //sFoodData.FoodItemIdx = i;
+		  ///* The floor texture must be updated */
+		  //m_pcFloor->SetChanged();
+		  /* We are done */
+		  bDone = true;
+	   }
+	}
     
     /* Get parameters of the robot: color, state, opinion and movement datas*/
     //CBlockchainVotingController::CollectedData& collectedData = cController.GetColData();

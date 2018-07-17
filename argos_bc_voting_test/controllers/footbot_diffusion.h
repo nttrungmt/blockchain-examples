@@ -36,6 +36,8 @@
 #include <argos3/plugins/robots/generic/control_interface/ci_leds_actuator.h>
 #include <argos3/plugins/robots/e-puck/control_interface/ci_epuck_ground_sensor.h>
 #include <argos3/plugins/robots/e-puck/control_interface/ci_epuck_wheels_actuator.h>
+/* Definition of the foot-bot light sensor */
+#include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_light_sensor.h>
 
 #include <argos3/core/utility/math/rng.h>
 #include <argos3/core/utility/math/vector2.h>
@@ -171,6 +173,14 @@ public:
      contractAddress = contractAddr;
    }
    
+   inline CColor& GetColor() {
+      return m_cColor;
+   }
+   
+   inline void setColor(CColor color) {
+     m_cColor = color;
+   }
+   
    void UpdateNeighbors(std::set<int> newNeighbors);
    void registerRobot(); // Tell the smart contract the robot's public key
    void updateRegistration(); // Wait for the first event of the smart contract 
@@ -181,15 +191,36 @@ private:
    //   void readByzantineMapping();
    void DistributeID();
    
-   CCI_EPuckWheelsActuator* m_pcWheels;
+    
+   /*
+    * Updates the state information.
+    * In pratice, it sets the SStateData::InNest flag.
+    * Future, more complex implementations should add their
+    * state update code here.
+    */
+   void UpdateState();
+ 
+   /*
+    * Calculates the vector to the light. Used to perform
+    * phototaxis and antiphototaxis.
+    */
+   CVector2 CalculateVectorToLight();
+   
+   CColor m_cColor;
+   
    Real m_fWheelVelocity;
+   CCI_EPuckWheelsActuator* m_pcWheels;
+   CCI_LEDsActuator* m_pcLEDs;
    CCI_EPuckRangeAndBearingActuator*  m_pcRABA;
+   
    CCI_EPuckRangeAndBearingSensor* m_pcRABS;
    CDegrees m_cAlpha;                         // OBST. AVOID.
    Real m_fDelta;                             // OBST. AVOID.
    CCI_EPuckProximitySensor* m_pcProximity;   // OBST. AVOID.
+   /* Pointer to the foot-bot light sensor */
+   CCI_FootBotLightSensor* m_pcLight;
    CRange<CRadians> m_cGoStraightAngleRange;  // OBST. AVOID.
-   CCI_LEDsActuator* m_pcLEDs;
+      
    CRandom::CRNG* m_pcRNG;
    
    /* Files */
@@ -215,33 +246,6 @@ private:
    int byzantineStyle;
    bool threadCurrentlyRunning;
    int eventTrials;
-   ///* Pointer to the differential steering actuator */
-   //CCI_DifferentialSteeringActuator* m_pcWheels;
-   ///* Pointer to the foot-bot proximity sensor */
-   //CCI_FootBotProximitySensor* m_pcProximity;
-   // /*
-    // * The following variables are used as parameters for the
-    // * algorithm. You can set their value in the <parameters> section
-    // * of the XML configuration file, under the
-    // * <controllers><footbot_diffusion_controller> section.
-    // */
-
-   // /* Maximum tolerance for the angle between
-    // * the robot heading direction and
-    // * the closest obstacle detected. */
-   // CDegrees m_cAlpha;
-   // /* Maximum tolerance for the proximity reading between
-    // * the robot and the closest obstacle.
-    // * The proximity reading is 0 when nothing is detected
-    // * and grows exponentially to 1 when the obstacle is
-    // * touching the robot.
-    // */
-   // Real m_fDelta;
-   // /* Wheel speed. */
-   // Real m_fWheelVelocity;
-   // /* Angle tolerance range to go straight.
-    // * It is set to [-alpha,alpha]. */
-   // CRange<CRadians> m_cGoStraightAngleRange;
 };
 
 #endif

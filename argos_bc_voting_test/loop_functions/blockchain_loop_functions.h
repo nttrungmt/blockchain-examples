@@ -40,6 +40,7 @@ public:
    virtual void PreStep();
    virtual void PostStep();
 
+   virtual CColor GetFloorColor(const CVector2& c_position_on_plane);
    //inline const TWaypointMap& GetWaypoints() const {
    //   return m_tWaypoints;
    //}
@@ -60,6 +61,10 @@ private:
 	void UpdateRegistrationAllRobots();
 	void connectMinerToEveryone();
 	
+	CRange<Real> m_cForagingArenaSideX, m_cForagingArenaSideY;
+	Real m_fFoodSquareRadius;
+	std::vector<CVector2> m_cFoodPos;
+	CFloorEntity* m_pcFloor;
 	CRange<Real> zeroOne;
 	CRandom::CRNG* m_pcRNG;
 	bool errorOccurred;

@@ -33,8 +33,9 @@
       <sensors>
         <!--<footbot_proximity implementation="default" show_rays="true" />-->
 		<!--epuck_motor_ground implementation="rot_z_only" /-->
-        <epuck_range_and_bearing implementation="medium" medium="rab" show_rays="true"/>
         <epuck_proximity implementation="default" show_rays="false" />
+		<footbot_light implementation="rot_z_only" show_rays="false" />
+        <epuck_range_and_bearing implementation="medium" medium="rab" show_rays="true"/>
       </sensors>
       <!--<params alpha="7.5" delta="0.1" velocity="5" />-->
 	  <params>   

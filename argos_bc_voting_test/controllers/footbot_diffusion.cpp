@@ -53,63 +53,32 @@ void CBlockchainVotingController::SimulationState::Init(TConfigurationNode& t_no
 CBlockchainVotingController::CBlockchainVotingController() :
    nodeInt(0),
    m_pcWheels (NULL),
+   m_pcLEDs(NULL),
    m_fWheelVelocity (10.0f),
    m_pcRABA (NULL),
    m_pcRABS (NULL),
    m_cAlpha (10.0f),
    m_fDelta(0.5f),
    m_pcProximity(NULL),
+   m_pcLight(NULL),
+   m_pcRNG(NULL),
    m_cGoStraightAngleRange(-ToRadians(m_cAlpha),
 						  ToRadians(m_cAlpha)) {}
 
 /****************************************/
 /****************************************/
 void CBlockchainVotingController::Init(TConfigurationNode& t_node) {
-   // /*
-    // * Get sensor/actuator handles
-    // *
-    // * The passed string (ex. "differential_steering") corresponds to the
-    // * XML tag of the device whose handle we want to have. For a list of
-    // * allowed values, type at the command prompt:
-    // *
-    // * $ argos3 -q actuators
-    // *
-    // * to have a list of all the possible actuators, or
-    // *
-    // * $ argos3 -q sensors
-    // *
-    // * to have a list of all the possible sensors.
-    // *
-    // * NOTE: ARGoS creates and initializes actuators and sensors
-    // * internally, on the basis of the lists provided the configuration
-    // * file at the <controllers><footbot_diffusion><actuators> and
-    // * <controllers><footbot_diffusion><sensors> sections. If you forgot to
-    // * list a device in the XML and then you request it here, an error
-    // * occurs.
-    // */
-   // m_pcWheels    = GetActuator<CCI_DifferentialSteeringActuator>("differential_steering");
-   // m_pcProximity = GetSensor  <CCI_FootBotProximitySensor      >("footbot_proximity"    );
-   // /*
-    // * Parse the configuration file
-    // *
-    // * The user defines this part. Here, the algorithm accepts three
-    // * parameters and it's nice to put them in the config file so we don't
-    // * have to recompile if we want to try other settings.
-    // */
-   // GetNodeAttributeOrDefault(t_node, "alpha", m_cAlpha, m_cAlpha);
-   // m_cGoStraightAngleRange.Set(-ToRadians(m_cAlpha), ToRadians(m_cAlpha));
-   // GetNodeAttributeOrDefault(t_node, "delta", m_fDelta, m_fDelta);
-   // GetNodeAttributeOrDefault(t_node, "velocity", m_fWheelVelocity, m_fWheelVelocity);
-   
   eventTrials = 0;
   //receivedDecision = true;
   threadCurrentlyRunning = false;
   
   /* Initialize the actuators (and sensors) and the initial velocity as straight walking*/
   m_pcWheels = GetActuator<CCI_EPuckWheelsActuator>("epuck_wheels");
-  m_pcProximity = GetSensor <CCI_EPuckProximitySensor>("epuck_proximity");
   m_pcLEDs = GetActuator<CCI_LEDsActuator>("leds");
   m_pcRABA = GetActuator<CCI_EPuckRangeAndBearingActuator>("epuck_range_and_bearing");
+  
+  m_pcProximity = GetSensor <CCI_EPuckProximitySensor>("epuck_proximity");
+  m_pcLight     = GetSensor <CCI_FootBotLightSensor>("footbot_light");
   m_pcRABS = GetSensor  <CCI_EPuckRangeAndBearingSensor>("epuck_range_and_bearing");
   m_pcRNG = CRandom::CreateRNG("argos");
   m_cGoStraightAngleRange.Set(-ToRadians(m_cAlpha), ToRadians(m_cAlpha));
@@ -127,6 +96,55 @@ void CBlockchainVotingController::Init(TConfigurationNode& t_node) {
   m_pcRABA->SetData(toSend);
 
   //readNodeMapping();
+}
+
+/****************************************/
+/****************************************/
+ 
+void CBlockchainVotingController::UpdateState() {
+   /* Reset state flags */
+   m_sStateData.InNest = false;
+   /* Read stuff from the ground sensor */
+   const CCI_FootBotMotorGroundSensor::TReadings& tGroundReads = m_pcGround->GetReadings();
+   /*
+    * You can say whether you are in the nest by checking the ground sensor
+    * placed close to the wheel motors. It returns a value between 0 and 1.
+    * It is 1 when the robot is on a white area, it is 0 when the robot
+    * is on a black area and it is around 0.5 when the robot is on a gray
+    * area. 
+    * The foot-bot has 4 sensors like this, two in the front
+    * (corresponding to readings 0 and 1) and two in the back
+    * (corresponding to reading 2 and 3).  Here we want the back sensors
+    * (readings 2 and 3) to tell us whether we are on gray: if so, the
+    * robot is completely in the nest, otherwise it's outside.
+    */
+   if(tGroundReads[2].Value > 0.25f &&
+      tGroundReads[2].Value < 0.75f &&
+      tGroundReads[3].Value > 0.25f &&
+      tGroundReads[3].Value < 0.75f) {
+      m_sStateData.InNest = true;
+   }
+}
+ 
+/****************************************/
+/****************************************/
+ 
+CVector2 CBlockchainVotingController::CalculateVectorToLight() {
+   /* Get readings from light sensor */
+   const CCI_FootBotLightSensor::TReadings& tLightReads = m_pcLight->GetReadings();
+   /* Sum them together */
+   CVector2 cAccumulator;
+   for(size_t i = 0; i < tLightReads.size(); ++i) {
+      cAccumulator += CVector2(tLightReads[i].Value, tLightReads[i].Angle);
+   }
+   /* If the light was perceived, return the vector */
+   if(cAccumulator.Length() > 0.0f) {
+      return CVector2(1.0f, cAccumulator.Angle());
+   }
+   /* Otherwise, return zero */
+   else {
+      return CVector2();
+   }
 }
 
 /****************************************/
