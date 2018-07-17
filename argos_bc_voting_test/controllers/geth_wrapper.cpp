@@ -49,8 +49,6 @@ void Geth_Wrapper::initGethNode(int i, int nodeInt, int basePort, string datadir
 }
 
 void Geth_Wrapper::geth_init(int i, int nodeInt, int basePort, string datadirBase, string genesisPath) {
-  cout << "DEBUG-- geth_init for robot " << i << endl;
-
   std::ostringstream datadirStream;
   datadirStream << datadirBase << i;
   
@@ -62,7 +60,7 @@ void Geth_Wrapper::geth_init(int i, int nodeInt, int basePort, string datadirBas
   string commandStream = fullCommandStream.str();
 
   if (true)
-    cout << "geth init: " << commandStream << endl; 
+      cout << "DEBUG-- geth_init for robot " << i << " command: " << commandStream << endl; 
   
   exec(commandStream.c_str());
 
@@ -70,9 +68,7 @@ void Geth_Wrapper::geth_init(int i, int nodeInt, int basePort, string datadirBas
 }
 
 void Geth_Wrapper::start_geth(int i, int nodeInt, int basePort, string datadirBase){
-  sleep(1);
-  cout << "DEBUG--  start_geth for robot " << i << endl;
-
+  sleep(1);  
   ostringstream fullCommandStream;
   
   /* Run geth command on this node  */
@@ -95,7 +91,8 @@ void Geth_Wrapper::start_geth(int i, int nodeInt, int basePort, string datadirBa
   // Compose geth command
   string ipc_path = "--ipcpath " + str_datadir + "geth.ipc";
   fullCommandStream << ipc_path << " --datadir " << str_datadir << str_port << " --maxpeers 130" << "&";
-  cout << "Running command " << fullCommandStream.str() << endl;
+  cout << "DEBUG--  start_geth for robot " << i 
+       << " Running command " << fullCommandStream.str() << endl;
   
   FILE* pipe = popen(fullCommandStream.str().c_str(), "r");
   pclose(pipe);
@@ -123,7 +120,7 @@ std::string Geth_Wrapper::createAccountInit(int i, int nodeInt, int basePort, st
   size_t t1 = res.find("{");
   size_t t2 = res.find("}"); 
   res = "0x" + res.substr(t1+1,t2-t1-1);
-  cout << "createAccountInit: " << fullCommand << ", res:" << res << endl;
+  cout << "DEBUG-- createAccountInit: " << fullCommand << ", res:" << res << endl;
   return res;  
 }
 
@@ -535,6 +532,52 @@ void Geth_Wrapper::smartContractInterfaceStringBg(int i, string interface, strin
   //cout << "Result received from SC is: " << res << endl;
 }
 
+string Geth_Wrapper::smartContractInterfaceFuncScript(int i, string interface, string contractAddress, string func, string args[], int argc, int v, int nodeInt, string datadirBase) {
+  ostringstream fullCommandStream;
+  fullCommandStream << "var cC = web3.eth.contract(" << interface << ");var c = cC.at(" << contractAddress << ");c." << func << "(";
+  for(int k = 0; k < argc; k++) {
+    fullCommandStream << "\"" << args[k] << "\",";  
+  }
+  fullCommandStream << "{";
+  if(v > 0) 
+    fullCommandStream << "value: " << v << ", ";
+  fullCommandStream << "from: eth.coinbase, gas: '3000000'});";
+  string fullCommand = fullCommandStream.str();
+
+  string tmpPath = datadirBase + "/" + func + ".js";
+  ofstream out(tmpPath.c_str());
+  out << fullCommand;
+  out.close();
+
+  string res = exec_geth_cmd(i, "loadScript(\"" + tmpPath + "\")", nodeInt, datadirBase);
+  cout << "[smartContractInterfaceFuncScript] res: " << res << endl;
+
+  return res;
+}
+
+string Geth_Wrapper::smartContractInterfaceFuncCallScript(int i, string interface, string contractAddress, string func, string args[], int argc, int v, int nodeInt, string datadirBase) {
+  ostringstream fullCommandStream;
+  fullCommandStream << "var cC = web3.eth.contract(" << interface << ");var c = cC.at(" << contractAddress << ");c." << func << ".call(";
+  for(int k = 0; k < argc; k++) {
+    fullCommandStream << "\"" << args[k] << "\",";  
+  }
+  fullCommandStream << "{";
+  if(v > 0) 
+    fullCommandStream << "value: " << v << ", ";
+  fullCommandStream << "from: eth.coinbase, gas: '3000000'});";
+  string fullCommand = fullCommandStream.str();
+
+  string tmpPath = datadirBase + "/" + func + ".js";
+  ofstream out(tmpPath.c_str());
+  out << fullCommand;
+  out.close();
+
+  string res = exec_geth_cmd(i, "loadScript(\"" + tmpPath + "\")", nodeInt, datadirBase);
+  cout << "[smartContractInterfaceFuncCallScript] res: " << res << endl;
+
+  return res;
+}
+
 /* Check account balance of robot i (in wei) */
 long long Geth_Wrapper::check_balance(int i, int nodeInt, string datadirBase) {
   string cmd = "eth.getBalance(eth.coinbase)";
@@ -592,7 +635,7 @@ int Geth_Wrapper::getBlockChainLength(int i, int nodeInt, string datadirBase) {
   /* TODO: A check would be better. Sometime eth.blockNumber returns
      true which is converted to 32515 */
   if (res.find("true") != string::npos) {
-    cout << "Result in getBlockChainLength was " << res << endl;
+    cout << "DEBUG-- eth.blockNumber: " << res << endl;
     blockNumber = -1;
   } else {  
     istringstream ss(res);
@@ -704,7 +747,7 @@ string Geth_Wrapper::exec_geth_cmd_helper(int i, string command, int nodeInt, st
   fullCommandStream << "geth" <<  nodeInt << " --exec " << "'" << command << "'" << " attach " << datadirBase << i << "/" << "geth.ipc";  
   string fullCommand = fullCommandStream.str();
   string res = exec(fullCommand.c_str());
-  cout << "Command in helper is: " << fullCommand << ", result:" << res << endl;
+  //cout << "Command in helper is: " << fullCommand << ", result:" << res << endl;
   return res;  
 }
 
