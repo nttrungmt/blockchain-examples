@@ -325,47 +325,7 @@ void CBlockchainVotingController::Explore() {
   m_pcRABS->ClearPackets();
   int robotId = Geth_Wrapper::Id2Int(GetId());
   //  int nodeInt = robotIdToNode[robotId];
-  
-  /* remainingExplorationTime it's the variable decremented each control step. 
-   * This variable represents the time that a robot must still spend in exploration state.
-   * If this variable it's greater than zero, then it must be decremented and the robot should 
-   * do exploration's stuffs (Update counters figuring out in which cell he is. It's done in loop function */
-  //if(m_sStateData.remainingExplorationTime > 0){		
-  //  m_sStateData.remainingExplorationTime--;
-  //}
 
-  /* If its time to change state, then the robot has to reset his own variables:
-   * - Assign a new random exponential time: remainingExplorationTime and explorDurationTime (used to
-   *   keep trace of the exploration times, just for statistic aims);
-   * - Calculate the quality of the opinion, basing on the sensed datas (Number of counted cells of actual
-   *   opinion / Number of total counted cells);
-   * - Reset counting variables (countedCellOfActualOpinion and count [total number of cells counted]);
-   * - Change state: Exploration->Diffusing;
-   * - Generate a new Diffusing time (same as exploring, but used for Diffusing state and calculated with
-   *   different params for the random variable;
-   */
-  //else{
-    // if (byzantineStyle == 4 || byzantineStyle == 5)
-      // opinion.quality = 1.0;
-    // else
-      // opinion.quality = (Real)((Real)(opinion.countedCellOfActualOpinion)/(Real)(collectedData.count));
-    // opinion.countedCellOfActualOpinion = 0;
-    // receivedOpinions.clear();
-    // collectedData.count = 1;
-    //m_sStateData.State = SStateData::STATE_DIFFUSING;
-    
-    //if (!simulationParams.useClassicalApproach) {
-    //  uint opinionInt = (uint) (opinion.quality * 100); // Convert opinion quality to a value between 0 and 100
-      //string args[4] = {Geth_Wrapper::NumberToString(opinion.actualOpinion),
-		//Geth_Wrapper::NumberToString(simulationParams.decision_rule),
-		//Geth_Wrapper::NumberToString(bwh.blockNumber),
-		//bwh.hash};
-	  //int emptyArgs[0] = {};
-    //  string voteResult;
-    //  int args3[1] = {bwh.blockNumber};
-      //Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "vote", args, 4, opinionInt, nodeInt, simulationParams.blockchainPath);
-      //Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "vote", emptyArgs, 4, opinionInt, nodeInt, simulationParams.blockchainPath);
-    //}	
 	/*int num1 = std::rand() % 100 + 0;
 	int num2 = std::rand() % 3 + 0;
 	if(num1 >= 95) {
@@ -386,46 +346,23 @@ void CBlockchainVotingController::Explore() {
 		Geth_Wrapper::exec_geth_cmd_helper(robotId, "admin.sleepBlocks(5)", nodeInt, simulationParams.blockchainPath);
 		Geth_Wrapper::stop_mining(robotId, nodeInt, simulationParams.blockchainPath);
 	}*/
-    
-    // /* Assigning a new exploration time, for the next exploration state */
-    // m_sStateData.remainingExplorationTime = Ceil(m_pcRNG->Exponential((Real)simulationParams.sigma));
-    // m_sStateData.explorDurationTime = m_sStateData.remainingExplorationTime;
 
-    // /*
-     // * Assigning a new diffusing time for the incoming diffusing time, if the decision rule is the not-weighted
-     // * direct comparison then the next diffusing time is weighted with the ideal quality of the best opinion
-     // */
-    // if (simulationParams.decision_rule == 0 || simulationParams.decision_rule == 2) {
-      // m_sStateData.remainingDiffusingTime = (m_pcRNG->Exponential(((Real)simulationParams.g)*((Real)simulationParams.percentRed)))+30;
-    // } else if (simulationParams.decision_rule == 1 || simulationParams.decision_rule == 3) {
-      // m_sStateData.remainingDiffusingTime = Ceil(m_pcRNG->Exponential((Real)simulationParams.g*(Real)opinion.quality)+30);
-    // } else {
-      // /* Non-implemented decision rule */
-      // cout << "Unknown decision rule" << endl;     
-      // throw;
-    // }
-    // m_sStateData.diffusingDurationTime = m_sStateData.remainingDiffusingTime;
-  //}
-
-  /*if(m_lStepCnt % 100 == 0) {
-    ostringstream strVotes;
-    string args[1] = {"RED"};
-    string resRed = Geth_Wrapper::smartContractInterfaceStringCall(robotId, interface, contractAddress, "totalVotesFor", args, 1, -1, nodeInt, simulationParams.blockchainPath);
-    strVotes << "Votes: RED=" << resRed;
-
-    args[0] = "GREEN";
-    string resGreen = Geth_Wrapper::smartContractInterfaceStringCall(robotId, interface, contractAddress, "totalVotesFor", args, 1, -1, nodeInt, simulationParams.blockchainPath);
-    strVotes << " - GREEN=" << resGreen;
-
-    args[0] = "BLUE";
-    string resBlue = Geth_Wrapper::smartContractInterfaceStringCall(robotId, interface, contractAddress, "totalVotesFor", args, 1, -1, nodeInt, simulationParams.blockchainPath);
-    strVotes << " - BLUE=" << resBlue;
-    string strTmp = strVotes.str();
-    strTmp = Geth_Wrapper::replaceAll(strTmp, "\n", "");
-    strTmp = Geth_Wrapper::replaceAll(strTmp, "true", "");
-    strTmp = Geth_Wrapper::replaceAll(strTmp, "undefined", "");
-    std::cerr << strTmp << endl;
-  }*/  
+  bool bDone = false;
+  CColor cColor = CColor::WHITE;
+  for(size_t i = 0; i < m_cFoodPos.size() && !bDone; ++i) {
+    if((m_cPos - m_cFoodPos[i]).SquareLength() < m_fFoodSquareRadius) {
+      // We are done 
+      if(i==0)
+        cColor = CColor::RED;
+      else if(i==1)
+        cColor = CColor::GREEN;
+      else
+        cColor = CColor::BLUE;
+      bDone = true;
+      break;
+    }
+  }
+  setColor(cColor);  
 }
 
 void CBlockchainVotingController::setColor(CColor color) {
@@ -438,14 +375,22 @@ void CBlockchainVotingController::setColor(CColor color) {
 		strColor = "GREEN";
 	else 
 		strColor = "BLUE";
-        cout << "setColor starting..." << strColor << endl;
 	string args[1] = {strColor};        
         int robotId = Geth_Wrapper::Id2Int(GetId());
+        cout << "setColor starting...id=" << robotId << ", color=" << strColor << endl;
 	Geth_Wrapper::unlockAccount(robotId, "test", nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
-	//Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "voteForCandidate", args, 1, -1, nodeInt, simulationParams.blockchainPath);
-        Geth_Wrapper::smartContractInterfaceFuncScript(robotId, interface, contractAddress, "voteForCandidate", args, 1, -1, nodeInt, simulationParams.blockchainPath);
-	Geth_Wrapper::start_mining(robotId, 1, nodeInt, simulationParams.blockchainPath);
-	Geth_Wrapper::exec_geth_cmd_helper(robotId, "admin.sleepBlocks(5)", nodeInt, simulationParams.blockchainPath);
+        long long nEther = Geth_Wrapper::check_ether(robotId, nodeInt, simulationParams.blockchainPath);        
+        Geth_Wrapper::start_mining(robotId, 1, nodeInt, simulationParams.blockchainPath);
+        while(nEther <= 20) {
+	  Geth_Wrapper::exec_geth_cmd_helper(robotId, "admin.sleepBlocks(2)", nodeInt, simulationParams.blockchainPath);
+	  nEther = Geth_Wrapper::check_ether(robotId, nodeInt, simulationParams.blockchainPath);
+        }
+        //stop_mining(robotId, nodeInt, simulationParams.blockchainPath);
+        cout << "Robot " << robotId << " current ether " << nEther << endl;
+	Geth_Wrapper::smartContractInterfaceStringBg(robotId, interface, contractAddress, "voteForCandidate", args, 1, -1, nodeInt, simulationParams.blockchainPath);
+        //Geth_Wrapper::smartContractInterfaceFuncScript(robotId, interface, contractAddress, "voteForCandidate", args, 1, -1, nodeInt, simulationParams.blockchainPath);
+	//Geth_Wrapper::start_mining(robotId, 1, nodeInt, simulationParams.blockchainPath);
+	Geth_Wrapper::exec_geth_cmd_helper(robotId, "admin.sleepBlocks(1)", nodeInt, simulationParams.blockchainPath);
 	Geth_Wrapper::stop_mining(robotId, nodeInt, simulationParams.blockchainPath);
      }
      

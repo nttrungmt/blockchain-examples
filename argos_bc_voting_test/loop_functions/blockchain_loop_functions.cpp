@@ -43,19 +43,18 @@ std::string interface; // Smart contract interface
 /****************************************/
 /****************************************/
 CBlockchainVotingLoopFunctions::CBlockchainVotingLoopFunctions() :
-    m_cForagingArenaSideX(-0.9f, 1.7f),
+    m_cForagingArenaSideX(-0.75f, 0.75f),
     m_cForagingArenaSideY(-1.7f, 1.7f),
     m_pcFloor(NULL),
-	zeroOne(0.0f,1.0f),
-	//bigRange(0.0f,30000.0f),
-	//arenaSizeRangeX(0.0f, ARENA_SIZE_X),
-	//arenaSizeRangeY(0.0f, ARENA_SIZE_Y),
-	errorOccurred(false),
-	miningNotWorkingAnymore(false),
-	gethStaticErrorOccurred(false),
-	incorrectParameters(false),
-	m_bExperimentFinished(false)//,
-	//m_pcFloor(NULL)
+    zeroOne(0.0f,1.0f),
+    //bigRange(0.0f,30000.0f),
+    //arenaSizeRangeX(0.0f, ARENA_SIZE_X),
+    //arenaSizeRangeY(0.0f, ARENA_SIZE_Y),
+    errorOccurred(false),
+    miningNotWorkingAnymore(false),
+    gethStaticErrorOccurred(false),
+    incorrectParameters(false),
+    m_bExperimentFinished(false)
 {
 }
 
@@ -380,8 +379,8 @@ void CBlockchainVotingLoopFunctions::setContractAddressAndDistributeEther(string
     cController.setContractAddress(contractAddress);
     //string e = cController.getEnode();
     //Geth_Wrapper::add_peer(minerId, e, minerNode, basePort, blockchainPath);
-	string e = Geth_Wrapper::get_enode(minerId, minerNode, basePort, blockchainPath);
-	Geth_Wrapper::add_peer(robotId, e, cController.getNodeInt(), basePort, blockchainPath);
+    string e = Geth_Wrapper::get_enode(minerId, minerNode, basePort, blockchainPath);
+    Geth_Wrapper::add_peer(robotId, e, cController.getNodeInt(), basePort, blockchainPath);
   }
 }
 
@@ -526,7 +525,9 @@ bool CBlockchainVotingLoopFunctions::InitRobots() {
     // /* Setting robots initial states: exploring state */
 
     cController.fromLoopFunctionResPrepare();
-
+	
+    cController.setSquareRadius(m_fFoodSquareRadius);
+    cController.setFoodPos(m_cFoodPos);
     // if( gethStaticErrorOccurred ) {
       // cout << "gethStaticErrorOccurred was true in InitRobots" << endl;
       // Reset();
@@ -678,18 +679,18 @@ void CBlockchainVotingLoopFunctions::PreStep() {
     UInt32 cell = (UInt32) ((y+0.009)*10000)/(Real)ENVIRONMENT_CELL_DIMENSION;
     cell = (UInt32) 40*cell + ((x+0.009)*10000)/(Real)ENVIRONMENT_CELL_DIMENSION;
 	
-	bool bDone = false;
+	/*bool bDone = false;
         CColor cColor = CColor::WHITE;
 	for(size_t i = 0; i < m_cFoodPos.size() && !bDone; ++i) {
 	   if((cPos - m_cFoodPos[i]).SquareLength() < m_fFoodSquareRadius) {
-		  ///* If so, we move that item out of sight */
+		  //// If so, we move that item out of sight
 		  //m_cFoodPos[i].Set(100.0f, 100.f);
-		  ///* The foot-bot is now carrying an item */
+		  //// The foot-bot is now carrying an item
 		  //sFoodData.HasFoodItem = true;
 		  //sFoodData.FoodItemIdx = i;
-		  ///* The floor texture must be updated */
+		  //// The floor texture must be updated
 		  //m_pcFloor->SetChanged();
-		  /* We are done */
+		  // We are done 
 		  if(i==0)
 			cColor = CColor::RED;
 		  else if(i==1)
@@ -701,7 +702,8 @@ void CBlockchainVotingLoopFunctions::PreStep() {
 	   }
 	}
         //cout << "Before calling cController.setColor" << endl;
-	cController.setColor(cColor);
+	cController.setColor(cColor);*/
+        cController.setCurrentPos(cPos);
     
     /* Get parameters of the robot: color, state, opinion and movement datas*/
     //CBlockchainVotingController::CollectedData& collectedData = cController.GetColData();

@@ -44,16 +44,16 @@
 		   lamda="100"
 		   turn="45"
 		   exitFlag="true"
-		   base_dir="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/controllers/"
+		   base_dir="./controllers/"
 		   use_multiple_nodes="true"
 		   use_background_geth_calls="true"
 		   interface_path="interface.txt"
-		   mapping_path="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/config0.txt"
-		   base_dir_raw="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test"
+		   mapping_path="./config0.txt"
+		   base_dir_raw="."
 		   base_port="33000"
-		   blockchain_path="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/eth_data/data"
+		   blockchain_path="./eth_data/data"
 		   use_classical_approach="false"
-		   regenerate_file="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/regenerate0.sh"/> 
+		   regenerate_file="./regenerate0.sh"/> 
 		   <!-- Sigma and G must be inserted in seconds, not in ticks; 
 			  1 = Voter model; 2 = Direct comparison; 3 = Majority Rule--> 
       </params>
@@ -71,8 +71,8 @@
 	  number_of_robots="2"
 	  number_of_runs="1"
       
-	  base_dir_loop="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/controllers/"
-	  base_dir_raw="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test"
+	  base_dir_loop="./controllers/"
+	  base_dir_raw="."
 	  data_dir="data/experiment1_decision1-node0-20-06-2018/"
       lamda="100"
 	  turn="45"
@@ -84,34 +84,34 @@
 	  base_port="33000"
 	  use_classical_approach="false"
 	  subswarm_consensus="false"
-	  regenerate_file="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/regenerate0.sh"
-	  blockchain_path="/home/trung/usm_swarm_blockchain/blockchain-examples/argos_bc_voting_test/eth_data/data"/>
+	  regenerate_file="./regenerate0.sh"
+	  blockchain_path="./eth_data/data"/>
   </loop_functions>
 
   <!-- *********************** -->
   <!-- * Arena configuration * -->
   <!-- *********************** -->
-  <arena size="2.1, 2.1, 1" center="1,1,0">
+  <arena size="3, 5, 1" center="0,0,0.5">
      <floor id="floor"
            source="loop_functions"
            pixels_per_meter="50" />
     <!-- Place four boxes in a rectangle to delimit the arena -->
-    <box id="wall_north" size="2 ,0.025,0.08" movable="false">
-      <body position="1,2.0075,0" orientation="0,0,0" />
+    <box id="wall_north" size="2,0.1,0.5" movable="false">
+      <body position="0,2,0" orientation="0,0,0" />
     </box>
-    <box id="wall_south" size="2,0.025,0.08" movable="false">
-      <body position="1,0.0075,0" orientation="0,0,0" />
+    <box id="wall_south" size="2,0.1,0.5" movable="false">
+      <body position="0,-2,0" orientation="0,0,0" />
     </box>
-    <box id="wall_east" size="0.025,2,0.08" movable="false">
-      <body position="2.0075,1,0" orientation="0,0,0" />
+    <box id="wall_east" size="0.1,4,0.5" movable="false">
+      <body position="1,0,0" orientation="0,0,0" />
     </box>
-    <box id="wall_west" size="0.025,2,0.08" movable="false">
-      <body position="0.0075,1 ,0" orientation="0,0,0" />
+    <box id="wall_west" size="0.1,4,0.5" movable="false">
+      <body position="-1,0,0" orientation="0,0,0" />
     </box>
 
     <distribute>
-      <position method="uniform" min="0.1,0.1,0" max="1.9 , 1.9, 0" />
-      <orientation method="gaussian" mean="1,1,0 " std_dev="360,0,0 " />
+      <position method="uniform" min="-1,-2,0" max="1,2,0" />
+      <orientation method="gaussian" mean="0,0,0" std_dev="360,0,0" />
       <entity quantity="2" max_trials="20">
         <e-puck id="ep" >
           <controller config="bvc" />

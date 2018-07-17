@@ -186,6 +186,18 @@ public:
    //  m_cColor = color;
    //}
    void setColor(CColor color);
+
+   inline void setSquareRadius(Real r) {
+     m_fFoodSquareRadius = r;
+   }
+
+   inline void setFoodPos(std::vector<CVector2> cFoodPos) {
+     m_cFoodPos = cFoodPos;
+   }
+
+   inline void setCurrentPos(CVector2 cPos) {
+     m_cPos = cPos;
+   }
    
    void UpdateNeighbors(std::set<int> newNeighbors);
    void registerRobot(); // Tell the smart contract the robot's public key
@@ -212,6 +224,9 @@ private:
     */
    CVector2 CalculateVectorToLight();
    
+   Real m_fFoodSquareRadius;
+   std::vector<CVector2> m_cFoodPos;
+   CVector2 m_cPos;
    CColor m_cColor;
    
    Real m_fWheelVelocity;

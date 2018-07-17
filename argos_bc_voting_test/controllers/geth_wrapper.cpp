@@ -46,6 +46,7 @@ void Geth_Wrapper::initGethNode(int i, int nodeInt, int basePort, string datadir
 	  nEther = check_ether(i, nodeInt, datadirBase);
   }
   stop_mining(i, nodeInt, datadirBase);
+  cout << "Robot " << i << " current ether " << nEther << endl;
 }
 
 void Geth_Wrapper::geth_init(int i, int nodeInt, int basePort, string datadirBase, string genesisPath) {
@@ -97,10 +98,8 @@ void Geth_Wrapper::start_geth(int i, int nodeInt, int basePort, string datadirBa
   FILE* pipe = popen(fullCommandStream.str().c_str(), "r");
   pclose(pipe);
 
-  string IPCfile = str_datadir + "geth.ipc";
- 
-  struct stat buffer;   
-
+  string IPCfile = str_datadir + "geth.ipc"; 
+  struct stat buffer;
   sleep(5); // TODO: rather check for the IPC path instead  
 }
 
@@ -517,7 +516,7 @@ void Geth_Wrapper::smartContractInterfaceBg(int i, string interface, string cont
   string fullCommand = fullCommandStream.str();
 
   //cout << "REGISTRATION ROBOT" << endl;
-  cout << fullCommand << endl;
+  //cout << fullCommand << endl;
   
   exec_geth_cmd_background(i, fullCommand, nodeInt, datadirBase);
   //cout << "Result received from SC is: " << res << endl;
@@ -539,7 +538,7 @@ void Geth_Wrapper::smartContractInterfaceStringBg(int i, string interface, strin
   fullCommandStream << " from: eth.coinbase, gas: 3000000});";
   
   string fullCommand = fullCommandStream.str();
-  cout << "Executing full command: " << fullCommand << endl;
+  //cout << "Executing full command: " << fullCommand << endl;
   exec_geth_cmd_background(i, fullCommand, nodeInt, datadirBase);
   //cout << "Result received from SC is: " << res << endl;
 }
@@ -823,7 +822,7 @@ void Geth_Wrapper::exec_geth_cmd_background(int i, string command, int nodeInt, 
   /* TODO: I cannot check for errors here since it is a background
      call; maybe I can come up with some error handling */  
   //  if (DEBUG)
-  cout << "exec_geth_cmd_background: " << fullCommand << endl;  
+  //cout << "exec_geth_cmd_background: " << fullCommand << endl;  
   system(fullCommand.c_str());
 }
 
