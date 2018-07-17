@@ -22,7 +22,7 @@
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-    <blockchain_voting_controller id="bvc"                                  
+    <footbot_foraging_controller id="ffc"                                  
 								  library="build/controllers/footbot_foraging/libfootbot_foraging">
 								  <!--library="build/controllers/libfootbot_diffusion"-->
       <actuators>
@@ -40,7 +40,25 @@
 		<range_and_bearing implementation="medium" medium="rab" />
       </sensors>
       <!--<params alpha="7.5" delta="0.1" velocity="5" />-->
-	  <params>   
+	  <params>
+	    <diffusion go_straight_angle_range="-5:5"
+                   delta="0.1" />
+        <wheel_turning hard_turn_angle_threshold="90"
+                       soft_turn_angle_threshold="70"
+                       no_turn_angle_threshold="10"
+                       max_speed="10" />
+        <state initial_rest_to_explore_prob="0.1"
+               initial_explore_to_rest_prob="0.1"
+               food_rule_explore_to_rest_delta_prob="0.01"
+               food_rule_rest_to_explore_delta_prob="0.01"
+               collision_rule_explore_to_rest_delta_prob="0.01"
+               social_rule_explore_to_rest_delta_prob="0.01"
+               social_rule_rest_to_explore_delta_prob="0.01"
+               minimum_resting_time="50"
+               minimum_unsuccessful_explore_time="600"
+               minimum_search_for_place_in_nest_time="50">
+          <food_rule active="true" food_rule_explore_to_rest_delta_prob="0.01" />
+        </state>
      	<simulation_parameters
 		   lamda="100"
 		   turn="45"
@@ -58,7 +76,7 @@
 		   <!-- Sigma and G must be inserted in seconds, not in ticks; 
 			  1 = Voter model; 2 = Direct comparison; 3 = Majority Rule--> 
       </params>
-    </blockchain_voting_controller>
+    </footbot_foraging_controller>
 
   </controllers>
 
@@ -69,6 +87,11 @@
   <!-- ****************** blockchain_voting_loop_functions -->
   <loop_functions library="build/loop_functions/foraging_loop_functions/libforaging_loop_functions"
                   label="foraging_loop_functions">
+	<foraging items="15"
+              radius="0.1"
+              energy_per_item="1000"
+              energy_per_walking_robot="1"
+              output="foraging.txt" />
 	<cells  
 	  exit="true"	  
 	  number_of_robots="2"
@@ -116,9 +139,9 @@
       <position method="uniform" min="-1,-0.25,0" max="1,0.25,0" />
       <orientation method="gaussian" mean="0,0,0" std_dev="360,0,0" />
       <entity quantity="2" max_trials="20">
-        <e-puck id="ep" >
-          <controller config="bvc" />
-        </e-puck>
+        <foot-bot id="fb">
+          <controller config="ffc" />
+        </foot-bot>
       </entity>
     </distribute>
     
