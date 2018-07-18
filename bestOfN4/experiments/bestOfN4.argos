@@ -171,7 +171,7 @@
            intensity="6.0"
            medium="leds" />
     <light id="light_5"
-           position="0.2,-1.6,0.0"
+           position="-0.2,-1.6,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="6.0"
