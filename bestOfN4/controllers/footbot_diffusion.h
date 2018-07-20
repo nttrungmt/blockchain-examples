@@ -150,7 +150,8 @@ public:
       enum EState {
          STATE_RESTING = 0,
          STATE_EXPLORING,
-         STATE_RETURN_TO_NEST
+         STATE_RETURN_TO_NEST,
+		 STATE_FINISH
       } State;
  
       /* True when the robot is in the nest */
