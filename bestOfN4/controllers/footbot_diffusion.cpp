@@ -535,7 +535,7 @@ void CBlockchainVotingController::SetWheelSpeedsFromVector(const CVector2& c_hea
 
 /************************************************* EXPLORING STATE *********************************************/
 /***************************************************************************************************************/
-void CFootBotForaging::Rest() {
+void CBlockchainVotingController::Rest() {
    /* If we have stayed here enough, probabilistically switch to
     * 'exploring' */
    if(m_sStateData.TimeRested > m_sStateData.MinimumRestingTime &&
@@ -893,7 +893,7 @@ void CBlockchainVotingController::Explore() {
 
 /****************************************/
 /****************************************/
-void CFootBotForaging::ReturnToNest() {
+void CBlockchainVotingController::ReturnToNest() {
    /* As soon as you get to the nest, switch to 'resting' */
    UpdateState();
 
