@@ -577,10 +577,11 @@ void CBlockchainVotingLoopFunctions::PreallocateEther() {
 
 void CBlockchainVotingLoopFunctions::RestartGeths() {
   cout << "[LoopFunctions::RestartGeths]" << endl;
-  CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
-  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
-    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);
-    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
+  CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
+  for(CSpace::TMapPerType::iterator it = m_cFootbots.begin();it != m_cFootbots.end();++it){
+    /* Get handle to foot-bot entity and controller */
+    CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
+    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cFootBot.GetControllableEntity().GetController());
     cController.fromLoopFunctionResStart();
   }
 }
