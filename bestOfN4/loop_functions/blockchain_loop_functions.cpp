@@ -355,7 +355,7 @@ void CBlockchainVotingLoopFunctions::PreStep() {
     //cell = (UInt32) 40*cell + ((cPos.GetX()+0.009)*10000)/(Real)ENVIRONMENT_CELL_DIMENSION;
     
 	//cout << "Before calling cController.setColor" << endl;
-	cController.setColor(cColor);*/
+	//cController.setColor(cColor);
     cController.setCurrentPos(cPos);
     
     /* Get parameters of the robot: color, state, opinion and movement datas*/
