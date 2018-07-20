@@ -1,15 +1,18 @@
 #include "blockchain_loop_functions.h"
 #include <argos3/core/utility/math/rng.h>
-//#include "controllers/geth_wrapper.h" /* Use geth from C++ */
-//#include "controllers/footboot_diffusion.h"
+#include <argos3/core/simulator/simulator.h>
+#include <argos3/core/utility/configuration/argos_configuration.h>
+#include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
+
 #include "../controllers/geth_wrapper.h" /* Use geth from C++ */
+#include "../controllers/footbot_diffusion.h"
 
 #include <iostream>
 #include <unistd.h>
 #include <time.h>
-/****************************************/
-/****************************************/
 
+/****************************************/
+/****************************************/
 /*
  * To reduce the number of waypoints stored in memory,
  * consider two robot positions distinct if they are
@@ -46,6 +49,12 @@ CBlockchainVotingLoopFunctions::CBlockchainVotingLoopFunctions() :
     m_cForagingArenaSideX(-0.75f, 0.75f),
     m_cForagingArenaSideY(-1.7f, 1.7f),
     m_pcFloor(NULL),
+    m_pcRNG(NULL),
+    m_unCollectedFood(0),
+    m_nEnergy(0),
+    m_unEnergyPerFoodItem(1),
+    m_unEnergyPerWalkingRobot(1),
+	////////////////////////////////
     zeroOne(0.0f,1.0f),
     //bigRange(0.0f,30000.0f),
     //arenaSizeRangeX(0.0f, ARENA_SIZE_X),
@@ -60,28 +69,46 @@ CBlockchainVotingLoopFunctions::CBlockchainVotingLoopFunctions() :
 
 /****************************************/
 /****************************************/
- 
-CColor CBlockchainVotingLoopFunctions::GetFloorColor(const CVector2& c_position_on_plane) {
-   //if(c_position_on_plane.GetX() < -1.0f) {
-   //   return CColor::GRAY50;
+void CBlockchainVotingLoopFunctions::Init(TConfigurationNode& t_node) {
+   cout << "[CBlockchainVotingLoopFunctions::Init] Starting..." << endl;
+   
+   /* Get a pointer to the floor entity */
+   m_pcFloor = &GetSpace().GetFloorEntity();
+   
+   m_pcRNG = CRandom::CreateRNG("argos");
+   
+   ///* Get the number of food items we want to be scattered from XML */
+   //UInt32 unFoodItems;
+   //GetNodeAttribute(tForaging, "items", unFoodItems);
+   ///* Get the number of food items we want to be scattered from XML */
+   ////GetNodeAttribute(tForaging, "radius", m_fFoodSquareRadius);
+   ////m_fFoodSquareRadius *= m_fFoodSquareRadius;
+   //m_fFoodSquareRadius = 0.01;
+   ///* Distribute uniformly the items in the environment */
+   //for(UInt32 i = 0; i < 3; ++i) {
+   //   m_cFoodPos.push_back(
+   //   CVector2(m_pcRNG->Uniform(m_cForagingArenaSideX),
+   //            m_pcRNG->Uniform(m_cForagingArenaSideY)));
    //}
-   for(UInt32 i = 0; i < m_cFoodPos.size(); ++i) {
-      if((c_position_on_plane - m_cFoodPos[i]).SquareLength() < m_fFoodSquareRadius) {
-		  if(i==0)
-			return CColor::RED;
-		  else if (i==1)
-			return CColor::GREEN;
-		  else 
-			return CColor::BLUE;
-      }
-   }
-   return CColor::WHITE;
+   
+   /* Get the output file name from XML */
+   GetNodeAttribute(tForaging, "output", m_strOutput);
+   /* Open the file, erasing its contents */
+   m_cOutput.open(m_strOutput.c_str(), std::ios_base::trunc | std::ios_base::out);
+   m_cOutput << "# clock\twalking\tresting\tcollected_food\tenergy" << std::endl;
+   /* Get energy gain per item collected */
+   GetNodeAttribute(tForaging, "energy_per_item", m_unEnergyPerFoodItem);
+   /* Get energy loss per walking robot */
+   GetNodeAttribute(tForaging, "energy_per_walking_robot", m_unEnergyPerWalkingRobot);
+
+   TConfigurationNode& tEnvironment = GetNode(t_node, "cells");
+   fillSettings(tEnvironment);
+   InitRobots();
 }
 
 void CBlockchainVotingLoopFunctions::fillSettings(TConfigurationNode& tEnvironment) {  
   cout << "[LoopFunctions::fillSettings]" << endl;
-  try
-    {	  
+  try {
       /* Retrieving information about arena */
       // GetNodeAttribute(tEnvironment, "number_of_red_cells", colorOfCell[0]);
       // GetNodeAttribute(tEnvironment, "number_of_white_cells", colorOfCell[1]);
@@ -90,7 +117,7 @@ void CBlockchainVotingLoopFunctions::fillSettings(TConfigurationNode& tEnvironme
       // GetNodeAttribute(tEnvironment, "percent_white", percentageOfColors[1]);
       // GetNodeAttribute(tEnvironment, "percent_black", percentageOfColors[2]);
       // GetNodeAttribute(tEnvironment, "using_percentage", using_percentage);
-      //GetNodeAttribute(tEnvironment, "exit", exitFlag);
+      // GetNodeAttribute(tEnvironment, "exit", exitFlag);
 
       /* Retrieving information about initial state of robots */
       // GetNodeAttribute(tEnvironment, "r_0", initialOpinions[0]);
@@ -105,7 +132,7 @@ void CBlockchainVotingLoopFunctions::fillSettings(TConfigurationNode& tEnvironme
       GetNodeAttribute(tEnvironment, "lamda", LAMDA);
       GetNodeAttribute(tEnvironment, "turn", turn);
       // GetNodeAttribute(tEnvironment, "decision_rule", decisionRule);
-      //GetNodeAttribute(tEnvironment, "number_of_runs", number_of_runs);
+      // GetNodeAttribute(tEnvironment, "number_of_runs", number_of_runs);
 
       /* Retrieving information about how to catch and where to save statistics */
       // GetNodeAttribute(tEnvironment, "save_every_ticks", timeStep);
@@ -126,14 +153,373 @@ void CBlockchainVotingLoopFunctions::fillSettings(TConfigurationNode& tEnvironme
       GetNodeAttribute(tEnvironment, "base_port", basePort);
       // GetNodeAttribute(tEnvironment, "num_byzantine", numByzantine);
       // GetNodeAttribute(tEnvironment, "byzantine_swarm_style", byzantineSwarmStyle);
-      //GetNodeAttribute(tEnvironment, "use_classical_approach", useClassicalApproach);
-      //GetNodeAttribute(tEnvironment, "subswarm_consensus", subswarmConsensus);
+      // GetNodeAttribute(tEnvironment, "use_classical_approach", useClassicalApproach);
+      // GetNodeAttribute(tEnvironment, "subswarm_consensus", subswarmConsensus);
       GetNodeAttribute(tEnvironment, "regenerate_file", regenerateFile);
       GetNodeAttribute(tEnvironment, "blockchain_path", blockchainPath);
     }
   catch(CARGoSException& ex) {
     THROW_ARGOSEXCEPTION_NESTED("Error parsing loop functions!", ex);
   }
+}
+
+/****************************************/
+/****************************************/
+void CBlockchainVotingLoopFunctions::Reset() {
+   gethStaticErrorOccurred = false;
+   /* Clean up Ethereum stuff  */
+   //if (!useClassicalApproach) {
+     // Kill all geth processes
+     string bckiller = "bash " + blockchainPath + "/bckillerccall";
+     Geth_Wrapper::exec(bckiller.c_str());    
+     // Remove blockchain folders
+     string rmBlockchainData = "rm -rf " + blockchainPath + "*";
+     Geth_Wrapper::exec(rmBlockchainData.c_str());    
+     // Regenerate blockchain folders
+     string regenerateFolders = "bash " + regenerateFile;
+     Geth_Wrapper::exec(regenerateFolders.c_str());    
+   //}
+  
+   /* Zero the counters */
+   m_unCollectedFood = 0;
+   m_nEnergy = 0;
+   /* Close the file */
+   m_cOutput.close();
+   /* Open the file, erasing its contents */
+   m_cOutput.open(m_strOutput.c_str(), std::ios_base::trunc | std::ios_base::out);
+   m_cOutput << "# clock\twalking\tresting\tcollected_food\tenergy" << std::endl;
+   /* Distribute uniformly the items in the environment */
+   /*for(UInt32 i = 0; i < m_cFoodPos.size(); ++i) {
+     m_cFoodPos[i].Set(m_pcRNG->Uniform(m_cForagingArenaSideX),
+                       m_pcRNG->Uniform(m_cForagingArenaSideY));
+   }*/
+  
+   InitRobots();
+}
+
+/****************************************/
+/****************************************/
+void CBlockchainVotingLoopFunctions::Destroy(){
+	/* Close the file */
+    m_cOutput.close();
+	//Clean up Ethereum stuff
+	//if (!useClassicalApproach) {
+	  // Kill all geth processes
+	  //Geth_Wrapper::kill_geth_thread(minerId, minerNode, basePort, blockchainPath);
+	  Geth_Wrapper::kill_geth_thread(minerId, basePort, minerNode, blockchainPath);
+	  string bckiller = "bash " + blockchainPath + "/bckillerccall";
+	  Geth_Wrapper::exec(bckiller.c_str());
+	  // Remove blockchain folders
+	  string rmBlockchainData = "rm -rf " + blockchainPath + "*";
+	  Geth_Wrapper::exec(rmBlockchainData.c_str());
+	//}
+}
+
+/****************************************/
+/****************************************/
+bool CBlockchainVotingLoopFunctions::IsExperimentFinished() {
+	/* If parameters are uncorrect then finish the experiment 
+	   (Eg: number of robots vs sum of the initial opinion,
+	* or the colours of the cells mismatching */
+	if( incorrectParameters ) {
+		cout << "incorrectParameters was true" << endl;
+		Reset();
+		return true;
+	}
+
+	if ( miningNotWorkingAnymore ) {
+		// system("echo \"true\" > regeneratedag.txt"); // set flag that the DAG should be regenerated
+		cout << "mininNotWorkingAnymore was true" << endl;
+		Reset();
+		return true;
+	}
+
+	if( errorOccurred ) {
+		cout << "errorOccured was true" << endl;
+		Reset();
+		return true;
+	}
+
+	if( gethStaticErrorOccurred ) {
+		cout << "gethStaticErrorOccurred was true" << endl;
+		Reset();
+		return true;
+	}
+}
+
+/****************************************/
+/****************************************/ 
+CColor CBlockchainVotingLoopFunctions::GetFloorColor(const CVector2& c_position_on_plane) {
+   //if(c_position_on_plane.GetX() < -1.0f) {
+   //   return CColor::GRAY50;
+   //}
+   /*for(UInt32 i = 0; i < m_cFoodPos.size(); ++i) {
+      if((c_position_on_plane - m_cFoodPos[i]).SquareLength() < m_fFoodSquareRadius) {
+		  if(i==0)
+			return CColor::RED;
+		  else if (i==1)
+			return CColor::GREEN;
+		  else 
+			return CColor::BLUE;
+      }
+   }*/
+   
+   if((c_position_on_plane.GetY() > -1.20f) && (c_position_on_plane.GetY() < -0.20f)) {
+     return CColor::BLACK;
+   }
+
+   else if((c_position_on_plane.GetY() < -0.10f) && (c_position_on_plane.GetY() > -0.20f)){
+     return CColor::GREEN;
+   }
+
+   else if((c_position_on_plane.GetY() < -1.20f) && (c_position_on_plane.GetY() > -1.30f)){
+     return CColor::BLUE;
+   }
+   
+   return CColor::WHITE;
+}
+ 
+/****************************************/
+/****************************************/
+void CBlockchainVotingLoopFunctions::PreStep() {
+   /* Logic to pick and drop food items */
+   /*
+    * If a robot is in the nest, drop the food item
+    * If a robot is on a food item, pick it
+    * Each robot can carry only one food item per time
+    */
+   UInt32 unWalkingFBs = 0;
+   UInt32 unRestingFBs = 0;
+   
+  CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
+  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
+    /* Get handle to foot-bot entity and controller */
+    CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
+    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cFootBot.GetControllableEntity().GetController());
+    
+	/* Count how many foot-bots are in which state */
+    if(! cController.IsResting()) ++unWalkingFBs;
+    else ++unRestingFBs;
+	
+    /* Get the position of the foot-bot on the ground as a CVector2 */
+    CVector2 cPos;
+    cPos.Set(cFootBot.GetEmbodiedEntity().GetOriginAnchor().Position.GetX(),
+             cFootBot.GetEmbodiedEntity().GetOriginAnchor().Position.GetY());
+	
+	// /* Get food data */
+	// CFootBotForaging::SFoodData& sFoodData = cController.GetFoodData();
+	// /* The foot-bot has a food item */
+	// if(sFoodData.HasFoodItem) {
+	  // /* Check whether the foot-bot is in the nest */
+	  // if(cPos.GetX() < -1.0f) {
+		// /* Place a new food item on the ground */
+		// m_cFoodPos[sFoodData.FoodItemIdx].Set(m_pcRNG->Uniform(m_cForagingArenaSideX),
+											  // m_pcRNG->Uniform(m_cForagingArenaSideY));
+		// /* Drop the food item */
+		// sFoodData.HasFoodItem = false;
+		// sFoodData.FoodItemIdx = 0;
+		// ++sFoodData.TotalFoodItems;
+		// /* Increase the energy and food count */
+		// m_nEnergy += m_unEnergyPerFoodItem;
+		// ++m_unCollectedFood;
+		// /* The floor texture must be updated */
+		// m_pcFloor->SetChanged();
+	  // }
+	// }
+	// else {
+	  // /* The foot-bot has no food item */
+	  // /* Check whether the foot-bot is out of the nest */
+	  // if(cPos.GetX() > -1.0f) {
+		// /* Check whether the foot-bot is on a food item */
+		// bool bDone = false;
+		// for(size_t i = 0; i < m_cFoodPos.size() && !bDone; ++i) {
+		   // if((cPos - m_cFoodPos[i]).SquareLength() < m_fFoodSquareRadius) {
+			  // /* If so, we move that item out of sight */
+			  // m_cFoodPos[i].Set(100.0f, 100.f);
+			  // /* The foot-bot is now carrying an item */
+			  // sFoodData.HasFoodItem = true;
+			  // sFoodData.FoodItemIdx = i;
+			  // /* The floor texture must be updated */
+			  // m_pcFloor->SetChanged();
+			  // /* We are done */
+			  // bDone = true;
+		   // }
+		// }
+	  // }
+	// }
+	
+    /* Figure out in which cell (EG: which is the index of the array grid) the robot is */
+    //UInt32 cell = (UInt32) ((cPos.GetY()+0.009)*10000)/(Real)ENVIRONMENT_CELL_DIMENSION;
+    //cell = (UInt32) 40*cell + ((cPos.GetX()+0.009)*10000)/(Real)ENVIRONMENT_CELL_DIMENSION;
+    
+	//cout << "Before calling cController.setColor" << endl;
+	cController.setColor(cColor);*/
+    cController.setCurrentPos(cPos);
+    
+    /* Get parameters of the robot: color, state, opinion and movement datas*/
+    //CBlockchainVotingController::CollectedData& collectedData = cController.GetColData();
+    //CBlockchainVotingController::SStateData& sStateData = cController.GetStateData();
+    //CBlockchainVotingController::Movement& movement = cController.GetMovement();
+    //CBlockchainVotingController::Opinion& opinion = cController.GetOpinion();
+    //std::string id = cController.GetId();
+    //CBlockchainVotingController::SimulationState& simulationParam = cController.GetSimulationState();
+    
+    /* Update statistics about the robot opinions*/
+    //bool isByzantine = (bool) cController.getByzantineStyle();
+    //UpdateStatistics(opinion, sStateData, isByzantine);
+    //if(cController.IsExploring())
+    //  UpdateCount(collectedData, cell, cPos, opinion, sStateData, id, simulationParam);
+    //RandomWalk(movement);
+  }
+  
+  /* Update energy expediture due to walking robots */
+   m_nEnergy -= unWalkingFBs * m_unEnergyPerWalkingRobot;
+   /* Output stuff to file */
+   m_cOutput << GetSpace().GetSimulationClock() << "\t"
+             << unWalkingFBs << "\t"
+             << unRestingFBs << "\t"
+             << m_unCollectedFood << "\t"
+             << m_nEnergy << std::endl;
+}
+ 
+/****************************************/
+/****************************************/
+void CBlockchainVotingLoopFunctions::PostStep() {
+   // /* Get the map of all foot-bots from the space */
+   // CSpace::TMapPerType& tFBMap = GetSpace().GetEntitiesByType("foot-bot");
+   // /* Go through them */
+   // for(CSpace::TMapPerType::iterator it = tFBMap.begin();
+       // it != tFBMap.end();
+       // ++it) {
+      // /* Create a pointer to the current foot-bot */
+      // CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
+      // /* Add the current position of the foot-bot if it's sufficiently far from the last */
+      // if(SquareDistance(pcFB->GetEmbodiedEntity().GetOriginAnchor().Position,
+                        // m_tWaypoints[pcFB].back()) > MIN_DISTANCE_SQUARED) {
+         // m_tWaypoints[pcFB].push_back(pcFB->GetEmbodiedEntity().GetOriginAnchor().Position);
+      // }
+   // }
+  /*CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
+  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
+    // Get handle to e-puck entity and controller
+    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);    
+    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
+    long long m_lStepCnt = cController.GetStepCnt();
+    if(m_lStepCnt % 100 == 0) {
+      ostringstream strVotes;
+      string args[1] = {"RED"};
+      string resRed = Geth_Wrapper::smartContractInterfaceStringCall(minerId, interface, contractAddress, "totalVotesFor", args, 1, -1, minerNode, blockchainPath);
+      strVotes << "Votes: RED=" << resRed;
+
+      args[0] = "GREEN";
+      string resGreen = Geth_Wrapper::smartContractInterfaceStringCall(minerId, interface, contractAddress, "totalVotesFor", args, 1, -1, minerNode, blockchainPath);
+      strVotes << " - GREEN=" << resGreen;
+
+      args[0] = "BLUE";
+      string resBlue = Geth_Wrapper::smartContractInterfaceStringCall(minerId, interface, contractAddress, "totalVotesFor", args, 1, -1, minerNode, blockchainPath);
+      strVotes << " - BLUE=" << resBlue;
+      string strTmp = strVotes.str();
+      strTmp = Geth_Wrapper::replaceAll(strTmp, "\n", "");
+      strTmp = Geth_Wrapper::replaceAll(strTmp, "true", "");
+      strTmp = Geth_Wrapper::replaceAll(strTmp, "undefined", "");
+      std::cerr << strTmp << endl;
+      break;
+    }
+  }*/
+}
+ 
+/****************************************/
+/****************************************/
+/* Implement random walk */
+/* void CBlockchainVotingLoopFunctions::RandomWalk(CBlockchainVotingController::Movement& movement) {
+  // walkTime represents the number of clock cycles (random number) of walk in a random direction
+  if ( movement.walkTime == 0 )                            // Is the walkTime in that direction finished? ->
+    { 				                                       // -> YES: change direction//
+      if ( movement.actualDirection == 0 )                 // If robot was going straight then turn standing in ->
+	// -> a position for an uniformly distribuited time //
+	{
+	  Real p = m_pcRNG->Uniform(zeroOne);
+	  p = p*turn - (turn/2);
+	  if ( p > 0 )
+	    movement.actualDirection = 1;
+	  else
+	    movement.actualDirection = 2;
+	  movement.walkTime = (UInt32) abs(p);
+	}
+      else 						// The robot was turning, time to go straight for ->
+	// -> an exponential period of time //
+	{
+	  movement.walkTime = (m_pcRNG->Exponential((Real)LAMDA))*4; // Exponential random generator. *50 is a scale factor for the time
+	  movement.actualDirection = 0;
+	}
+    }
+  else 							// NO: The period of time is not finished, decrement the ->
+    // -> walkTime and keep the direction //
+    movement.walkTime--;
+} */
+ 
+/****************************************/
+/****************************************/
+bool CBlockchainVotingLoopFunctions::InitRobots() {
+  cout  << "[CBlockchainVotingLoopFunctions::InitRobots]Initializing loop function" << endl;
+  miningNotWorkingAnymore = false;
+  errorOccurred = false;
+  
+  /* Preallocate money to the miner (120)*/
+  PreinitMiner();  
+
+  /* Variable i is used to check the vector with the mixed opinion to assign a new opinion to every robots*/
+  int i = 0;
+  CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
+  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
+    /* Get handle to e-puck entity and controller */
+    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);
+    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
+    // CBlockchainVotingController::Opinion& opinion = cController.GetOpinion();
+    // CBlockchainVotingController::CollectedData& collectedData = cController.GetColData();
+
+    // /* Resetting initial state of the robots: exploring for everyone */
+    // cController.GetReceivedOpinions().clear();
+    // cController.GetStateData().State = CBlockchainVotingController::SStateData::STATE_EXPLORING;
+    // Real tmpValue = (m_pcRNG->Exponential((Real)sigma));
+    // cController.GetStateData().remainingExplorationTime = tmpValue;
+    // cController.GetStateData().explorDurationTime =  cController.GetStateData().remainingExplorationTime;
+
+    // /* Assign a random actual opinion using the shuffled vector */
+    // opinion.actualOpinion = opinionsToAssign[i];
+    // i++;
+
+    // opinion.countedCellOfActualOpinion = 0;
+    // collectedData.count = 1;
+    // if(opinion.actualOpinion == 1)
+      // opinion.actualOpCol = CColor::WHITE;
+    // if(opinion.actualOpinion == 2)
+      // opinion.actualOpCol = CColor::BLACK;
+    // /* Setting robots initial states: exploring state */
+
+    cController.fromLoopFunctionResPrepare();
+	
+    //cController.setSquareRadius(m_fFoodSquareRadius);
+    //cController.setFoodPos(m_cFoodPos);
+    // if( gethStaticErrorOccurred ) {
+      // cout << "gethStaticErrorOccurred was true in InitRobots" << endl;
+      // Reset();
+      // cout << "Finished Reset, returning true now" << endl;
+      // return true;
+    // }
+  }
+
+  //if (!useClassicalApproach) {
+    //PreallocateEther();
+    RestartGeths();
+  //}
+
+  AssignNewStateAndPosition();
+
+  //if (!useClassicalApproach) {
+    /* Initialize miner, distribute ether, and more */
+    InitEthereum();
+  //}    
 }
 
 void CBlockchainVotingLoopFunctions::PreinitMiner() {
@@ -329,9 +715,9 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   // }
 
   //cout << "Waiting until all robots have the same blockchain" << endl;
-  ///* Wait until all robots have the same blockchain */
+  //// Wait until all robots have the same blockchain
   //bool allSameHeight = allSameBCHeight();
-  ///* Check that all robots received their ether */
+  //// Check that all robots received their ether
   ////vector<int> allRobotIds = getAllRobotIds();
 
   // int trialssameheight = 0;
@@ -440,359 +826,41 @@ bool CBlockchainVotingLoopFunctions::CheckEtherReceived() {
   return everyoneReceivedSomething;
 }
 
-void CBlockchainVotingLoopFunctions::registerAllRobots() {
+/*void CBlockchainVotingLoopFunctions::registerAllRobots() {
   CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
   for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
-    /* Get handle to e-puck entity and controller */
+    // Get handle to e-puck entity and controller
     CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);
     CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
     cController.registerRobot();
   }
-}
+}*/
 
-void CBlockchainVotingLoopFunctions::UpdateRegistrationAllRobots() {
+/*void CBlockchainVotingLoopFunctions::UpdateRegistrationAllRobots() {
   CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
   for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
-    /* Get handle to e-puck entity and controller */
+    // Get handle to e-puck entity and controller
     CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);
     CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
     cController.updateRegistration();
   }
-}
+}*/
 
-void CBlockchainVotingLoopFunctions::connectMinerToEveryone() {
+/*void CBlockchainVotingLoopFunctions::connectMinerToEveryone() {
   CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
   for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
-    /* Get handle to e-puck entity and controller */
+    // Get handle to e-puck entity and controller
     CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);
     CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
     std::string& address = cController.GetAddress();
     std::string id = cController.GetId();
     int robotId = Geth_Wrapper::Id2Int(id);
-    /* Make sure that the robot is connected */
+    // Make sure that the robot is connected
     string e = cController.getEnode();    
     cout << "enode in connecttominer is" << e << endl;
     Geth_Wrapper::add_peer(minerId, e, minerNode, basePort, blockchainPath);
   }
-}
-
-bool CBlockchainVotingLoopFunctions::InitRobots() {
-  cout  << "[CBlockchainVotingLoopFunctions::InitRobots]Initializing loop function" << endl;
-  miningNotWorkingAnymore = false;
-  errorOccurred = false;
-  //if (!useClassicalApproach) {
-    /* Preallocate money to the miner */
-    PreinitMiner();
-  //}
-  // int temp1;
-  // /* Mix the colours in the vector of cells to avoid the problem of eventual correlations*/
-  // for (int k = 0; k < 8; k++){
-    // for (int i = TOTAL_CELLS-1; i >= 0; --i){
-      // int j = ((int)m_pcRNG->Uniform(bigRange)%(i+1));
-      // temp1 = grid[i];
-      // grid[i] = grid[j];
-      // grid[j] = temp1;
-    // }
-  // }
-
-  /* Variable i is used to check the vector with the mixed opinion to assign a new opinion to every robots*/
-  int i = 0;
-  CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
-  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
-    /* Get handle to e-puck entity and controller */
-    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);
-    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
-    // CBlockchainVotingController::Opinion& opinion = cController.GetOpinion();
-    // CBlockchainVotingController::CollectedData& collectedData = cController.GetColData();
-
-    // /* Resetting initial state of the robots: exploring for everyone */
-    // cController.GetReceivedOpinions().clear();
-    // cController.GetStateData().State = CBlockchainVotingController::SStateData::STATE_EXPLORING;
-    // Real tmpValue = (m_pcRNG->Exponential((Real)sigma));
-    // cController.GetStateData().remainingExplorationTime = tmpValue;
-    // cController.GetStateData().explorDurationTime =  cController.GetStateData().remainingExplorationTime;
-
-    // /* Assign a random actual opinion using the shuffled vector */
-    // opinion.actualOpinion = opinionsToAssign[i];
-    // i++;
-
-    // opinion.countedCellOfActualOpinion = 0;
-    // collectedData.count = 1;
-    // if(opinion.actualOpinion == 1)
-      // opinion.actualOpCol = CColor::WHITE;
-    // if(opinion.actualOpinion == 2)
-      // opinion.actualOpCol = CColor::BLACK;
-    // /* Setting robots initial states: exploring state */
-
-    cController.fromLoopFunctionResPrepare();
-	
-    cController.setSquareRadius(m_fFoodSquareRadius);
-    cController.setFoodPos(m_cFoodPos);
-    // if( gethStaticErrorOccurred ) {
-      // cout << "gethStaticErrorOccurred was true in InitRobots" << endl;
-      // Reset();
-      // cout << "Finished Reset, returning true now" << endl;
-      // return true;
-    // }
-  }
-
-  //if (!useClassicalApproach) {
-    //PreallocateEther();
-    RestartGeths();
-  //}
-
-  AssignNewStateAndPosition();
-
-  //if (!useClassicalApproach) {
-    /* Initialize miner, distribute ether, and more */
-    InitEthereum();
-  //}    
-}
-
-void CBlockchainVotingLoopFunctions::Init(TConfigurationNode& t_node) {
-   cout << "[CBlockchainVotingLoopFunctions::Init] Starting..." << endl;
-
-   TConfigurationNode& tEnvironment = GetNode(t_node, "cells");
-   fillSettings(tEnvironment);
-   
-   m_pcRNG = CRandom::CreateRNG("argos");
-   
-   /* Get a pointer to the floor entity */
-   m_pcFloor = &GetSpace().GetFloorEntity();
-   /* Get the number of food items we want to be scattered from XML */
-   //GetNodeAttribute(tForaging, "radius", m_fFoodSquareRadius);
-   //m_fFoodSquareRadius *= m_fFoodSquareRadius;
-   m_fFoodSquareRadius = 0.01;
-   /* Distribute uniformly the items in the environment */
-   for(UInt32 i = 0; i < 3; ++i) {
-      m_cFoodPos.push_back(
-      CVector2(m_pcRNG->Uniform(m_cForagingArenaSideX),
-               m_pcRNG->Uniform(m_cForagingArenaSideY)));
-   }
-
-   InitRobots();
-   
-   // /*
-    // * Go through all the robots in the environment
-    // * and create an entry in the waypoint map for each of them
-    // */
-   // /* Get the map of all foot-bots from the space */
-   // CSpace::TMapPerType& tFBMap = GetSpace().GetEntitiesByType("epuck");
-   // /* Go through them */
-   // for(CSpace::TMapPerType::iterator it = tFBMap.begin();
-       // it != tFBMap.end();
-       // ++it) {
-      // /* Create a pointer to the current foot-bot */
-      // CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
-      // /* Create a waypoint vector */
-      // m_tWaypoints[pcFB] = std::vector<CVector3>();
-      // /* Add the initial position of the foot-bot */
-      // m_tWaypoints[pcFB].push_back(pcFB->GetEmbodiedEntity().GetOriginAnchor().Position);
-   // }
-}
-
-/****************************************/
-/****************************************/
-
-void CBlockchainVotingLoopFunctions::Reset() {
-  gethStaticErrorOccurred = false;
-  /* Clean up Ethereum stuff  */
-  //if (!useClassicalApproach) {
-    // Kill all geth processes
-    string bckiller = "bash " + blockchainPath + "/bckillerccall";
-    Geth_Wrapper::exec(bckiller.c_str());    
-    // Remove blockchain folders
-    string rmBlockchainData = "rm -rf " + blockchainPath + "*";
-    Geth_Wrapper::exec(rmBlockchainData.c_str());    
-    // Regenerate blockchain folders
-    string regenerateFolders = "bash " + regenerateFile;
-    Geth_Wrapper::exec(regenerateFolders.c_str());    
-  //}
-  
-  /* Distribute uniformly the items in the environment */
-  for(UInt32 i = 0; i < m_cFoodPos.size(); ++i) {
-     m_cFoodPos[i].Set(m_pcRNG->Uniform(m_cForagingArenaSideX),
-                       m_pcRNG->Uniform(m_cForagingArenaSideY));
-  }
-  
-  InitRobots();
-}
-
-/****************************************/
-/****************************************/
-bool CBlockchainVotingLoopFunctions::IsExperimentFinished() {
-  /* If parameters are uncorrect then finish the experiment (Eg: number of robots vs sum of the initial opinion,
-   * or the colours of the cells mismatching */
-  if( incorrectParameters ) {
-    cout << "incorrectParameters was true" << endl;
-    Reset();
-    return true;
-  }
-
-  if ( miningNotWorkingAnymore ) {
-    // system("echo \"true\" > regeneratedag.txt"); // set flag that the DAG should be regenerated
-    cout << "mininNotWorkingAnymore was true" << endl;
-    Reset();
-    return true;
-  }
-
-  if( errorOccurred ) {
-    cout << "errorOccured was true" << endl;
-    Reset();
-    return true;
-  }
-
-  if( gethStaticErrorOccurred ) {
-    cout << "gethStaticErrorOccurred was true" << endl;
-    Reset();
-    return true;
-  }
-}
-
-void CBlockchainVotingLoopFunctions::Destroy(){
-  //Clean up Ethereum stuff
-  //if (!useClassicalApproach) {
-      // Kill all geth processes
-      //Geth_Wrapper::kill_geth_thread(minerId, minerNode, basePort, blockchainPath);
-      Geth_Wrapper::kill_geth_thread(minerId, basePort, minerNode, blockchainPath);
-      string bckiller = "bash " + blockchainPath + "/bckillerccall";
-      Geth_Wrapper::exec(bckiller.c_str());
-      // Remove blockchain folders
-      string rmBlockchainData = "rm -rf " + blockchainPath + "*";
-      Geth_Wrapper::exec(rmBlockchainData.c_str());
-  //}
-}
-
-void CBlockchainVotingLoopFunctions::PreStep() {
-  CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
-  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
-    /* Get handle to e-puck entity and controller */
-    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);    
-    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
-    
-    Real x = cEpuck.GetEmbodiedEntity().GetOriginAnchor().Position.GetX(); // X coordinate of the robot
-    Real y = cEpuck.GetEmbodiedEntity().GetOriginAnchor().Position.GetY(); // Y coordinate of the robot
-    
-    CVector2 cPos;
-    cPos.Set(x,y);	// Vector position of the robot
-    /* Figure out in which cell (EG: which is the index of the array grid) the robot is */
-    UInt32 cell = (UInt32) ((y+0.009)*10000)/(Real)ENVIRONMENT_CELL_DIMENSION;
-    cell = (UInt32) 40*cell + ((x+0.009)*10000)/(Real)ENVIRONMENT_CELL_DIMENSION;
-	
-	/*bool bDone = false;
-        CColor cColor = CColor::WHITE;
-	for(size_t i = 0; i < m_cFoodPos.size() && !bDone; ++i) {
-	   if((cPos - m_cFoodPos[i]).SquareLength() < m_fFoodSquareRadius) {
-		  //// If so, we move that item out of sight
-		  //m_cFoodPos[i].Set(100.0f, 100.f);
-		  //// The foot-bot is now carrying an item
-		  //sFoodData.HasFoodItem = true;
-		  //sFoodData.FoodItemIdx = i;
-		  //// The floor texture must be updated
-		  //m_pcFloor->SetChanged();
-		  // We are done 
-		  if(i==0)
-			cColor = CColor::RED;
-		  else if(i==1)
-			cColor = CColor::GREEN;
-		  else
-			cColor = CColor::BLUE;
-		  bDone = true;
-		  break;
-	   }
-	}
-        //cout << "Before calling cController.setColor" << endl;
-	cController.setColor(cColor);*/
-        cController.setCurrentPos(cPos);
-    
-    /* Get parameters of the robot: color, state, opinion and movement datas*/
-    //CBlockchainVotingController::CollectedData& collectedData = cController.GetColData();
-    //CBlockchainVotingController::SStateData& sStateData = cController.GetStateData();
-    CBlockchainVotingController::Movement& movement = cController.GetMovement();
-    //CBlockchainVotingController::Opinion& opinion = cController.GetOpinion();
-    std::string id = cController.GetId();
-    //CBlockchainVotingController::SimulationState& simulationParam = cController.GetSimulationState();
-    
-    /* Update statistics about the robot opinions*/
-    //bool isByzantine = (bool) cController.getByzantineStyle();
-    //UpdateStatistics(opinion, sStateData, isByzantine);
-    //if(cController.IsExploring())
-    //  UpdateCount(collectedData, cell, cPos, opinion, sStateData, id, simulationParam);
-    RandomWalk(movement);
-  }
-}
-
-void CBlockchainVotingLoopFunctions::PostStep() {
-   // /* Get the map of all foot-bots from the space */
-   // CSpace::TMapPerType& tFBMap = GetSpace().GetEntitiesByType("foot-bot");
-   // /* Go through them */
-   // for(CSpace::TMapPerType::iterator it = tFBMap.begin();
-       // it != tFBMap.end();
-       // ++it) {
-      // /* Create a pointer to the current foot-bot */
-      // CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
-      // /* Add the current position of the foot-bot if it's sufficiently far from the last */
-      // if(SquareDistance(pcFB->GetEmbodiedEntity().GetOriginAnchor().Position,
-                        // m_tWaypoints[pcFB].back()) > MIN_DISTANCE_SQUARED) {
-         // m_tWaypoints[pcFB].push_back(pcFB->GetEmbodiedEntity().GetOriginAnchor().Position);
-      // }
-   // }
-  CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
-  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
-    /* Get handle to e-puck entity and controller */
-    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);    
-    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
-    long long m_lStepCnt = cController.GetStepCnt();
-    if(m_lStepCnt % 100 == 0) {
-      ostringstream strVotes;
-      string args[1] = {"RED"};
-      string resRed = Geth_Wrapper::smartContractInterfaceStringCall(minerId, interface, contractAddress, "totalVotesFor", args, 1, -1, minerNode, blockchainPath);
-      strVotes << "Votes: RED=" << resRed;
-
-      args[0] = "GREEN";
-      string resGreen = Geth_Wrapper::smartContractInterfaceStringCall(minerId, interface, contractAddress, "totalVotesFor", args, 1, -1, minerNode, blockchainPath);
-      strVotes << " - GREEN=" << resGreen;
-
-      args[0] = "BLUE";
-      string resBlue = Geth_Wrapper::smartContractInterfaceStringCall(minerId, interface, contractAddress, "totalVotesFor", args, 1, -1, minerNode, blockchainPath);
-      strVotes << " - BLUE=" << resBlue;
-      string strTmp = strVotes.str();
-      strTmp = Geth_Wrapper::replaceAll(strTmp, "\n", "");
-      strTmp = Geth_Wrapper::replaceAll(strTmp, "true", "");
-      strTmp = Geth_Wrapper::replaceAll(strTmp, "undefined", "");
-      std::cerr << strTmp << endl;
-      break;
-    }
-  }
-}
-
-/* Implement random walk */
-void CBlockchainVotingLoopFunctions::RandomWalk(CBlockchainVotingController::Movement& movement) {
-  /* walkTime represents the number of clock cycles (random number) of walk in a random direction*/
-  if ( movement.walkTime == 0 )                            // Is the walkTime in that direction finished? ->
-    { 				                                         // -> YES: change direction//
-      if ( movement.actualDirection == 0 )                  // If robot was going straight then turn standing in ->
-	// -> a position for an uniformly distribuited time //
-	{
-	  Real p = m_pcRNG->Uniform(zeroOne);
-	  p = p*turn - (turn/2);
-	  if ( p > 0 )
-	    movement.actualDirection = 1;
-	  else
-	    movement.actualDirection = 2;
-	  movement.walkTime = (UInt32) abs(p);
-	}
-      else 						// The robot was turning, time to go straight for ->
-	// -> an exponential period of time //
-	{
-	  movement.walkTime = (m_pcRNG->Exponential((Real)LAMDA))*4; // Exponential random generator. *50 is a scale factor for the time
-	  movement.actualDirection = 0;
-	}
-    }
-  else 							// NO: The period of time is not finished, decrement the ->
-    // -> walkTime and keep the direction //
-    movement.walkTime--;
-}
+}*/
 
 /****************************************/
 /****************************************/

@@ -16,8 +16,6 @@
 #include <ctime>
 #include <stddef.h>
 
-#include "../controllers/footbot_diffusion.h"
-
 using namespace argos;
 using namespace std;
 
@@ -25,25 +23,25 @@ extern std::map<int, std::string> coinbaseAddresses;
 
 class CBlockchainVotingLoopFunctions : public CLoopFunctions {
 public:
-   //typedef std::map<CFootBotEntity*, std::vector<CVector3> > TWaypointMap;
-   //TWaypointMap m_tWaypoints;
+    //typedef std::map<CFootBotEntity*, std::vector<CVector3> > TWaypointMap;
+    //TWaypointMap m_tWaypoints;
    
 public:
-   CBlockchainVotingLoopFunctions();
-   virtual ~CBlockchainVotingLoopFunctions() {}
+    CBlockchainVotingLoopFunctions();
+    virtual ~CBlockchainVotingLoopFunctions() {}
 
-   virtual void Init(TConfigurationNode& t_node);
-   virtual bool InitRobots();
-   virtual bool IsExperimentFinished();
-   virtual void Reset();
-   virtual void Destroy();
-   virtual void PreStep();
-   virtual void PostStep();
+    virtual void Init(TConfigurationNode& t_node);
+    virtual void Reset();
+    virtual void Destroy();
+    virtual void PreStep();
+    virtual void PostStep();
 
-   virtual CColor GetFloorColor(const CVector2& c_position_on_plane);
-   //inline const TWaypointMap& GetWaypoints() const {
-   //   return m_tWaypoints;
-   //}
+    virtual CColor GetFloorColor(const CVector2& c_position_on_plane);
+    //inline const TWaypointMap& GetWaypoints() const {
+    //   return m_tWaypoints;
+    //}
+    virtual bool InitRobots();
+    virtual bool IsExperimentFinished();
 
 private:
 	void fillSettings(TConfigurationNode& tEnvironment);
@@ -52,28 +50,37 @@ private:
 	void RestartGeths();
 	void AssignNewStateAndPosition();
 	void InitEthereum();
-	void RandomWalk(CBlockchainVotingController::Movement& movement);
+	//void RandomWalk(CBlockchainVotingController::Movement& movement);
 	
 	void setContractAddressAndDistributeEther(string contractAddress, string minerAddress);
 	bool allSameBCHeight();
 	bool CheckEtherReceived();
-	void registerAllRobots();
-	void UpdateRegistrationAllRobots();
-	void connectMinerToEveryone();
+	//void registerAllRobots();
+	//void UpdateRegistrationAllRobots();
+	//void connectMinerToEveryone();
 	
 	CRange<Real> m_cForagingArenaSideX, m_cForagingArenaSideY;
-	Real m_fFoodSquareRadius;
-	std::vector<CVector2> m_cFoodPos;
+	//Real m_fFoodSquareRadius;
+	//std::vector<CVector2> m_cFoodPos;
 	CFloorEntity* m_pcFloor;
-	CRange<Real> zeroOne;
 	CRandom::CRNG* m_pcRNG;
+	
+	std::string m_strOutput;
+    std::ofstream m_cOutput;
+ 
+    UInt32 m_unCollectedFood;
+    SInt64 m_nEnergy;
+    UInt32 m_unEnergyPerFoodItem;
+    UInt32 m_unEnergyPerWalkingRobot;
+	
+	CRange<Real> zeroOne;
 	bool errorOccurred;
 	bool miningNotWorkingAnymore;
 	bool gethStaticErrorOccurred;
 	bool incorrectParameters;
 	bool m_bExperimentFinished;
 
-        std::string interface;
+    std::string interface;
 	
 	UInt32 LAMDA,turn; // Parameters for the randomWalk: Lamda is the exponential mean and turn is the uniform parameter
 	

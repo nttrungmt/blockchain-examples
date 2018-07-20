@@ -7,7 +7,6 @@
 <!-- *************************************************** -->
 
 <argos-configuration>
-
   <!-- ************************* -->
   <!-- * General configuration * -->
   <!-- ************************* -->
@@ -21,11 +20,11 @@
   <!-- *************** -->
   <!-- * Controllers * -->
   <!-- *************** -->
-  <!-- build/controllers/footbot_foraging/libfootbot_foraging -->
   <controllers>
+	<!--<footbot_foraging_controller id="ffc"                                  
+			library="build/controllers/footbot_foraging/libfootbot_foraging"-->
     <footbot_foraging_controller id="ffc"                                  
-								  library="build/controllers/footbot_foraging/libfootbot_foraging">
-								  <!--library="build/controllers/libfootbot_diffusion"-->
+			library="build/controllers/libfootbot_diffusion">
       <actuators>
         <differential_steering implementation="default" />
         <leds implementation="default" medium="leds" />
@@ -36,6 +35,7 @@
         <footbot_light implementation="rot_z_only" show_rays="false" />
         <footbot_motor_ground implementation="rot_z_only" />
         <range_and_bearing implementation="medium" medium="rab" />
+        <colored_blob_omnidirectional_camera implementation="rot_z_only" medium="leds" show_rays="true" />
         <!--epuck_motor_ground implementation="rot_z_only" /-->
         <!--epuck_proximity implementation="default" show_rays="false" /-->
         <!--epuck_range_and_bearing implementation="medium" medium="rab" show_rays="true"/-->
@@ -78,15 +78,14 @@
 			  1 = Voter model; 2 = Direct comparison; 3 = Majority Rule--> 
       </params>
     </footbot_foraging_controller>
-
   </controllers>
 
   <!-- ****************** -->
   <!-- * Loop functions * -->
   <!-- ****************** -->
-  <!-- ****************** build/loop_functions/libblockchain_voting_loop_functions -->
-  <!-- ****************** blockchain_voting_loop_functions -->
-  <loop_functions library="build/loop_functions/foraging_loop_functions/libforaging_loop_functions"
+  <!--loop_functions library="build/loop_functions/foraging_loop_functions/libforaging_loop_functions"
+                  label="foraging_loop_functions"-->
+  <loop_functions library="build/loop_functions/libblockchain_voting_loop_functions"
                   label="foraging_loop_functions">
 	<foraging items="15"
               radius="0.1"
@@ -97,7 +96,6 @@
 	  exit="true"	  
 	  number_of_robots="2"
 	  number_of_runs="1"
-      
 	  base_dir_loop="./controllers/"
 	  base_dir_raw="."
 	  data_dir="data/experiment1_decision1-node0-20-06-2018/"
@@ -107,7 +105,6 @@
 	  use_multiple_nodes="true"
 	  miner_id="120"
 	  miner_node="0"
-	  
 	  base_port="33000"
 	  use_classical_approach="false"
 	  subswarm_consensus="false"
@@ -276,6 +273,12 @@
     <qt-opengl>
       <!--<user_functions library="build/loop_functions/libtrajectory_loop_functions"
                       label="trajectory_qtuser_functions" /> -->
+		<camera>
+          <placement idx="0"
+                   position="0,0,4.34"
+                   look_at="0,0,0"
+                   lens_focal_length="20" />
+        </camera>
     </qt-opengl>
   </visualization>
 
