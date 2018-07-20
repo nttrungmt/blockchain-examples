@@ -148,7 +148,7 @@ CBlockchainVotingController::CBlockchainVotingController() :
 	mining(false),
 	m_pcWheels (NULL),
 	m_pcLEDs(NULL),
-	m_fWheelVelocity (10.0f),
+	//m_fWheelVelocity (10.0f),
 	m_pcRABA (NULL),
 	m_pcRABS (NULL),
 	m_cAlpha (10.0f),
@@ -193,7 +193,7 @@ void CBlockchainVotingController::Init(TConfigurationNode& t_node) {
 
 	m_pcRNG = CRandom::CreateRNG("argos");
 	m_cGoStraightAngleRange.Set(-ToRadians(m_cAlpha), ToRadians(m_cAlpha));
-	GetNodeAttributeOrDefault(t_node, "velocity", m_fWheelVelocity, m_fWheelVelocity);
+	//GetNodeAttributeOrDefault(t_node, "velocity", m_fWheelVelocity, m_fWheelVelocity);
 	simulationParams.Init(GetNode(t_node, "simulation_parameters"));
 	//simulationParams.g = simulationParams.g * 10;
 	//simulationParams.sigma = simulationParams.sigma * 10;
@@ -317,7 +317,7 @@ void CBlockchainVotingController::Reset() {
 	m_sStateData.cosnatantTime = 1000;
 	m_sStateData.greenFractionTime = 0.8;
 	m_sStateData.blueFractionTime = 0.9;
-	int id = Id2Int(GetId());
+	int id = Geth_Wrapper::Id2Int(GetId());
 	//std::cout << "GetID()" << GetID() << std::endl;
 	if(id > m_sStateData.half){
 		 m_pcLEDs->SetSingleColor(12, CColor::BLUE);
@@ -1103,7 +1103,7 @@ void CBlockchainVotingController::fromLoopFunctionResPrepare(){
     m_pcRABS->ClearPackets();
     //receivedOpinions.clear();*/
 
-    TurnLeds();
+    //TurnLeds();
 
     // // Assign the initial state of the robots: all in exploration state//
     // m_sStateData.State = SStateData::STATE_EXPLORING;

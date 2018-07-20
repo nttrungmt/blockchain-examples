@@ -45,6 +45,8 @@
 /* Definition of the foot-bot light sensor */
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_light_sensor.h>
 #include <argos3/plugins/robots/foot-bot/control_interface/ci_footbot_motor_ground_sensor.h>
+/* Definition of the omnidirectional camera sensor */
+#include <argos3/plugins/robots/generic/control_interface/ci_colored_blob_omnidirectional_camera_sensor.h>
 
 #include <argos3/core/utility/math/rng.h>
 #include <argos3/core/utility/math/vector2.h>
@@ -194,6 +196,12 @@ public:
       size_t MinimumSearchForPlaceInNestTime;
       /* The time spent searching for a place in the nest */
       size_t TimeSearchingForPlaceInNest;
+
+      /*Count for color for influence*/
+      int CountOfColor;
+
+      /*Decision at nest to accept limited decisions*/
+      int DecisionAtNest;
  
       /*Decision at explore area to accept limited decisions*/
       int DecisionAtExplore;
@@ -314,11 +322,10 @@ public:
       return m_sFoodData;
    }
 
-   virtual void RandomWalk();
-   //void killGethAndRemoveFolders(std::string bcPath, std::string regenFile);
-   void Explore();
-   void Move();
-   void TurnLeds();
+   //virtual void RandomWalk();
+   //void Explore();
+   //void Move();
+   //void TurnLeds();
 
    inline Movement & GetMovement() {
       return movement;
@@ -428,6 +435,7 @@ private:
    //void readNodeMapping();
    //void readByzantineMapping();
    //void DistributeID(); 
+   //void killGethAndRemoveFolders(std::string bcPath, std::string regenFile);
    
    //Real m_fWheelVelocity;
    /* Pointer to the differential steering actuator */
