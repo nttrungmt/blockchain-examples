@@ -538,9 +538,9 @@ void CBlockchainVotingController::SetWheelSpeedsFromVector(const CVector2& c_hea
 void CBlockchainVotingController::Rest() {
    /* If we have stayed here enough, probabilistically switch to
     * 'exploring' */
+   int id = Geth_Wrapper::Id2Int(GetId());
    if(m_sStateData.TimeRested > m_sStateData.MinimumRestingTime &&
-		m_pcRNG->Uniform(m_sStateData.ProbRange) < m_sStateData.RestToExploreProb) {
-		int id = Id2Int(GetId());
+		m_pcRNG->Uniform(m_sStateData.ProbRange) < m_sStateData.RestToExploreProb) {		
 		if(id > m_sStateData.half){
 			m_pcLEDs->SetSingleColor(12, CColor::BLUE);
 			m_pcLEDs->SetSingleColor(11, CColor::BLUE);
@@ -598,10 +598,8 @@ void CBlockchainVotingController::Rest() {
    }
    else{
 		UpdateState();
-
 		m_sStateData.State = SStateData::STATE_EXPLORING;
 		m_sStateData.TimeRested = 0;
-
 		if(m_sStateData.DecisionAtExplore + m_sStateData.DecisionAtNest > 0){
 			m_pcLEDs->SetSingleColor(12, CColor::BLUE);
 			m_pcLEDs->SetSingleColor(11, CColor::BLUE);
@@ -610,7 +608,6 @@ void CBlockchainVotingController::Rest() {
 			m_sStateData.DecisionAtExplore = 0;
 			m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.blueFractionTime;
 
-			int id = Id2Int(GetId());
 			std::string strId = std::to_string(id);
 			string args[2] = {strId,"2"};
 			Geth_Wrapper::unlockAccount(id, "test", nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
@@ -649,7 +646,6 @@ void CBlockchainVotingController::Rest() {
 			}
 		}
 		else if(m_sStateData.DecisionAtExplore + m_sStateData.DecisionAtNest == 0){
-			int id = Id2Int(GetId());
 			if(id > m_sStateData.half){
 				m_pcLEDs->SetSingleColor(12, CColor::BLUE);
 				m_pcLEDs->SetSingleColor(11, CColor::BLUE);
@@ -671,8 +667,7 @@ void CBlockchainVotingController::Rest() {
 			m_pcLEDs->SetSingleColor(10, CColor::GREEN);
 			m_pcLEDs->SetSingleColor(9, CColor::GREEN);
 			m_sStateData.DecisionAtExplore = 0;
-			m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.greenFractionTime;
-			int id = Id2Int(GetId());
+			m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.greenFractionTime;			
 			std::string strId = std::to_string(id);
 			string args[2] = {strId,"1"};
 			Geth_Wrapper::unlockAccount(id, "test", nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
@@ -713,8 +708,7 @@ void CBlockchainVotingController::Rest() {
 			}
 		}
    }
-
-   int id = Id2Int(GetId());
+   
    const CCI_FootBotMotorGroundSensor::TReadings& tGroundReads = m_pcGround->GetReadings();
    if(((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) == 0) 
 	&& (id > m_sStateData.half) && ((0.28 < tGroundReads[1].Value && tGroundReads[1].Value < 0.3 ) || (0.28 < tGroundReads[2].Value && tGroundReads[2].Value < 0.3 ))) {
@@ -794,6 +788,7 @@ void CBlockchainVotingController::Explore() {
    }
 
 	/* So, do we return to the nest now? */
+	int id = Geth_Wrapper::Id2Int(GetId());
 	if(bReturnToNest) {
 		/* Yes, we do! */
 		m_sStateData.TimeExploringUnsuccessfully = 0;
@@ -827,7 +822,6 @@ void CBlockchainVotingController::Explore() {
 			* the light. Thus, the minus sign is because we want to go away
 			* from the light.
 			*/
-			int id = Id2Int(GetId());
 			const CCI_FootBotMotorGroundSensor::TReadings& tGroundReads = m_pcGround->GetReadings();
 
 			if((tGroundReads[1].Value < 0.01) ||(tGroundReads[2].Value < 0.01))	{
@@ -835,7 +829,6 @@ void CBlockchainVotingController::Explore() {
 			}
 		} else {
 			/* Use the diffusion vector only */
-			int id = Id2Int(GetId());
 			const CCI_FootBotMotorGroundSensor::TReadings& tGroundReads = m_pcGround->GetReadings();
 			if(    (tGroundReads[1].Value > 0.1 && tGroundReads[1].Value < 0.12 ) 
 				|| (tGroundReads[2].Value > 0.1 && tGroundReads[2].Value < 0.12 ) 
