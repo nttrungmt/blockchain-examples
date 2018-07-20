@@ -134,7 +134,7 @@
     </box>
 
     <distribute>
-      <position method="uniform" min="-2,-0.25,0" max="2,0.25,0" />
+      <position method="uniform" min="-2,-1.2,0" max="2,-0.2,0" />
       <orientation method="gaussian" mean="0,0,0" std_dev="360,0,0" />
       <entity quantity="2" max_trials="20">
         <foot-bot id="fb">
@@ -146,55 +146,55 @@
 	<light id="light_1"
            position="-1.8,-1.6,0.0"
            orientation="0,0,0"
-           color="yellow"
+           color="cyan"
            intensity="6.0"
            medium="leds" />
 	<light id="light_2"
            position="-1.4,-1.6,0.0"
            orientation="0,0,0"
-           color="yellow"
+           color="cyan"
            intensity="6.0"
            medium="leds" />
     <light id="light_3"
            position="-1.0,-1.6,0.0"
            orientation="0,0,0"
-           color="yellow"
+           color="cyan"
            intensity="6.0"
            medium="leds" />
 	<light id="light_4"
            position="-0.6,-1.6,0.0"
            orientation="0,0,0"
-           color="yellow"
+           color="cyan"
            intensity="6.0"
            medium="leds" />
     <light id="light_5"
            position="-0.2,-1.6,0.0"
            orientation="0,0,0"
-           color="yellow"
+           color="cyan"
            intensity="6.0"
            medium="leds" />
 	<light id="light_6"
            position="0.2,-1.6,0.0"
            orientation="0,0,0"
-           color="yellow"
+           color="cyan"
            intensity="6.0"
            medium="leds" />
     <light id="light_7"
            position="0.6,-1.6,0.0"
            orientation="0,0,0"
-           color="yellow"
+           color="cyan"
            intensity="6.0"
            medium="leds" />
 	<light id="light_8"
            position="1.0,-1.6,0.0"
            orientation="0,0,0"
-           color="yellow"
+           color="cyan"
            intensity="6.0"
            medium="leds" />
 	<light id="light_9"
            position="1.4,-1.6,0.0"
            orientation="0,0,0"
-           color="yellow"
+           color="cyan"
            intensity="6.0"
            medium="leds" />
 	<light id="light_10"
