@@ -72,6 +72,8 @@ CBlockchainVotingLoopFunctions::CBlockchainVotingLoopFunctions() :
 void CBlockchainVotingLoopFunctions::Init(TConfigurationNode& t_node) {
    cout << "[CBlockchainVotingLoopFunctions::Init] Starting..." << endl;
    
+   TConfigurationNode& tForaging = GetNode(t_node, "foraging");
+   
    // Get a pointer to the floor entity
    m_pcFloor = &GetSpace().GetFloorEntity();
    
@@ -292,7 +294,7 @@ void CBlockchainVotingLoopFunctions::PreStep() {
    UInt32 unRestingFBs = 0;
    
   CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
-  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
+  for(CSpace::TMapPerType::iterator it = m_cFootbots.begin();it != m_cFootbots.end();++it){
     /* Get handle to foot-bot entity and controller */
     CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
     CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cFootBot.GetControllableEntity().GetController());
@@ -457,11 +459,11 @@ bool CBlockchainVotingLoopFunctions::InitRobots() {
 
   /* Variable i is used to check the vector with the mixed opinion to assign a new opinion to every robots*/
   int i = 0;
-  CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
-  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
-    /* Get handle to e-puck entity and controller */
-    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);
-    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
+  CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
+  for(CSpace::TMapPerType::iterator it = m_cFootbots.begin();it != m_cFootbots.end();++it){
+    /* Get handle to foot-bot entity and controller */
+    CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
+    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cFootBot.GetControllableEntity().GetController());
     // CBlockchainVotingController::Opinion& opinion = cController.GetOpinion();
     // CBlockchainVotingController::CollectedData& collectedData = cController.GetColData();
 
@@ -738,11 +740,11 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
 
 void CBlockchainVotingLoopFunctions::setContractAddressAndDistributeEther(string contractAddress, string minerAddress) {
   cout << "[LoopFunctions::setContractAddressAndDistributeEther]" << endl;
-  CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
-  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
-    /* Get handle to e-puck entity and controller */
-    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);
-    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
+  CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
+  for(CSpace::TMapPerType::iterator it = m_cFootbots.begin();it != m_cFootbots.end();++it){
+    /* Get handle to foot-bot entity and controller */
+    CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
+    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cFootBot.GetControllableEntity().GetController());
 
     std::string& address = cController.GetAddress();
     std::string id = cController.GetId();
@@ -759,16 +761,17 @@ void CBlockchainVotingLoopFunctions::setContractAddressAndDistributeEther(string
 
 bool CBlockchainVotingLoopFunctions::allSameBCHeight() {
   //int maxChecks = 11;
-  CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
   int s, a, b;
   bool canExit = false;
   bool success = true;
   b = -1;
   cout << "Checking if all robots have the same blockchain height" << endl;
   s = 0;
-  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
-    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);
-    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
+  CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
+  for(CSpace::TMapPerType::iterator it = m_cFootbots.begin();it != m_cFootbots.end();++it){
+    /* Get handle to foot-bot entity and controller */
+    CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
+    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cFootBot.GetControllableEntity().GetController());
     std::string id = cController.GetId();
     int robotNodeInt = cController.getNodeInt();
     int robotId = Geth_Wrapper::Id2Int(id);
@@ -792,12 +795,12 @@ bool CBlockchainVotingLoopFunctions::allSameBCHeight() {
 }
 
 bool CBlockchainVotingLoopFunctions::CheckEtherReceived() {
-  CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
   bool everyoneReceivedSomething = true;
-  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin(); it != m_cEpuck.end(); ++it) {
-    /* Get handle to e-puck entity and controller */
-    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);
-    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
+  CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
+  for(CSpace::TMapPerType::iterator it = m_cFootbots.begin();it != m_cFootbots.end();++it){
+    /* Get handle to foot-bot entity and controller */
+    CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
+    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cFootBot.GetControllableEntity().GetController());
     std::string id = cController.GetId();
     int robotId = Geth_Wrapper::Id2Int(id);
     int robotNodeInt = cController.getNodeInt();
@@ -814,31 +817,31 @@ bool CBlockchainVotingLoopFunctions::CheckEtherReceived() {
 }
 
 /*void CBlockchainVotingLoopFunctions::registerAllRobots() {
-  CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
-  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
-    // Get handle to e-puck entity and controller
-    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);
-    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
+  CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
+  for(CSpace::TMapPerType::iterator it = m_cFootbots.begin();it != m_cFootbots.end();++it){
+    // Get handle to foot-bot entity and controller //
+    CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
+    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cFootBot.GetControllableEntity().GetController());
     cController.registerRobot();
   }
 }*/
 
 /*void CBlockchainVotingLoopFunctions::UpdateRegistrationAllRobots() {
-  CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
-  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
-    // Get handle to e-puck entity and controller
-    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);
-    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
+  CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
+  for(CSpace::TMapPerType::iterator it = m_cFootbots.begin();it != m_cFootbots.end();++it){
+    // Get handle to foot-bot entity and controller //
+    CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
+    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cFootBot.GetControllableEntity().GetController());
     cController.updateRegistration();
   }
 }*/
 
 /*void CBlockchainVotingLoopFunctions::connectMinerToEveryone() {
-  CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
-  for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
-    // Get handle to e-puck entity and controller
-    CEPuckEntity& cEpuck = *any_cast<CEPuckEntity*>(it->second);
-    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cEpuck.GetControllableEntity().GetController());
+  CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
+  for(CSpace::TMapPerType::iterator it = m_cFootbots.begin();it != m_cFootbots.end();++it){
+    // Get handle to foot-bot entity and controller //
+    CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
+    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cFootBot.GetControllableEntity().GetController());
     std::string& address = cController.GetAddress();
     std::string id = cController.GetId();
     int robotId = Geth_Wrapper::Id2Int(id);
