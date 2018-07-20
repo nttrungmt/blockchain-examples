@@ -1119,7 +1119,7 @@ void CBlockchainVotingController::fromLoopFunctionResPrepare(){
   
     // Ethereum
     //interface = Geth_Wrapper::readStringFromFile(simulationParams.baseDir + simulationParams.interfacePath);
-    interface = Geth_Wrapper::readStringFromFile(simulationParams.baseDirRaw + "/Voting.abi");
+    interface = Geth_Wrapper::readStringFromFile(simulationParams.baseDirRaw + "/bon4.abi");
     //cout << "Interface: " << interface << endl;    
 
     /* Find out on which cluster node this robot's geth process should be executed */

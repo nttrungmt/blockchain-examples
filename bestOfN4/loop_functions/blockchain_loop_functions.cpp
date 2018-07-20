@@ -72,33 +72,33 @@ CBlockchainVotingLoopFunctions::CBlockchainVotingLoopFunctions() :
 void CBlockchainVotingLoopFunctions::Init(TConfigurationNode& t_node) {
    cout << "[CBlockchainVotingLoopFunctions::Init] Starting..." << endl;
    
-   /* Get a pointer to the floor entity */
+   // Get a pointer to the floor entity
    m_pcFloor = &GetSpace().GetFloorEntity();
    
    m_pcRNG = CRandom::CreateRNG("argos");
    
-   ///* Get the number of food items we want to be scattered from XML */
+   //// Get the number of food items we want to be scattered from XML
    //UInt32 unFoodItems;
    //GetNodeAttribute(tForaging, "items", unFoodItems);
-   ///* Get the number of food items we want to be scattered from XML */
+   //// Get the number of food items we want to be scattered from XML
    ////GetNodeAttribute(tForaging, "radius", m_fFoodSquareRadius);
    ////m_fFoodSquareRadius *= m_fFoodSquareRadius;
    //m_fFoodSquareRadius = 0.01;
-   ///* Distribute uniformly the items in the environment */
+   //// Distribute uniformly the items in the environment
    //for(UInt32 i = 0; i < 3; ++i) {
    //   m_cFoodPos.push_back(
    //   CVector2(m_pcRNG->Uniform(m_cForagingArenaSideX),
    //            m_pcRNG->Uniform(m_cForagingArenaSideY)));
    //}
    
-   /* Get the output file name from XML */
+   // Get the output file name from XML //
    GetNodeAttribute(tForaging, "output", m_strOutput);
-   /* Open the file, erasing its contents */
+   // Open the file, erasing its contents //
    m_cOutput.open(m_strOutput.c_str(), std::ios_base::trunc | std::ios_base::out);
    m_cOutput << "# clock\twalking\tresting\tcollected_food\tenergy" << std::endl;
-   /* Get energy gain per item collected */
+   // Get energy gain per item collected //
    GetNodeAttribute(tForaging, "energy_per_item", m_unEnergyPerFoodItem);
-   /* Get energy loss per walking robot */
+   // Get energy loss per walking robot //
    GetNodeAttribute(tForaging, "energy_per_walking_robot", m_unEnergyPerWalkingRobot);
 
    TConfigurationNode& tEnvironment = GetNode(t_node, "cells");
@@ -385,20 +385,6 @@ void CBlockchainVotingLoopFunctions::PreStep() {
 /****************************************/
 /****************************************/
 void CBlockchainVotingLoopFunctions::PostStep() {
-   // /* Get the map of all foot-bots from the space */
-   // CSpace::TMapPerType& tFBMap = GetSpace().GetEntitiesByType("foot-bot");
-   // /* Go through them */
-   // for(CSpace::TMapPerType::iterator it = tFBMap.begin();
-       // it != tFBMap.end();
-       // ++it) {
-      // /* Create a pointer to the current foot-bot */
-      // CFootBotEntity* pcFB = any_cast<CFootBotEntity*>(it->second);
-      // /* Add the current position of the foot-bot if it's sufficiently far from the last */
-      // if(SquareDistance(pcFB->GetEmbodiedEntity().GetOriginAnchor().Position,
-                        // m_tWaypoints[pcFB].back()) > MIN_DISTANCE_SQUARED) {
-         // m_tWaypoints[pcFB].push_back(pcFB->GetEmbodiedEntity().GetOriginAnchor().Position);
-      // }
-   // }
   /*CSpace::TMapPerType& m_cEpuck = GetSpace().GetEntitiesByType("epuck");
   for(CSpace::TMapPerType::iterator it = m_cEpuck.begin();it != m_cEpuck.end();++it){
     // Get handle to e-puck entity and controller
@@ -432,30 +418,31 @@ void CBlockchainVotingLoopFunctions::PostStep() {
 /****************************************/
 /* Implement random walk */
 /* void CBlockchainVotingLoopFunctions::RandomWalk(CBlockchainVotingController::Movement& movement) {
-  // walkTime represents the number of clock cycles (random number) of walk in a random direction
-  if ( movement.walkTime == 0 )                            // Is the walkTime in that direction finished? ->
-    { 				                                       // -> YES: change direction//
-      if ( movement.actualDirection == 0 )                 // If robot was going straight then turn standing in ->
-	// -> a position for an uniformly distribuited time //
-	{
-	  Real p = m_pcRNG->Uniform(zeroOne);
-	  p = p*turn - (turn/2);
-	  if ( p > 0 )
-	    movement.actualDirection = 1;
-	  else
-	    movement.actualDirection = 2;
-	  movement.walkTime = (UInt32) abs(p);
-	}
-      else 						// The robot was turning, time to go straight for ->
-	// -> an exponential period of time //
-	{
-	  movement.walkTime = (m_pcRNG->Exponential((Real)LAMDA))*4; // Exponential random generator. *50 is a scale factor for the time
-	  movement.actualDirection = 0;
-	}
-    }
-  else 							// NO: The period of time is not finished, decrement the ->
-    // -> walkTime and keep the direction //
-    movement.walkTime--;
+	// walkTime represents the number of clock cycles (random number) of walk in a random direction
+	if ( movement.walkTime == 0 ) {
+		// Is the walkTime in that direction finished? ->    
+		// -> YES: change direction//
+		if ( movement.actualDirection == 0 ) {
+			// If robot was going straight then turn standing in ->
+			// -> a position for an uniformly distribuited time
+			Real p = m_pcRNG->Uniform(zeroOne);
+			p = p*turn - (turn/2);
+			if ( p > 0 )
+				movement.actualDirection = 1;
+			else
+				movement.actualDirection = 2;
+			movement.walkTime = (UInt32) abs(p);
+		} else { 
+			// The robot was turning, time to go straight for ->
+			// -> an exponential period of time //	
+			movement.walkTime = (m_pcRNG->Exponential((Real)LAMDA))*4; 
+			// Exponential random generator. *50 is a scale factor for the time
+			movement.actualDirection = 0;
+		}
+    } else 							
+		// NO: The period of time is not finished, decrement the ->
+		// -> walkTime and keep the direction //
+		movement.walkTime--;
 } */
  
 /****************************************/
@@ -652,7 +639,7 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   minerAddress = Geth_Wrapper::getCoinbase(minerId, minerNode, basePort, blockchainPath);
   Geth_Wrapper::start_mining(minerId, 4, minerNode, blockchainPath);
 
-  interface = Geth_Wrapper::readAllFromFile(baseDirRaw + "/Voting.abi");
+  interface = Geth_Wrapper::readAllFromFile(baseDirRaw + "/bon4.abi");
 
   /* Deploy contract */
   cout << "[LoopFunctions::InitEthereum]deploy_contract" << endl;

@@ -200,32 +200,32 @@
 	<light id="light_10"
            position="1.8,-1.6,0.0"
            orientation="0,0,0"
-           color="yellow"
+           color="cyan"
            intensity="6.0"
            medium="leds" />
 	
 	<light id="light_11"
            position="-1.2,1.6,0.0"
            orientation="0,0,0"
-           color="blue"
+           color="yellow"
            intensity="3.0"
            medium="leds" />
 	<light id="light_12"
            position="-0.4,1.6,0.0"
            orientation="0,0,0"
-           color="blue"
+           color="yellow"
            intensity="3.0"
            medium="leds" />
     <light id="light_13"
            position="0.4,1.6,0.0"
            orientation="0,0,0"
-           color="blue"
+           color="yellow"
            intensity="3.0"
            medium="leds" />
 	<light id="light_14"
            position="1.2,1.6,0.0"
            orientation="0,0,0"
-           color="blue"
+           color="yellow"
            intensity="3.0"
            medium="leds" />
 	
