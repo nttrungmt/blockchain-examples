@@ -86,7 +86,7 @@
   <!--loop_functions library="build/loop_functions/foraging_loop_functions/libforaging_loop_functions"
                   label="foraging_loop_functions"-->
   <loop_functions library="build/loop_functions/libblockchain_voting_loop_functions"
-                  label="foraging_loop_functions">
+                  label="blockchain_voting_loop_functions">
 	<foraging items="15"
               radius="0.1"
               energy_per_item="1000"
