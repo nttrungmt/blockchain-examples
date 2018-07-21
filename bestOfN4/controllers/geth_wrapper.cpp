@@ -516,8 +516,7 @@ void Geth_Wrapper::smartContractInterfaceBg(int i, string interface, string cont
   string fullCommand = fullCommandStream.str();
 
   //cout << "REGISTRATION ROBOT" << endl;
-  //cout << fullCommand << endl;
-  
+  //cout << fullCommand << endl;  
   exec_geth_cmd_background(i, fullCommand, nodeInt, datadirBase);
   //cout << "Result received from SC is: " << res << endl;
 }
@@ -529,7 +528,8 @@ void Geth_Wrapper::smartContractInterfaceStringBg(int i, string interface, strin
   ostringstream fullCommandStream;
   fullCommandStream << "var cC = web3.eth.contract(" << interface << ");var c = cC.at(" << contractAddress << ");c." << func << "(";    
   for(int k = 0; k < argc; k++) {
-    fullCommandStream << "\"" << args[k] << "\",";  
+    //fullCommandStream << "\"" << args[k] << "\",";
+    fullCommandStream << args[k] << ",";  
   }
   fullCommandStream << "{";
   if(v > 0) {
@@ -538,7 +538,7 @@ void Geth_Wrapper::smartContractInterfaceStringBg(int i, string interface, strin
   fullCommandStream << " from: eth.coinbase, gas: 3000000});";
   
   string fullCommand = fullCommandStream.str();
-  //cout << "Executing full command: " << fullCommand << endl;
+  cout << "Executing full command: " << fullCommand << endl;
   exec_geth_cmd_background(i, fullCommand, nodeInt, datadirBase);
   //cout << "Result received from SC is: " << res << endl;
 }

@@ -642,7 +642,7 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   minerAddress = Geth_Wrapper::getCoinbase(minerId, minerNode, basePort, blockchainPath);
   Geth_Wrapper::start_mining(minerId, 4, minerNode, blockchainPath);
 
-  interface = Geth_Wrapper::readAllFromFile(baseDirRaw + "/bon4.abi");
+  interface = Geth_Wrapper::readAllFromFile(baseDirRaw + "/Voting.abi");
 
   /* Deploy contract */
   cout << "[LoopFunctions::InitEthereum]deploy_contract" << endl;

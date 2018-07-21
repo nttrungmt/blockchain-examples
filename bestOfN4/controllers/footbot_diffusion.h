@@ -430,7 +430,12 @@ private:
    /*
     * Executes the return to nest state.
     */
-   void ReturnToNest();   
+   void ReturnToNest();
+
+   /*
+    * Reach consensus => STOP.
+    */
+   void Finish();
    
    //void InitGeth(int robotId);
    //void readNodeMapping();

@@ -94,7 +94,7 @@
               output="foraging.txt" />
 	<cells  
 	  exit="true"	  
-	  number_of_robots="2"
+	  number_of_robots="4"
 	  number_of_runs="1"
 	  base_dir_loop="./controllers/"
 	  base_dir_raw="."
@@ -120,23 +120,23 @@
            source="loop_functions"
            pixels_per_meter="50" />
     <!-- Place four boxes in a rectangle to delimit the arena -->
-    <box id="wall_north" size="4,0.1,0.5" movable="false">
-      <body position="0,2,0" orientation="0,0,0" />
+    <box id="wall_north" size="5,0.1,0.5" movable="false">
+      <body position="0,2.5,0" orientation="0,0,0" />
     </box>
-    <box id="wall_south" size="4,0.1,0.5" movable="false">
-      <body position="0,-2,0" orientation="0,0,0" />
+    <box id="wall_south" size="5,0.1,0.5" movable="false">
+      <body position="0,-2.5,0" orientation="0,0,0" />
     </box>
-    <box id="wall_east" size="0.1,4,0.5" movable="false">
-      <body position="2,0,0" orientation="0,0,0" />
+    <box id="wall_east" size="0.1,5,0.5" movable="false">
+      <body position="2.5,0,0" orientation="0,0,0" />
     </box>
-    <box id="wall_west" size="0.1,4,0.5" movable="false">
-      <body position="-2,0,0" orientation="0,0,0" />
+    <box id="wall_west" size="0.1,5,0.5" movable="false">
+      <body position="-2.5,0,0" orientation="0,0,0" />
     </box>
 
     <distribute>
-      <position method="uniform" min="-2,-1.2,0" max="2,-0.2,0" />
+      <position method="uniform" min="-2.5,-1.2,0" max="2.5,-0.2,0" />
       <orientation method="gaussian" mean="0,0,0" std_dev="360,0,0" />
-      <entity quantity="2" max_trials="20">
+      <entity quantity="4" max_trials="20">
         <foot-bot id="fb">
           <controller config="ffc" />
         </foot-bot>
@@ -144,86 +144,86 @@
     </distribute>
     
 	<light id="light_1"
-           position="-1.8,-1.6,0.0"
+           position="-1.8,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
 	<light id="light_2"
-           position="-1.4,-1.6,0.0"
+           position="-1.4,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
     <light id="light_3"
-           position="-1.0,-1.6,0.0"
+           position="-1.0,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
 	<light id="light_4"
-           position="-0.6,-1.6,0.0"
+           position="-0.6,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
     <light id="light_5"
-           position="-0.2,-1.6,0.0"
+           position="-0.2,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
 	<light id="light_6"
-           position="0.2,-1.6,0.0"
+           position="0.2,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
     <light id="light_7"
-           position="0.6,-1.6,0.0"
+           position="0.6,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
 	<light id="light_8"
-           position="1.0,-1.6,0.0"
+           position="1.0,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
 	<light id="light_9"
-           position="1.4,-1.6,0.0"
+           position="1.4,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
 	<light id="light_10"
-           position="1.8,-1.6,0.0"
+           position="1.8,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
 	
 	<light id="light_11"
-           position="-1.2,1.6,0.0"
+           position="-1.2,2.25,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="3.0"
            medium="leds" />
 	<light id="light_12"
-           position="-0.4,1.6,0.0"
+           position="-0.4,2.25,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="3.0"
            medium="leds" />
     <light id="light_13"
-           position="0.4,1.6,0.0"
+           position="0.4,2.25,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="3.0"
            medium="leds" />
 	<light id="light_14"
-           position="1.2,1.6,0.0"
+           position="1.2,2.25,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="3.0"
