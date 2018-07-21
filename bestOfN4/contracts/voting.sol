@@ -20,7 +20,8 @@ contract Voting {
   uint   public maxVoters;
 
   mapping (uint => uint) public votesReceived;
-  mapping (uint => Voter) public voters;
+  //mapping (uint => Voter) public voters;
+  uint[] voters;
 
   /* This is the constructor which will be called once when you
   deploy the contract to the blockchain. When we deploy the contract,
@@ -29,6 +30,7 @@ contract Voting {
   constructor(uint[] candidateNames, uint maxNumVoters) public {
     candidateList = candidateNames;
     maxVoters = maxNumVoters;
+	voters = new uint[](maxVoters);
   }
 
   // This function increments the vote count for the specified candidate. This
@@ -37,7 +39,8 @@ contract Voting {
     require(validCandidate(candidate));
     votesReceived[candidate] += 1;
     //uint voterID = numVoters++; //voterID is the return variable
-    voters[uid] = Voter(uid,candidate);
+	numVoters++;
+    voters[uid] = candidate;
   }
 
   // This function returns the total votes a candidate has received so far
@@ -47,7 +50,7 @@ contract Voting {
     uint numOfVotes = 0; // we will return this
     for (uint i = 0; i < numVoters; i++) {
       // if the voter votes for this specific candidate, we increment the number
-      if (voters[i].candidateVote == candidate) {
+      if (voters[i] == candidate) {
         numOfVotes++;
       }
     }
@@ -57,7 +60,7 @@ contract Voting {
   function consensus() view public returns (bool) {
     for(uint i = 0; i < candidateList.length; i++) {
       uint numOfVotes = totalVotesFor(candidateList[i]);
-      if (numOfVotes == maxVoters) {
+      if (numOfVotes >= maxVoters) {
         return true;
       }
     }
