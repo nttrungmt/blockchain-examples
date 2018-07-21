@@ -30,7 +30,7 @@ contract Voting {
   constructor(uint[] candidateNames, uint maxNumVoters) public {
     candidateList = candidateNames;
     maxVoters = maxNumVoters;
-	voters = new uint[](maxVoters);
+    voters = new uint[](maxVoters);
   }
 
   // This function increments the vote count for the specified candidate. This
@@ -39,7 +39,7 @@ contract Voting {
     require(validCandidate(candidate));
     votesReceived[candidate] += 1;
     //uint voterID = numVoters++; //voterID is the return variable
-	numVoters++;
+    numVoters++;
     voters[uid] = candidate;
   }
 

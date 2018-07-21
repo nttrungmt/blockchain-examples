@@ -268,7 +268,7 @@ void CBlockchainVotingController::ControlStep() {
 		break;
 	}	
 	case SStateData::STATE_FINISH: {
-		ReturnToNest();
+		Finish();
 		break;
 	}
 	default: {
