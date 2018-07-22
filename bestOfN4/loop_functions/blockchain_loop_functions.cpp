@@ -202,10 +202,10 @@ void CBlockchainVotingLoopFunctions::Reset() {
 /****************************************/
 /****************************************/
 void CBlockchainVotingLoopFunctions::Destroy(){
-	/* Close the file */
+    /* Close the file */
     m_cOutput.close();
-	//Clean up Ethereum stuff
-	//if (!useClassicalApproach) {
+    //Clean up Ethereum stuff
+    //if (!useClassicalApproach) {
 	  // Kill all geth processes
 	  //Geth_Wrapper::kill_geth_thread(minerId, minerNode, basePort, blockchainPath);
 	  Geth_Wrapper::kill_geth_thread(minerId, basePort, minerNode, blockchainPath);
@@ -214,7 +214,7 @@ void CBlockchainVotingLoopFunctions::Destroy(){
 	  // Remove blockchain folders
 	  string rmBlockchainData = "rm -rf " + blockchainPath + "*";
 	  Geth_Wrapper::exec(rmBlockchainData.c_str());
-	//}
+    //}
 }
 
 /****************************************/
@@ -247,6 +247,43 @@ bool CBlockchainVotingLoopFunctions::IsExperimentFinished() {
 		Reset();
 		return true;
 	}
+
+	/*string testConsensus ;
+	string blueCount;
+	string greenCount;
+	string args1[] = {};
+	string args2[] = {"2"};
+	string args3[] = {"1"};
+
+	testConsensus = Geth_Wrapper::smartContractInterfaceStringCall(minerId, interface, contractAddress, "consensus", args1, 0, -1, minerNode, blockchainPath);
+	blueCount = Geth_Wrapper::smartContractInterfaceStringCall(minerId, interface, contractAddress, "totalVotesFor", args2, 1, -1, minerNode, blockchainPath);
+	greenCount = Geth_Wrapper::smartContractInterfaceStringCall(minerId, interface, contractAddress, "totalVotesFor", args3, 1, -1, minerNode, blockchainPath);
+
+	std::string trueFinish ("true");    
+	if(testConsensus.find(trueFinish) != string::npos){
+		std::cout << "++++++++ Stop:+++++++: " << testConsensus << std::endl;		
+		std::cout << "Vote for blue" << blueCount << std::endl;
+		std::cout << "Vote for green" << greenCount << std::endl;
+		return true;
+	} else {
+		std::cout << "++++++++ Not Stop:+++++++: " << testConsensus << std::endl;
+		std::cout << "Vote for blue: " << blueCount << std::endl;
+		std::cout << "Vote for green: " << greenCount << std::endl;
+	}*/
+  bool bAllFinished = true;
+  CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
+  for(CSpace::TMapPerType::iterator it = m_cFootbots.begin();it != m_cFootbots.end();++it){
+    /* Get handle to foot-bot entity and controller */
+    CFootBotEntity& cFootBot = *any_cast<CFootBotEntity*>(it->second);
+    CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cFootBot.GetControllableEntity().GetController());    
+    /* Count how many foot-bots are in which state */
+    if(!cController.IsFinished()) { 
+      bAllFinished = false;
+      break;
+    }
+  }
+  
+  return bAllFinished;
 }
 
 /****************************************/

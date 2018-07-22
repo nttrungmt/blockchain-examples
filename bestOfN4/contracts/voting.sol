@@ -48,7 +48,7 @@ contract Voting {
     require(validCandidate(candidate));
     //return votesReceived[candidate];
     uint numOfVotes = 0; // we will return this
-    for (uint i = 0; i < numVoters; i++) {
+    for (uint i = 0; i < maxVoters; i++) {
       // if the voter votes for this specific candidate, we increment the number
       if (voters[i] == candidate) {
         numOfVotes++;

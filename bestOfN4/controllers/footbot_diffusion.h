@@ -315,6 +315,13 @@ public:
    inline bool IsReturningToNest() const {
       return m_sStateData.State == SStateData::STATE_RETURN_TO_NEST;
    }
+
+   /*
+    * Returns true if the robot is in FINISH state
+    */
+   inline bool IsFinished() const {
+      return m_sStateData.State == SStateData::STATE_FINISH;
+   }
  
    /*
     * Returns the food data
