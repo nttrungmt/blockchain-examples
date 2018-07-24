@@ -44,65 +44,65 @@ public:
     virtual bool IsExperimentFinished();
 
 private:
-	void fillSettings(TConfigurationNode& tEnvironment);
-	void PreinitMiner();
-	void PreallocateEther();
-	void RestartGeths();
-	void AssignNewStateAndPosition();
-	void InitEthereum();
-	//void RandomWalk(CBlockchainVotingController::Movement& movement);
-	
-	void setContractAddressAndDistributeEther(string contractAddress, string minerAddress);
-	bool allSameBCHeight();
-	bool CheckEtherReceived();
-	//void registerAllRobots();
-	//void UpdateRegistrationAllRobots();
-	//void connectMinerToEveryone();
-	
-	CRange<Real> m_cForagingArenaSideX, m_cForagingArenaSideY;
-	//Real m_fFoodSquareRadius;
-	//std::vector<CVector2> m_cFoodPos;
-	CFloorEntity* m_pcFloor;
-	CRandom::CRNG* m_pcRNG;
-	
-	std::string m_strOutput;
+    void fillSettings(TConfigurationNode& tEnvironment);
+    void PreinitMiner();
+    void PreallocateEther();
+    void RestartGeths();
+    void AssignNewStateAndPosition();
+    void InitEthereum();
+    //void RandomWalk(CBlockchainVotingController::Movement& movement);
+    
+    void setContractAddressAndDistributeEther(string contractAddress, string minerAddress);
+    bool allSameBCHeight();
+    bool CheckEtherReceived();
+    //void registerAllRobots();
+    //void UpdateRegistrationAllRobots();
+    //void connectMinerToEveryone();
+    
+    CRange<Real> m_cForagingArenaSideX, m_cForagingArenaSideY;
+    //Real m_fFoodSquareRadius;
+    //std::vector<CVector2> m_cFoodPos;
+    CFloorEntity* m_pcFloor;
+    CRandom::CRNG* m_pcRNG;
+    
+    std::string m_strOutput;
     std::ofstream m_cOutput;
  
     UInt32 m_unCollectedFood;
     SInt64 m_nEnergy;
     UInt32 m_unEnergyPerFoodItem;
     UInt32 m_unEnergyPerWalkingRobot;
-	
-	CRange<Real> zeroOne;
-	bool errorOccurred;
-	bool miningNotWorkingAnymore;
-	bool gethStaticErrorOccurred;
-	bool incorrectParameters;
-	bool m_bExperimentFinished;
+    
+    CRange<Real> zeroOne;
+    bool errorOccurred;
+    bool miningNotWorkingAnymore;
+    bool gethStaticErrorOccurred;
+    bool incorrectParameters;
+    bool m_bExperimentFinished;
 
     std::string interface;
-	
-	UInt32 LAMDA,turn; // Parameters for the randomWalk: Lamda is the exponential mean and turn is the uniform parameter
-	
-	UInt32 n_robots;  /* Swarm Size */
-	//UInt32 g;
-	//UInt32 sigma;
-	//UInt32 decisionRule;
-	UInt32 miningDiff;
-	int minerId;
-	int minerNode;
-	std::string blockchainPath;
-	std::string regenerateFile;
-	std::string baseDirLoop;
-	std::string baseDirRaw;
-	std::string dataDir;
-	std::string datadirBase;
-	bool useMultipleNodes;
-	int basePort;
-	//int numByzantine;
-	//int byzantineSwarmStyle;
-	//bool useClassicalApproach;
-	//bool subswarmConsensus;
+    
+    UInt32 LAMDA,turn; // Parameters for the randomWalk: Lamda is the exponential mean and turn is the uniform parameter
+    
+    UInt32 n_robots;  /* Swarm Size */
+    //UInt32 g;
+    //UInt32 sigma;
+    //UInt32 decisionRule;
+    UInt32 miningDiff;
+    int minerId;
+    int minerNode;
+    std::string blockchainPath;
+    std::string regenerateFile;
+    std::string baseDirLoop;
+    std::string baseDirRaw;
+    std::string dataDir;
+    std::string datadirBase;
+    bool useMultipleNodes;
+    int basePort;
+    //int numByzantine;
+    //int byzantineSwarmStyle;
+    bool useClassicalApproach;
+    //bool subswarmConsensus;
 };
 
 #endif

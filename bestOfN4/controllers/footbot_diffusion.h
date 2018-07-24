@@ -73,7 +73,7 @@ using namespace std;
  */
 class CBlockchainVotingController : public CCI_Controller {
 public:
-	/*
+    /*
     * This structure holds data about food collecting by the robots
     */
     struct SFoodData {
@@ -85,7 +85,7 @@ public:
       void Reset();
     };
     
-	/*
+    /*
     * The following variables are used as parameters for the
     * diffusion algorithm. You can set their value in the <parameters>
     * section of the XML configuration file, under the
@@ -151,7 +151,7 @@ public:
          STATE_RESTING = 0,
          STATE_EXPLORING,
          STATE_RETURN_TO_NEST,
-		 STATE_FINISH
+         STATE_FINISH
       } State;
  
       /* True when the robot is in the nest */
@@ -216,47 +216,47 @@ public:
       int finishFlag;
       double duration;
       double start;
-	  
+      
       SStateData();
       void Init(TConfigurationNode& t_node);
       void Reset();
     };
    
-	// Random walk
-	struct Movement {
-	  SInt32 walkTime;         // Movement time counter;
-	  UInt32 actualDirection;  // 0, straight; 1, turn CW; 2, turn CCW (TOCHECK: if 1 is counterclockwise or vice versa; fix comment)
-	  Movement();
-	};
+    // Random walk
+    struct Movement {
+      SInt32 walkTime;         // Movement time counter;
+      UInt32 actualDirection;  // 0, straight; 1, turn CW; 2, turn CCW (TOCHECK: if 1 is counterclockwise or vice versa; fix comment)
+      Movement();
+    };
 
-	struct SimulationState {
-	  //UInt32 decision_rule;
-	  //Real percentRed, percentBlue;
-	  //Real g;
-	  //Real sigma;
-	  bool exitFlag;
-	  bool profiling;
-	  bool useMultipleNodes;
-	  bool useBackgroundGethCalls;
-	  //std::string radix;
-	  std::string baseDir; /* Basedir of the controller folder */
-	  std::string baseDirRaw; /* Basedir of the controller folder */
-	  std::string interfacePath;
-	  std::string mappingPath;
-	  std::string regenerateFile;
-	  //	    std::string mappingByzantinePath;
-	  std::string blockchainPath;
-	  std::string datadirBase;
-	  int basePort;
-	  //	    int numByzantine;
-	  //UInt32 numPackSaved;
-	  UInt32 status;
-	  UInt32 LAMDA, turn;
-	  //bool useClassicalApproach;
-	  UInt32 numRobots; /* total amount of robots in the experiment */
-	  void Init(TConfigurationNode& t_node);
-	};
-	  
+    struct SimulationState {
+      //UInt32 decision_rule;
+      //Real percentRed, percentBlue;
+      //Real g;
+      //Real sigma;
+      bool exitFlag;
+      bool profiling;
+      bool useMultipleNodes;
+      bool useBackgroundGethCalls;
+      //std::string radix;
+      std::string baseDir; /* Basedir of the controller folder */
+      std::string baseDirRaw; /* Basedir of the controller folder */
+      std::string interfacePath;
+      std::string mappingPath;
+      std::string regenerateFile;
+      //std::string mappingByzantinePath;
+      std::string blockchainPath;
+      std::string datadirBase;
+      int basePort;
+      //int numByzantine;
+      //UInt32 numPackSaved;
+      UInt32 status;
+      UInt32 LAMDA, turn;
+      //bool useClassicalApproach;
+      UInt32 numRobots; /* total amount of robots in the experiment */
+      void Init(TConfigurationNode& t_node);
+    };
+      
 public:
     /* Class constructor. */
     CBlockchainVotingController();
@@ -276,7 +276,7 @@ public:
     * The length of the time step is set in the XML file.
     */
     virtual void ControlStep();
-	
+    
     /*
     * This function resets the controller to its state right after the
     * Init().
@@ -357,6 +357,10 @@ public:
 
    inline int getNodeInt() {
      return nodeInt;
+   }
+   
+   inline void setUseClassicalApproach(book bUseClassicalApproach) {
+      useClassicalApproach = bUseClassicalApproach;
    }
 
    inline void setContractAddress(std::string contractAddr) {
@@ -492,6 +496,7 @@ private:
    SFoodData m_sFoodData;
 
    /* All others used variables */
+   bool useClassicalApproach;
    SimulationState simulationParams;
    
    Real m_fFoodSquareRadius;
