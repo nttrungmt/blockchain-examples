@@ -359,7 +359,7 @@ public:
      return nodeInt;
    }
    
-   inline void setUseClassicalApproach(book bUseClassicalApproach) {
+   inline void setUseClassicalApproach(bool bUseClassicalApproach) {
       useClassicalApproach = bUseClassicalApproach;
    }
 
