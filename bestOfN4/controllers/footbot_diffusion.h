@@ -254,6 +254,8 @@ public:
       UInt32 LAMDA, turn;
       //bool useClassicalApproach;
       UInt32 numRobots; /* total amount of robots in the experiment */
+      UInt32 max_unchanged_times;
+      UInt32 max_running_steps;
       void Init(TConfigurationNode& t_node);
     };
       
@@ -503,6 +505,10 @@ private:
    std::vector<CVector2> m_cFoodPos;
    CVector2 m_cPos;
    CColor m_cColor;
+   CColor m_cPrevColor;
+   int nUnchagedTimes;
+   clock_t start, end;
+   bool bFinishedOutput;
    
    Movement movement;
    std::string address;

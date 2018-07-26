@@ -21,10 +21,10 @@
   <!-- * Controllers * -->
   <!-- *************** -->
   <controllers>
-	<!--<footbot_foraging_controller id="ffc"                                  
-			library="build/controllers/footbot_foraging/libfootbot_foraging"-->
+  <!--<footbot_foraging_controller id="ffc"                                  
+      library="build/controllers/footbot_foraging/libfootbot_foraging"-->
     <blockchain_voting_controller id="ffc"                                  
-			library="build/controllers/libfootbot_diffusion">
+      library="build/controllers/libfootbot_diffusion">
       <actuators>
         <differential_steering implementation="default" />
         <leds implementation="default" medium="leds" />
@@ -49,33 +49,35 @@
                        no_turn_angle_threshold="10"
                        max_speed="10" />
         <state initial_rest_to_explore_prob="0.1"
-               initial_explore_to_rest_prob="0.1"
+               initial_explore_to_rest_prob="0.5"
                food_rule_explore_to_rest_delta_prob="0.01"
                food_rule_rest_to_explore_delta_prob="0.01"
                collision_rule_explore_to_rest_delta_prob="0.01"
                social_rule_explore_to_rest_delta_prob="0.01"
                social_rule_rest_to_explore_delta_prob="0.01"
                minimum_resting_time="50"
-               minimum_unsuccessful_explore_time="600"
+               minimum_unsuccessful_explore_time="1000"
                minimum_search_for_place_in_nest_time="50">
           <food_rule active="true" food_rule_explore_to_rest_delta_prob="0.01" />
         </state>
-     	<simulation_parameters
-		   lamda="100"
-		   turn="45"
-		   exitFlag="true"
-		   base_dir="./controllers/"
-		   use_multiple_nodes="true"
-		   use_background_geth_calls="true"
-		   interface_path="interface.txt"
-		   mapping_path="./config0.txt"
-		   base_dir_raw="."
-		   base_port="33000"
-		   blockchain_path="./eth_data/data"
-		   use_classical_approach="false"
-		   regenerate_file="./regenerate0.sh"/> 
-		   <!-- Sigma and G must be inserted in seconds, not in ticks; 
-			  1 = Voter model; 2 = Direct comparison; 3 = Majority Rule--> 
+       <simulation_parameters
+       lamda="100"
+       turn="45"
+       exitFlag="true"
+       base_dir="./controllers/"
+       use_multiple_nodes="true"
+       use_background_geth_calls="true"
+       interface_path="interface.txt"
+       mapping_path="./config0.txt"
+       base_dir_raw="."
+       base_port="33000"
+       blockchain_path="./eth_data/data"
+       use_classical_approach="false"
+       max_unchanged_times="3"
+       max_running_steps="10000"
+       regenerate_file="./regenerate0.sh"/> 
+       <!-- Sigma and G must be inserted in seconds, not in ticks; 
+        1 = Voter model; 2 = Direct comparison; 3 = Majority Rule--> 
       </params>
     </blockchain_voting_controller>
   </controllers>
@@ -87,29 +89,29 @@
                   label="foraging_loop_functions"-->
   <loop_functions library="build/loop_functions/libblockchain_voting_loop_functions"
                   label="blockchain_voting_loop_functions">
-	<foraging items="15"
+  <foraging items="15"
               radius="0.1"
               energy_per_item="1000"
               energy_per_walking_robot="1"
               output="foraging.txt" />
-	<cells  
-	  exit="true"	  
-	  number_of_robots="4"
-	  number_of_runs="1"
-	  base_dir_loop="./controllers/"
-	  base_dir_raw="."
-	  data_dir="data/experiment1_decision1-node0-20-06-2018/"
+  <cells  
+    exit="true"    
+    number_of_robots="2"
+    number_of_runs="1"
+    base_dir_loop="./controllers/"
+    base_dir_raw="."
+    data_dir="data/experiment1_decision1-node0-20-06-2018/"
       lamda="100"
-	  turn="45"
-	  miningdiff="1000000"
-	  use_multiple_nodes="true"
-	  miner_id="120"
-	  miner_node="0"
-	  base_port="33000"
-	  use_classical_approach="false"
-	  subswarm_consensus="false"
-	  regenerate_file="./regenerate0.sh"
-	  blockchain_path="./eth_data/data"/>
+    turn="45"
+    miningdiff="1000000"
+    use_multiple_nodes="true"
+    miner_id="120"
+    miner_node="0"
+    base_port="33000"
+    use_classical_approach="true"
+    subswarm_consensus="false"
+    regenerate_file="./regenerate0.sh"
+    blockchain_path="./eth_data/data"/>
   </loop_functions>
 
   <!-- *********************** -->
@@ -136,20 +138,20 @@
     <distribute>
       <position method="uniform" min="-2.5,-1.2,0" max="2.5,-0.2,0" />
       <orientation method="gaussian" mean="0,0,0" std_dev="360,0,0" />
-      <entity quantity="4" max_trials="20">
+      <entity quantity="2" max_trials="20">
         <foot-bot id="fb">
           <controller config="ffc" />
         </foot-bot>
       </entity>
     </distribute>
     
-	<light id="light_1"
+  <light id="light_1"
            position="-1.8,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
-	<light id="light_2"
+  <light id="light_2"
            position="-1.4,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
@@ -161,7 +163,7 @@
            color="cyan"
            intensity="6.0"
            medium="leds" />
-	<light id="light_4"
+  <light id="light_4"
            position="-0.6,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
@@ -173,7 +175,7 @@
            color="cyan"
            intensity="6.0"
            medium="leds" />
-	<light id="light_6"
+  <light id="light_6"
            position="0.2,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
@@ -185,32 +187,32 @@
            color="cyan"
            intensity="6.0"
            medium="leds" />
-	<light id="light_8"
+  <light id="light_8"
            position="1.0,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
-	<light id="light_9"
+  <light id="light_9"
            position="1.4,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
-	<light id="light_10"
+  <light id="light_10"
            position="1.8,-2.3,0.0"
            orientation="0,0,0"
            color="cyan"
            intensity="6.0"
            medium="leds" />
-	
-	<light id="light_11"
+  
+  <light id="light_11"
            position="-1.2,2.25,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="3.0"
            medium="leds" />
-	<light id="light_12"
+  <light id="light_12"
            position="-0.4,2.25,0.0"
            orientation="0,0,0"
            color="yellow"
@@ -222,13 +224,13 @@
            color="yellow"
            intensity="3.0"
            medium="leds" />
-	<light id="light_14"
+  <light id="light_14"
            position="1.2,2.25,0.0"
            orientation="0,0,0"
            color="yellow"
            intensity="3.0"
            medium="leds" />
-	
+  
     <!--<distribute>
       <position method="uniform" min="-2,-2,0" max="2,2,0" />
       <orientation method="uniform" min="0,0,0" max="360,0,0" />
@@ -273,7 +275,7 @@
     <qt-opengl>
       <!--<user_functions library="build/loop_functions/libtrajectory_loop_functions"
                       label="trajectory_qtuser_functions" /> -->
-		<camera>
+    <camera>
           <placement idx="0"
                    position="0,0,4.34"
                    look_at="0,0,0"

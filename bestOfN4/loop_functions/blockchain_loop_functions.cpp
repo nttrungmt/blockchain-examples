@@ -241,6 +241,8 @@ bool CBlockchainVotingLoopFunctions::IsExperimentFinished() {
       }
     }
     
+    if(bAllFinished)
+      std::cout << "====== All robots - Finish experiment ======" << endl;
     return bAllFinished;
 }
 
