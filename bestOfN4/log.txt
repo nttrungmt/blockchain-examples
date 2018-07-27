@@ -11,4 +11,15 @@
 [t=6781] ======Robot: fb3 Finish experiment in 367.562seconds ======
 [t=6781] ====== All robots - Finish experiment ======
 
-================================================================================================
+[t=5970] ======Robot: fb1 Finish experiment in 314.75seconds ======
+[t=5971] ======Robot: fb1 - Finish experiment======
+[t=6020] ======Robot: fb2 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6020] ======Robot: fb2 Finish experiment in 317.578seconds ======
+[t=6021] ======Robot: fb2 - Finish experiment======
+[t=6193] ======Robot: fb0 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6193] ======Robot: fb0 Finish experiment in 327.953seconds ======
+[t=6194] ======Robot: fb0 - Finish experiment======
+[t=6781] ======Robot: fb3 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6781] ======Robot: fb3 Finish experiment in 359.922seconds ======
+[t=6781] ====== All robots - Finish experiment ======
+
