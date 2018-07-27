@@ -249,15 +249,18 @@ bool CBlockchainVotingLoopFunctions::IsExperimentFinished() {
 /****************************************/
 /****************************************/ 
 CColor CBlockchainVotingLoopFunctions::GetFloorColor(const CVector2& c_position_on_plane) {
-    if((c_position_on_plane.GetY() > -1.20f) && (c_position_on_plane.GetY() < -0.20f)) {
+    if( /*(c_position_on_plane.GetX() > -1.250f) && (c_position_on_plane.GetX() < 1.250f) &&*/
+        (c_position_on_plane.GetY() > -1.20f) && (c_position_on_plane.GetY() < -0.20f)) {
       return CColor::BLACK;
     }
     
-    else if((c_position_on_plane.GetY() < -0.10f) && (c_position_on_plane.GetY() > -0.20f)){
+    else if(/*(c_position_on_plane.GetX() > -1.250f) && (c_position_on_plane.GetX() < 1.250f) &&*/
+            (c_position_on_plane.GetY() < -0.10f) && (c_position_on_plane.GetY() > -0.20f)){
       return CColor::GREEN;
     }
     
-    else if((c_position_on_plane.GetY() < -1.20f) && (c_position_on_plane.GetY() > -1.30f)){
+    else if( /*(c_position_on_plane.GetX() > -1.250f) && (c_position_on_plane.GetX() < 1.250f) &&*/
+             (c_position_on_plane.GetY() < -1.20f) && (c_position_on_plane.GetY() > -1.30f)){
       return CColor::BLUE;
     }
     
@@ -393,6 +396,9 @@ bool CBlockchainVotingLoopFunctions::InitRobots() {
     CBlockchainVotingController& cController =  dynamic_cast<CBlockchainVotingController&>(cFootBot.GetControllableEntity().GetController());
     
     cController.setUseClassicalApproach(useClassicalApproach);
+    int nPos = std::ceil((n_robots+1)/2) - 1;
+    cController.setHalfPos(nPos);
+    cout << "Set HalfPos=" << nPos << endl;
     
     if (!useClassicalApproach) {
       cController.fromLoopFunctionResPrepare();

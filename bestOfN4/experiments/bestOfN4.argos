@@ -96,7 +96,7 @@
               output="foraging.txt" />
   <cells  
     exit="true"    
-    number_of_robots="2"
+    number_of_robots="4"
     number_of_runs="1"
     base_dir_loop="./controllers/"
     base_dir_raw="."
@@ -136,9 +136,9 @@
     </box>
 
     <distribute>
-      <position method="uniform" min="-2.5,-1.2,0" max="2.5,-0.2,0" />
+      <position method="uniform" min="-2.25,-1.1,0" max="2.25,-0.3,0" />
       <orientation method="gaussian" mean="0,0,0" std_dev="360,0,0" />
-      <entity quantity="2" max_trials="20">
+      <entity quantity="4" max_trials="20">
         <foot-bot id="fb">
           <controller config="ffc" />
         </foot-bot>

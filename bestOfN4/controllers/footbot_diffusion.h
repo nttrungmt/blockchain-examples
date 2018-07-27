@@ -393,6 +393,10 @@ public:
    inline void setCurrentPos(CVector2 cPos) {
      m_cPos = cPos;
    }
+    
+   inline void setHalfPos(int nPos) {
+     m_sStateData.half = nPos;
+   }
    
    //void UpdateNeighbors(std::set<int> newNeighbors);
    //void registerRobot(); // Tell the smart contract the robot's public key
@@ -506,6 +510,7 @@ private:
    CVector2 m_cPos;
    CColor m_cColor;
    CColor m_cPrevColor;
+   bool bHasOpinion;
    int nUnchagedTimes;
    clock_t start, end;
    bool bFinishedOutput;
