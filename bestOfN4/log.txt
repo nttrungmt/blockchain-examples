@@ -23,3 +23,98 @@
 [t=6781] ======Robot: fb3 Finish experiment in 359.922seconds ======
 [t=6781] ====== All robots - Finish experiment ======
 
+[t=5970] ======Robot: fb1 Finish experiment in 653seconds ======
+[t=5971] ======Robot: fb1 - Finish experiment======
+[t=6020] ======Robot: fb2 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6020] ======Robot: fb2 Finish experiment in 658.844seconds ======
+[t=6021] ======Robot: fb2 - Finish experiment======
+[t=6193] ======Robot: fb0 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6193] ======Robot: fb0 Finish experiment in 677.719seconds ======
+[t=6194] ======Robot: fb0 - Finish experiment======
+[t=6781] ======Robot: fb3 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6781] ======Robot: fb3 Finish experiment in 744.359seconds ======
+[t=6781] ====== All robots - Finish experiment ======
+
+[t=5970] ======Robot: fb1 Finish experiment in 674.016seconds ======
+[t=5971] ======Robot: fb1 - Finish experiment======
+[t=6020] ======Robot: fb2 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6020] ======Robot: fb2 Finish experiment in 680.188seconds ======
+[t=6021] ======Robot: fb2 - Finish experiment======
+[t=6193] ======Robot: fb0 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6193] ======Robot: fb0 Finish experiment in 701.703seconds ======
+[t=6194] ======Robot: fb0 - Finish experiment======
+[t=6781] ======Robot: fb3 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6781] ======Robot: fb3 Finish experiment in 768.844seconds ======
+[t=6781] ====== All robots - Finish experiment ======
+
+[t=5970] ======Robot: fb1 Finish experiment in 641.797seconds ======
+[t=5971] ======Robot: fb1 - Finish experiment======
+[t=6020] ======Robot: fb2 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6020] ======Robot: fb2 Finish experiment in 647.656seconds ======
+[t=6021] ======Robot: fb2 - Finish experiment======
+[t=6193] ======Robot: fb0 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6193] ======Robot: fb0 Finish experiment in 666.016seconds ======
+[t=6194] ======Robot: fb0 - Finish experiment======
+[t=6781] ======Robot: fb3 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6781] ======Robot: fb3 Finish experiment in 735.094seconds ======
+[t=6781] ====== All robots - Finish experiment ======
+
+[t=5970] ======Robot: fb1 Finish experiment in 650.656seconds ======
+[t=5971] ======Robot: fb1 - Finish experiment======
+[t=6020] ======Robot: fb2 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6020] ======Robot: fb2 Finish experiment in 656.109seconds ======
+[t=6021] ======Robot: fb2 - Finish experiment======
+[t=6193] ======Robot: fb0 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6193] ======Robot: fb0 Finish experiment in 676.125seconds ======
+[t=6194] ======Robot: fb0 - Finish experiment======
+[t=6781] ======Robot: fb3 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6781] ======Robot: fb3 Finish experiment in 742.703seconds ======
+[t=6781] ====== All robots - Finish experiment ======
+
+[t=5970] ======Robot: fb1 Finish experiment in 666.688seconds ======
+[t=5971] ======Robot: fb1 - Finish experiment======
+[t=6020] ======Robot: fb2 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6020] ======Robot: fb2 Finish experiment in 672.266seconds ======
+[t=6021] ======Robot: fb2 - Finish experiment======
+[t=6193] ======Robot: fb0 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6193] ======Robot: fb0 Finish experiment in 691.266seconds ======
+[t=6194] ======Robot: fb0 - Finish experiment======
+[t=6781] ======Robot: fb3 REST 3a => EXPLORE and BLUE (decision>0)
+[t=6781] ======Robot: fb3 Finish experiment in 752.969seconds ======
+[t=6781] ====== All robots - Finish experiment ======
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
