@@ -508,7 +508,7 @@ void CBlockchainVotingController::Rest() {
   /* If we have stayed here enough, probabilistically switch to
    * 'exploring' */
   int id = Geth_Wrapper::Id2Int(GetId());
-  if( m_sStateData.TimeRested > m_sStateData.MinimumRestingTime &&
+  /*if( m_sStateData.TimeRested > m_sStateData.MinimumRestingTime &&
       m_pcRNG->Uniform(m_sStateData.ProbRange) < m_sStateData.RestToExploreProb) {
     if(!bHasOpinion) {
       if(id > m_sStateData.half){
@@ -531,9 +531,10 @@ void CBlockchainVotingController::Rest() {
     m_sStateData.State = SStateData::STATE_EXPLORING;
     m_sStateData.TimeRested = 0;
     //std::cout << "======Robot: " << GetId() << " REST 1 => change to EXPLORE" << endl;
-  } else if(m_sStateData.TimeRested <= m_sStateData.maxTimeRest){
+  } else*/ 
+  if(m_sStateData.TimeRested <= m_sStateData.maxTimeRest){
     ++m_sStateData.TimeRested;
-    const CCI_ColoredBlobOmnidirectionalCameraSensor::SReadings& sReadings = m_pcCamera->GetReadings();
+    /*const CCI_ColoredBlobOmnidirectionalCameraSensor::SReadings& sReadings = m_pcCamera->GetReadings();
     for(size_t i = 0; i < sReadings.BlobList.size(); ++i) {
       if(m_sStateData.TimeRested % 10 == 0){
         std::string blue ("4294901760");
@@ -541,17 +542,19 @@ void CBlockchainVotingController::Rest() {
         std::string tempColor = std::to_string(sReadings.BlobList[i]->Color);
         if(blue.compare(tempColor) == 0)
           m_sStateData.DecisionAtNest = m_sStateData.DecisionAtNest + 1;
+          //m_sStateData.DecisionAtNest = 1;
         if(green.compare(tempColor) == 0)
           m_sStateData.DecisionAtNest = m_sStateData.DecisionAtNest - 1;
+          //m_sStateData.DecisionAtNest = -1;
       }
-    }
+    }*/
 
     /* Be sure not to send the last exploration result multiple times */
     //if(m_sStateData.TimeRested == 1) {
     //  m_pcRABA->SetData(0, LAST_EXPLORATION_NONE);
     //}
     if(m_sStateData.TimeRested <= m_sStateData.maxTimeRest){
-      if(m_sStateData.DecisionAtNest < 0){
+      if((m_sStateData.DecisionAtExplore + m_sStateData.DecisionAtNest) < 0){
         m_cColor = CColor::GREEN;
       } else {
         m_cColor = CColor::BLUE;
@@ -587,7 +590,6 @@ void CBlockchainVotingController::Rest() {
       m_pcLEDs->SetAllColors(m_cColor);
       m_sStateData.DecisionAtExplore = 0;
       m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.blueFractionTime;
-      
       std::cout << "======Robot: " << GetId() 
           << " REST 3a => EXPLORE and BLUE (decision>0)" << endl;
 
@@ -704,7 +706,7 @@ void CBlockchainVotingController::Rest() {
     }
   }
   
-  const CCI_FootBotMotorGroundSensor::TReadings& tGroundReads = m_pcGround->GetReadings();
+  /*const CCI_FootBotMotorGroundSensor::TReadings& tGroundReads = m_pcGround->GetReadings();
   if(((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) == 0) 
       && (id >= m_sStateData.half) 
       && (   (0.28 < tGroundReads[1].Value && tGroundReads[1].Value < 0.3 ) 
@@ -713,71 +715,23 @@ void CBlockchainVotingController::Rest() {
     std::cout << "======Robot: " << GetId() 
         << " REST 4 decision=0 && ground value betweem 0.28 && 0.3 "
         << " REST 4 => m_pcWheels->SetLinearVelocity(70,0)" << endl;
-  }
+  }*/
   
   if(   nUnchagedTimes >= simulationParams.max_unchanged_times
      || m_lStepCnt >=  simulationParams.max_running_steps) {
     m_sStateData.State = SStateData::STATE_FINISH;
     m_pcWheels->SetLinearVelocity(0,0);
-    end = clock();
-    double elapsed_secs = double(end - start) / CLOCKS_PER_SEC;
-    std::cout << "======Robot: " << GetId() << " Finish experiment in " 
-              << elapsed_secs << "seconds ======" << endl;
   }
 }
 
 void CBlockchainVotingController::Explore() {
-  /*m_pcRABS->ClearPackets();
-  int robotId = Geth_Wrapper::Id2Int(GetId());
-  bool bDone = false;
-  CColor cColor = CColor::WHITE;
-  for(size_t i = 0; i < m_cFoodPos.size() && !bDone; ++i) {
-    if((m_cPos - m_cFoodPos[i]).SquareLength() < m_fFoodSquareRadius) {
-      // We are done 
-      if(i==0)
-        cColor = CColor::RED;
-      else if(i==1)
-        cColor = CColor::GREEN;
-      else
-        cColor = CColor::BLUE;
-      bDone = true;
-      break;
-    }
-  }
-  setColor(cColor);*/
-  
-  /* We switch to 'return to nest' in two situations:
-   * 1. if we have a food item
-   * 2. if we have not found a food item for some time;
-   *    in this case, the switch is probabilistic
-   */
-   
   bool bReturnToNest(false);
   int id = Geth_Wrapper::Id2Int(GetId());
   
   if(!bHasOpinion) {
-    /*if(id > m_sStateData.half){
-      m_cColor = CColor::CYAN;
-    } else {
-      m_cColor = CColor::YELLOW;
-    }*/
     m_cColor = CColor::GRAY50;
-  } /*else {
-    std::cout << "======Robot: " << GetId() 
-            << " EXPLORING - DecisionAtExplore=" << m_sStateData.DecisionAtExplore << endl;
-    if(m_sStateData.DecisionAtExplore > 0){
-      m_cColor = CColor::BLUE;
-    } else {
-      m_cColor = CColor::GREEN;
-    }
-  }*/
+  }
   m_pcLEDs->SetAllColors(m_cColor);
-    
-  /*
-   * Test the first condition: have we found a food item?
-   * NOTE: the food data is updated by the loop functions, so
-   * here we just need to read it
-   */
 
   /* Test the second condition: we probabilistically switch to 'return to
    * nest' if we have been wandering for some time and found nothing */
@@ -849,8 +803,7 @@ void CBlockchainVotingController::Explore() {
       m_sStateData.ProbRange.TruncValue(m_sStateData.RestToExploreProb);
     }
     /*
-     * If we are in the nest, we combine antiphototaxis with obstacle
-     * avoidance
+     * If we are in the nest, we combine antiphototaxis with obstacle avoidance
      * Outside the nest, we just use the diffusion vector
      */
     if(m_sStateData.InNest) {
@@ -862,8 +815,6 @@ void CBlockchainVotingController::Explore() {
       const CCI_FootBotMotorGroundSensor::TReadings& tGroundReads = m_pcGround->GetReadings();
       if((tGroundReads[1].Value < 0.01) ||(tGroundReads[2].Value < 0.01))    {
         SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion);
-        //std::cout << "======Robot: " << GetId() 
-        //    << " EXPLORING - IN NEST groundValue < 0.01 " << endl;
       }
     } else {
       /* Use the diffusion vector only */
@@ -872,28 +823,47 @@ void CBlockchainVotingController::Explore() {
           || (tGroundReads[2].Value > 0.1 && tGroundReads[2].Value < 0.12 ) 
           || (tGroundReads[3].Value > 0.1 && tGroundReads[3].Value < 0.12 ) 
           || (tGroundReads[4].Value > 0.1 && tGroundReads[4].Value < 0.12 )) {
-        //std::cout << "Count total --> " 
-        //  << (m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) << std::endl;
-        //std::cout << "======Robot: " << GetId() 
-        //    << " EXPLORING - NOT IN NEST groundValue between 0.1 and 0.12" 
-        //    << " decision=" << m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore << endl;
-        if((id > m_sStateData.half)) {
+        /*if((id > m_sStateData.half)) {
           //std::cout << "In  greater than 9 " << std::endl;
           if(((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) >= 0)) {
             SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion);
           } else if(((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) < 0)){
-            std::cout << "======Robot: " << GetId() << " Change direction" << endl;
-            //m_pcLEDs->SetSingleColor(12, CColor::GREEN);
+            //std::cout << "======Robot: " << GetId() << " Change direction" << endl;
+            std::cout << "======Robot: " << GetId() 
+              << " EXPLORING - IN BLUE need to turn" 
+              << " decision=" << m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore << endl;
             m_pcWheels->SetLinearVelocity(70,0);
+            //SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion 
+            //  - m_sWheelTurningParams.MaxSpeed * 0.25f * CVector2(1.0f, CRadians::PI/2));
           }
         } else {
           //std::cout << "In  less than 9 " << std::endl;
           if(((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) > 0)) {
             SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion);
           } else if(((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) <= 0)){
-            std::cout << "======Robot: " << GetId() << " Change direction" << endl;
+            //std::cout << "======Robot: " << GetId() << " Change direction" << endl;
+            std::cout << "======Robot: " << GetId() 
+              << " EXPLORING - IN BLUE need to turn" 
+              << " decision=" << m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore << endl;
             m_pcWheels->SetLinearVelocity(70,0);
+            //SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion 
+            //  - m_sWheelTurningParams.MaxSpeed * 0.25f * CVector2(1.0f, CRadians::PI/2));
           }
+        }*/
+        if(   ((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) > 0) 
+           || ( ((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) == 0) 
+                && (id > m_sStateData.half)) ) {
+          SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion);
+        } else if(   ((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) < 0) 
+                  || ( ((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) == 0)
+                      && (id <= m_sStateData.half)) ){
+          //std::cout << "======Robot: " << GetId() << " Change direction" << endl;
+          std::cout << "======Robot: " << GetId() 
+            << " EXPLORING - IN BLUE need to turn back" 
+            << " decision=" << m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore << endl;
+          m_pcWheels->SetLinearVelocity(90,0);
+          //SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion 
+          //  - m_sWheelTurningParams.MaxSpeed * 0.25f * CVector2(1.0f, CRadians::PI/2));
         }
         if(m_sStateData.DecisionAtExplore != 0) {
           /* Yes, we do! */
@@ -901,12 +871,12 @@ void CBlockchainVotingController::Explore() {
           m_sStateData.TimeSearchingForPlaceInNest = 0;
           //m_pcLEDs->SetAllColors(CColor::BLUE);
           m_sStateData.State = SStateData::STATE_RETURN_TO_NEST;
-          if(m_sStateData.DecisionAtExplore > 0){
+          /*if(m_sStateData.DecisionAtExplore > 0){
             m_cColor = CColor::BLUE;
           } else {
             m_cColor = CColor::GREEN;
           }
-          m_pcLEDs->SetAllColors(m_cColor);
+          m_pcLEDs->SetAllColors(m_cColor);*/
           std::cout << "======Robot: " << GetId() 
             << " EXPLORE SUCCESSFUL => STATE_RETURN_TO_NEST - DecisionAtExplore=" 
             << m_sStateData.DecisionAtExplore << endl;
@@ -915,15 +885,16 @@ void CBlockchainVotingController::Explore() {
             ||  (tGroundReads[2].Value > 0.4 && tGroundReads[2].Value < 0.6 ) 
             ||  (tGroundReads[3].Value > 0.4 && tGroundReads[3].Value < 0.6 ) 
             ||  (tGroundReads[4].Value > 0.4 && tGroundReads[4].Value < 0.6 )) {
-        //std::cout << "In green region " << '\n';
-        //std::cout << "======Robot: " << GetId() 
-        //    << " EXPLORING - NOT IN NEST groundValue between 0.4 and 0.6" 
-        //    << " decision=" << m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore << endl;
-        if((id > m_sStateData.half)) {
+        /*if((id > m_sStateData.half)) {
           // std::cout << "In  greater than 9 " << std::endl;
           if(((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) >= 0)){
-            std::cout << "======Robot: " << GetId() << " Change direction" << endl;
+            //std::cout << "======Robot: " << GetId() << " Change direction" << endl;
+            std::cout << "======Robot: " << GetId() 
+              << " EXPLORING - IN GREEN need to turn" 
+              << " decision=" << m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore << endl;
             m_pcWheels->SetLinearVelocity(70,0);
+            //SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion 
+            //  - m_sWheelTurningParams.MaxSpeed * 0.25f * CVector2(1.0f, 3*CRadians::PI/2));
           } else if(((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) < 0)){            
             SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion);
           }
@@ -932,9 +903,29 @@ void CBlockchainVotingController::Explore() {
           if(((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) <= 0)) {
             SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion);
           } else if(((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) > 0)){
-            std::cout << "======Robot: " << GetId() << " Change direction" << endl;
-            m_pcWheels->SetLinearVelocity(60,0);
+            //std::cout << "======Robot: " << GetId() << " Change direction" << endl;
+            std::cout << "======Robot: " << GetId() 
+              << " EXPLORING - IN GREEN need to turn" 
+              << " decision=" << m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore << endl;
+            m_pcWheels->SetLinearVelocity(70,0);
+            //SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion 
+            //  - m_sWheelTurningParams.MaxSpeed * 0.25f * CVector2(1.0f, 3*CRadians::PI/2));
           }
+        }*/
+        if(   ((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) < 0) 
+           || ( ((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) == 0) 
+                && (id <= m_sStateData.half)) ) {
+          SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion);
+        } else if(   ((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) > 0) 
+                  || ( ((m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore) == 0)
+                      && (id > m_sStateData.half)) ){
+          //std::cout << "======Robot: " << GetId() << " Change direction" << endl;
+          std::cout << "======Robot: " << GetId() 
+            << " EXPLORING - IN GREEN need to turn back" 
+            << " decision=" << m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore << endl;
+          m_pcWheels->SetLinearVelocity(90,0);
+          //SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion 
+          //  - m_sWheelTurningParams.MaxSpeed * 0.25f * CVector2(1.0f, CRadians::PI/2));
         }
         if(m_sStateData.DecisionAtExplore != 0) {
           /* Yes, we do! */
@@ -942,12 +933,12 @@ void CBlockchainVotingController::Explore() {
           m_sStateData.TimeSearchingForPlaceInNest = 0;
           //m_pcLEDs->SetAllColors(CColor::BLUE);
           m_sStateData.State = SStateData::STATE_RETURN_TO_NEST;
-          if(m_sStateData.DecisionAtExplore > 0){
+          /*if(m_sStateData.DecisionAtExplore > 0){
             m_cColor = CColor::BLUE;
           } else {
             m_cColor = CColor::GREEN;
           }
-          m_pcLEDs->SetAllColors(m_cColor);
+          m_pcLEDs->SetAllColors(m_cColor);*/
           std::cout << "======Robot: " << GetId() 
             << " EXPLORE SUCCESSFUL => STATE_RETURN_TO_NEST - DecisionAtExplore=" 
             << m_sStateData.DecisionAtExplore << endl;
@@ -988,6 +979,20 @@ void CBlockchainVotingController::ReturnToNest() {
     } else {
       /* No, keep looking */
       ++m_sStateData.TimeSearchingForPlaceInNest;
+      const CCI_ColoredBlobOmnidirectionalCameraSensor::SReadings& sReadings = m_pcCamera->GetReadings();
+      for(size_t i = 0; i < sReadings.BlobList.size(); ++i) {
+        if(m_sStateData.TimeRested % 10 == 0){
+          std::string blue ("4294901760");
+          std::string green ("4278255360");
+          std::string tempColor = std::to_string(sReadings.BlobList[i]->Color);
+          if(blue.compare(tempColor) == 0)
+            m_sStateData.DecisionAtNest = m_sStateData.DecisionAtNest + 1;
+            //m_sStateData.DecisionAtNest = 1;
+          if(green.compare(tempColor) == 0)
+            m_sStateData.DecisionAtNest = m_sStateData.DecisionAtNest - 1;
+            //m_sStateData.DecisionAtNest = -1;
+        }
+      }
     }
   } else {
     /* Still outside the nest */
@@ -1003,7 +1008,11 @@ void CBlockchainVotingController::ReturnToNest() {
 /****************************************/
 void CBlockchainVotingController::Finish() {
   if(!bFinishedOutput) {
-    std::cout << "======Robot: " << GetId() << " - Finish experiment======" << endl;
+    end = clock();
+    elapsed_secs = double(end - start) / CLOCKS_PER_SEC;
+    std::cout << "======Robot: " << GetId() << " Finish experiment in " 
+              << elapsed_secs << "seconds ======" << endl;
+    //std::cout << "======Robot: " << GetId() << " - Finish experiment======" << endl;
     bFinishedOutput = true;
   }
   m_pcWheels->SetLinearVelocity(0.0f, 0.0f);

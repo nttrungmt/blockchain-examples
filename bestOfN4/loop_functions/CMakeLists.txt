@@ -9,9 +9,9 @@ message(STATUS "${CMAKE_SOURCE_DIR}")
 if(ARGOS_COMPILE_QTOPENGL)
   add_library(blockchain_voting_loop_functions MODULE 
     blockchain_loop_functions.h
-#    trajectory_qtuser_functions.h
-    blockchain_loop_functions.cpp)
-#    trajectory_qtuser_functions.cpp)
+    id_qtuser_functions.h
+    blockchain_loop_functions.cpp
+    id_qtuser_functions.cpp)
 
   target_link_libraries(blockchain_voting_loop_functions
     footbot_diffusion

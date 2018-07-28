@@ -229,6 +229,7 @@ bool CBlockchainVotingLoopFunctions::IsExperimentFinished() {
     }
 
     bool bAllFinished = true;
+    ostringstream runningTimeStream;
     CSpace::TMapPerType& m_cFootbots = GetSpace().GetEntitiesByType("foot-bot");
     for(CSpace::TMapPerType::iterator it = m_cFootbots.begin();it != m_cFootbots.end();++it){
       /* Get handle to foot-bot entity and controller */
@@ -238,11 +239,35 @@ bool CBlockchainVotingLoopFunctions::IsExperimentFinished() {
       if(!cController.IsFinished()) { 
           bAllFinished = false;
           break;
+      } else {
+          runningTimeStream << "======Robot: " << cController.GetId() 
+              << " Finish experiment in " << cController.getElapsedSeconds() 
+              << " seconds ======" << endl;
       }
     }
     
-    if(bAllFinished)
-      std::cout << "====== All robots - Finish experiment ======" << endl;
+    if(bAllFinished) {
+      std::cout << "======== All robots - Finish experiment ========" << endl;
+      m_strOutput = dataDir +"log.txt";
+      
+      time_t     now = time(0);
+      struct tm  tstruct;
+      char       buf[80];
+      tstruct = *localtime(&now);
+      strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+        
+      std::ofstream blockChainFile;
+      blockChainFile.open(m_strOutput.c_str(), std::ios_base::app | std::ios_base::out);
+      blockChainFile << "===============================================================" << endl;
+      if(useClassicalApproach) {
+          blockChainFile << " --------------- NON BLOCKCHAIN APPROACH ---------------" << endl;
+      } else {
+          blockChainFile << " ----------------- BLOCKCHAIN APPROACH -----------------" << endl;
+      }
+      blockChainFile << string(buf) << endl;
+      blockChainFile << runningTimeStream.str() << endl;
+      blockChainFile.close();
+    }
     return bAllFinished;
 }
 
@@ -255,12 +280,12 @@ CColor CBlockchainVotingLoopFunctions::GetFloorColor(const CVector2& c_position_
     }
     
     else if(/*(c_position_on_plane.GetX() > -1.250f) && (c_position_on_plane.GetX() < 1.250f) &&*/
-            (c_position_on_plane.GetY() < -0.10f) && (c_position_on_plane.GetY() > -0.20f)){
+            (c_position_on_plane.GetY() < -0.12f) && (c_position_on_plane.GetY() > -0.20f)){
       return CColor::GREEN;
     }
     
     else if( /*(c_position_on_plane.GetX() > -1.250f) && (c_position_on_plane.GetX() < 1.250f) &&*/
-             (c_position_on_plane.GetY() < -1.20f) && (c_position_on_plane.GetY() > -1.30f)){
+             (c_position_on_plane.GetY() < -1.20f) && (c_position_on_plane.GetY() > -1.28f)){
       return CColor::BLUE;
     }
     

@@ -398,6 +398,8 @@ public:
      m_sStateData.half = nPos;
    }
    
+   inline double getElapsedSeconds() { return elapsed_secs; }
+   
    //void UpdateNeighbors(std::set<int> newNeighbors);
    //void registerRobot(); // Tell the smart contract the robot's public key
    //void updateRegistration(); // Wait for the first event of the smart contract 
@@ -513,6 +515,7 @@ private:
    bool bHasOpinion;
    int nUnchagedTimes;
    clock_t start, end;
+   double elapsed_secs;
    bool bFinishedOutput;
    
    Movement movement;

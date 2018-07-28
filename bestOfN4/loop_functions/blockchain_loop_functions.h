@@ -82,7 +82,9 @@ private:
 
     std::string interface;
     
-    UInt32 LAMDA,turn; // Parameters for the randomWalk: Lamda is the exponential mean and turn is the uniform parameter
+    // Parameters for the randomWalk: 
+    //  Lamda is the exponential mean and turn is the uniform parameter
+    UInt32 LAMDA,turn;
     
     UInt32 n_robots;  /* Swarm Size */
     //UInt32 g;
