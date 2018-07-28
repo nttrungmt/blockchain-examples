@@ -861,7 +861,7 @@ void CBlockchainVotingController::Explore() {
           std::cout << "======Robot: " << GetId() 
             << " EXPLORING - IN BLUE need to turn back" 
             << " decision=" << m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore << endl;
-          m_pcWheels->SetLinearVelocity(90,0);
+          m_pcWheels->SetLinearVelocity(60,-60);
           //SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion 
           //  - m_sWheelTurningParams.MaxSpeed * 0.25f * CVector2(1.0f, CRadians::PI/2));
         }
@@ -923,7 +923,7 @@ void CBlockchainVotingController::Explore() {
           std::cout << "======Robot: " << GetId() 
             << " EXPLORING - IN GREEN need to turn back" 
             << " decision=" << m_sStateData.DecisionAtNest + m_sStateData.DecisionAtExplore << endl;
-          m_pcWheels->SetLinearVelocity(90,0);
+          m_pcWheels->SetLinearVelocity(60,-60);
           //SetWheelSpeedsFromVector(m_sWheelTurningParams.MaxSpeed * cDiffusion 
           //  - m_sWheelTurningParams.MaxSpeed * 0.25f * CVector2(1.0f, CRadians::PI/2));
         }
