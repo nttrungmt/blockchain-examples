@@ -322,7 +322,7 @@ public:
     * Returns true if the robot is in FINISH state
     */
    inline bool IsFinished() const {
-      return m_sStateData.State == SStateData::STATE_FINISH;
+      return m_sStateData.State == SStateData::STATE_FINISH && bFinishedOutput;
    }
  
    /*
@@ -513,7 +513,9 @@ private:
    CColor m_cColor;
    CColor m_cPrevColor;
    bool bHasOpinion;
-   int nUnchagedTimes;
+   bool bMakeTurnOnce;
+   int  nTurnStepsElapsed;
+   int  nUnchagedTimes;
    clock_t start, end;
    double elapsed_secs;
    bool bFinishedOutput;
