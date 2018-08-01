@@ -569,11 +569,14 @@ void CBlockchainVotingController::Rest() {
                 string votedCand = Geth_Wrapper::smartContractInterfaceStringCall(id, interface, contractAddress, 
                     "getVotesFor", args1, 1, -1, nodeInt, blockchainPath);
                 votedCand = Geth_Wrapper::replaceAll(votedCand, "\n", "");
-                std::cout << "Robot " << id << " - VoteUsingGethCommands: current=" 
-                    << votedCand << " <> " << option << endl;
+                //std::cout << "Robot " << id << " - VoteUsingGethCommands: current=" 
+                //    << votedCand << " <> " << option << endl;
                 //}
+                ostringstream ss;
+                ss << "Robot " << id << " - VoteUsingGethCommands: current=" 
+                   << votedCand << " <> " << option << endl;
                 Geth_Wrapper::stop_mining(id, nodeInt, blockchainPath);
-                return true; 
+                return ss.str();
               }, 
               id, "2", nodeInt, simulationParams.basePort, simulationParams.blockchainPath, 
               interface, contractAddress
@@ -632,11 +635,14 @@ void CBlockchainVotingController::Rest() {
                 string votedCand = Geth_Wrapper::smartContractInterfaceStringCall(id, interface, contractAddress, 
                     "getVotesFor", args1, 1, -1, nodeInt, blockchainPath);
                 votedCand = Geth_Wrapper::replaceAll(votedCand, "\n", "");
-                std::cout << "Robot " << id << " - VoteUsingGethCommands: current=" 
-                    << votedCand << " <> " << option << endl;
+                //std::cout << "Robot " << id << " - VoteUsingGethCommands: current=" 
+                //    << votedCand << " <> " << option << endl;
                 //}
+                ostringstream ss;
+                ss << "Robot " << id << " - VoteUsingGethCommands: current=" 
+                   << votedCand << " <> " << option << endl;
                 Geth_Wrapper::stop_mining(id, nodeInt, blockchainPath);
-                return true; 
+                return ss.str();
               }, 
               id, "1", nodeInt, simulationParams.basePort, simulationParams.blockchainPath, 
               interface, contractAddress
