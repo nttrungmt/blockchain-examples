@@ -494,7 +494,7 @@ void CBlockchainVotingController::Rest() {
     //std::cout << "======Robot: " << GetId() << " REST 1 => change to EXPLORE" << endl;
   } else*/ 
   if(m_sStateData.TimeRested <= m_sStateData.maxTimeRest){
-    ++m_sStateData.TimeRested;
+    //++m_sStateData.TimeRested;
     /*const CCI_ColoredBlobOmnidirectionalCameraSensor::SReadings& sReadings = m_pcCamera->GetReadings();
     for(size_t i = 0; i < sReadings.BlobList.size(); ++i) {
       if(m_sStateData.TimeRested % 10 == 0){
@@ -514,15 +514,138 @@ void CBlockchainVotingController::Rest() {
     //if(m_sStateData.TimeRested == 1) {
     //  m_pcRABA->SetData(0, LAST_EXPLORATION_NONE);
     //}
-    
-    if((m_sStateData.DecisionAtExplore + m_sStateData.DecisionAtNest) < 0){
-      m_cColor = CColor::GREEN;
-    } else {
-      m_cColor = CColor::BLUE;
+    if(m_sStateData.TimeRested == 0) {
+      if((m_sStateData.DecisionAtExplore + m_sStateData.DecisionAtNest) > 0){
+        m_cColor = CColor::BLUE;
+        if(m_cPrevColor == m_cColor)
+          nUnchagedTimes++;
+        else
+          nUnchagedTimes = 0;
+        m_pcLEDs->SetAllColors(m_cColor);
+        m_sStateData.DecisionAtExplore = 0;
+        m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.blueFractionTime;
+        std::cout << "======Robot: " << GetId() 
+          << " REST 3a => RESTING and BLUE (decision>0)" << endl;
+        if(!useClassicalApproach) {
+          if(m_cPrevColor != m_cColor) {
+            //VoteUsingGethCommands(id, "2");
+            //// Create a thread using member function
+            //std::thread th(&CBlockchainVotingController::VoteUsingGethCommands, this, id, "2");
+            //th.join();
+            // enqueue and store future
+            auto result = m_pThreadPool->enqueue(
+              [](int id, string option, int nodeInt, int basePort, 
+                   string blockchainPath, string interface, string contractAddress) { 
+                std::string strId = std::to_string(id);
+                string args[2] = {strId, option};
+                Geth_Wrapper::unlockAccount(id, "test", nodeInt, basePort, blockchainPath);
+                long long nEther = Geth_Wrapper::check_ether(id, nodeInt, blockchainPath);
+                Geth_Wrapper::start_mining(id, 1, nodeInt, blockchainPath);
+                while(nEther <= 10) {
+                    Geth_Wrapper::exec_geth_cmd_helper(id, "admin.sleepBlocks(1)", nodeInt, blockchainPath);
+                    nEther = Geth_Wrapper::check_ether(id, nodeInt, blockchainPath);
+                }
+                Geth_Wrapper::smartContractInterfaceStringBg(id, interface, contractAddress, 
+                    "voteForCandidate", args, 2, -1, nodeInt, blockchainPath);
+                Geth_Wrapper::exec_geth_cmd_helper(id, "admin.sleepBlocks(2)", nodeInt, blockchainPath);
+                //make sure the transaction is submitted and mined
+                string args1[1] = {strId};
+                //while(true) {
+                string votedCand = Geth_Wrapper::smartContractInterfaceStringCall(id, interface, contractAddress, 
+                    "getVotesFor", args1, 1, -1, nodeInt, blockchainPath);
+                votedCand = Geth_Wrapper::replaceAll(votedCand, "\n", "");
+                //std::cout << "Robot " << id << " - VoteUsingGethCommands: current=" 
+                //    << votedCand << " <> " << option << endl;
+                //}
+                ostringstream ss;
+                ss << "Robot " << id << " - VoteUsingGethCommands: current=" 
+                   << votedCand << " <> " << option << endl;
+                Geth_Wrapper::stop_mining(id, nodeInt, blockchainPath);
+                return ss.str();
+              }, 
+              id, "2", nodeInt, simulationParams.basePort, simulationParams.blockchainPath, 
+              interface, contractAddress
+            );
+          }
+          //CheckConsensus(id);
+          CheckConsensusUsingOneCommand(id);
+        }
+        m_cPrevColor = m_cColor;
+      } else if ((m_sStateData.DecisionAtExplore + m_sStateData.DecisionAtNest) == 0){
+        if(id > m_sStateData.half){
+          m_cColor = CColor::BLUE;
+          m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.blueFractionTime;
+        } else {
+          m_cColor = CColor::GREEN;
+          m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.greenFractionTime;
+        }
+        m_pcLEDs->SetAllColors(m_cColor);
+        std::cout << "======Robot: " << GetId() 
+          << " REST 3b => RESTING (decision=0)" << endl;
+      } else {
+        m_cColor = CColor::GREEN;
+        if(m_cPrevColor == m_cColor)
+          nUnchagedTimes++;
+        else
+          nUnchagedTimes = 0;
+        m_pcLEDs->SetAllColors(m_cColor);
+        m_sStateData.DecisionAtExplore = 0;
+        m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.greenFractionTime;
+        std::cout << "======Robot: " << GetId() 
+          << " REST 3c => RESTING and GREEN (decision<0)" << endl;
+        if(!useClassicalApproach) {
+          if(m_cPrevColor != m_cColor) {
+            //VoteUsingGethCommands(id, "1");
+            //std::thread th(&CBlockchainVotingController::VoteUsingGethCommands, this, id, "1");
+            //th.join();
+            auto result = m_pThreadPool->enqueue(
+              [](int id, string option, int nodeInt, int basePort, 
+                   string blockchainPath, string interface, string contractAddress) { 
+                std::string strId = std::to_string(id);
+                string args[2] = {strId, option};
+                Geth_Wrapper::unlockAccount(id, "test", nodeInt, basePort, blockchainPath);
+                long long nEther = Geth_Wrapper::check_ether(id, nodeInt, blockchainPath);
+                Geth_Wrapper::start_mining(id, 1, nodeInt, blockchainPath);
+                while(nEther <= 10) {
+                    Geth_Wrapper::exec_geth_cmd_helper(id, "admin.sleepBlocks(1)", nodeInt, blockchainPath);
+                    nEther = Geth_Wrapper::check_ether(id, nodeInt, blockchainPath);
+                }
+                Geth_Wrapper::smartContractInterfaceStringBg(id, interface, contractAddress, 
+                    "voteForCandidate", args, 2, -1, nodeInt, blockchainPath);
+                Geth_Wrapper::exec_geth_cmd_helper(id, "admin.sleepBlocks(2)", nodeInt, blockchainPath);
+                //make sure the transaction is submitted and mined
+                string args1[1] = {strId};
+                //while(true) {
+                string votedCand = Geth_Wrapper::smartContractInterfaceStringCall(id, interface, contractAddress, 
+                    "getVotesFor", args1, 1, -1, nodeInt, blockchainPath);
+                votedCand = Geth_Wrapper::replaceAll(votedCand, "\n", "");
+                //std::cout << "Robot " << id << " - VoteUsingGethCommands: current=" 
+                //    << votedCand << " <> " << option << endl;
+                //}
+                ostringstream ss;
+                ss << "Robot " << id << " - VoteUsingGethCommands: current=" 
+                   << votedCand << " <> " << option << endl;
+                Geth_Wrapper::stop_mining(id, nodeInt, blockchainPath);
+                return ss.str();
+              }, 
+              id, "1", nodeInt, simulationParams.basePort, simulationParams.blockchainPath, 
+              interface, contractAddress
+            );
+          }
+          //CheckConsensus(id);
+          CheckConsensusUsingOneCommand(id);
+        }
+        m_cPrevColor = m_cColor;
+      }
     }
-    m_pcLEDs->SetAllColors(m_cColor);
+    
+    m_sStateData.TimeRested++;
+    //m_pcLEDs->SetAllColors(m_cColor);
     //std::cout << "======Robot: " << GetId() 
     //    << " REST 2 m_sStateData.DecisionAtNest=" << m_sStateData.DecisionAtNest << endl;
+    
+    //if(m_sStateData.TimeRested % 10 ==0)
+    //  CheckConsensusUsingOneCommand(id);
     
     /*
      * Social rule: listen to what other people have found and modify
@@ -533,7 +656,7 @@ void CBlockchainVotingController::Rest() {
     UpdateState();
     m_sStateData.State = SStateData::STATE_EXPLORING;
     m_sStateData.TimeRested = 0;
-    if(m_sStateData.DecisionAtExplore + m_sStateData.DecisionAtNest > 0){
+    /*if(m_sStateData.DecisionAtExplore + m_sStateData.DecisionAtNest > 0){
       m_cColor = CColor::BLUE;
       if(m_cPrevColor == m_cColor)
         nUnchagedTimes++;
@@ -547,6 +670,9 @@ void CBlockchainVotingController::Rest() {
       if(!useClassicalApproach) {
         if(m_cPrevColor != m_cColor) {
           //VoteUsingGethCommands(id, "2");
+          //// Create a thread using member function
+          //std::thread th(&CBlockchainVotingController::VoteUsingGethCommands, this, id, "2");
+          //th.join();
           // enqueue and store future
           auto result = m_pThreadPool->enqueue(
               [](int id, string option, int nodeInt, int basePort, 
@@ -614,6 +740,8 @@ void CBlockchainVotingController::Rest() {
       if(!useClassicalApproach) {
         if(m_cPrevColor != m_cColor) {
           //VoteUsingGethCommands(id, "1");
+          //std::thread th(&CBlockchainVotingController::VoteUsingGethCommands, this, id, "1");
+          //th.join();
           auto result = m_pThreadPool->enqueue(
               [](int id, string option, int nodeInt, int basePort, 
                    string blockchainPath, string interface, string contractAddress) { 
@@ -653,7 +781,7 @@ void CBlockchainVotingController::Rest() {
       }
       
       m_cPrevColor = m_cColor;
-    }
+    }*/
   }
   
   /*const CCI_FootBotMotorGroundSensor::TReadings& tGroundReads = m_pcGround->GetReadings();
@@ -1013,10 +1141,10 @@ void CBlockchainVotingController::ReturnToNest() {
       /* Tell people about the last exploration attempt */
       //m_pcRABA->SetData(0, m_eLastExplorationResult);
       /* ... and switch to state 'resting' */
-      m_pcLEDs->SetSingleColor(12, CColor::RED);
-
+      //m_pcLEDs->SetSingleColor(12, CColor::RED);
       m_sStateData.State = SStateData::STATE_RESTING;
       m_sStateData.TimeSearchingForPlaceInNest = 0;
+      m_sStateData.TimeRested = 0;
       m_eLastExplorationResult = LAST_EXPLORATION_NONE;
       std::cout << "======Robot: " << GetId() 
           << " ReturnToNest SUCCESSFUL => STATE_RESTING" << endl;
@@ -1024,6 +1152,7 @@ void CBlockchainVotingController::ReturnToNest() {
     } else {
       /* No, keep looking */
       ++m_sStateData.TimeSearchingForPlaceInNest;
+      m_pcLEDs->SetSingleColor(12, CColor::RED);
       const CCI_ColoredBlobOmnidirectionalCameraSensor::SReadings& sReadings = m_pcCamera->GetReadings();
       for(size_t i = 0; i < sReadings.BlobList.size(); ++i) {
         if(m_sStateData.TimeRested % 10 == 0){
@@ -1142,38 +1271,6 @@ void CBlockchainVotingController::setColor(CColor color) {
     // else
       // if(movement.actualDirection == 2) // Turn left
     // m_pcWheels->SetLinearVelocity(-m_fWheelVelocity,  m_fWheelVelocity);
-// }*/
-
-/*********************** TURNING LEDS ON **************************/
-/***************************************************************************************************************
-0 = BLACK/EX-RED;
-1 = GREEN; 
-2 = WHITE/EX-BLUE
-AGGIUNGERECOLORI 
-*/
-/* void CBlockchainVotingController::TurnLeds(){
-   // //cout << "Called TurnLeds..." << endl;
-   // switch(m_cColor) {
-   // case CColor::RED: {
-     // //opinion.actualOpCol = CColor::RED;
-     // m_pcLEDs->SetAllColors(CColor::RED);
-     // break;
-   // }
-   // case CColor::GREEN: {
-     // //opinion.actualOpCol = CColor::GREEN;
-     // m_pcLEDs->SetAllColors(CColor::GREEN);
-     // break;
-   // }
-   // case CColor::BLUE: {
-     // //opinion.actualOpCol = CColor::BLUE;
-     // m_pcLEDs->SetAllColors(CColor::BLUE);
-     // break;
-   // }
-   // default:
-     // m_pcLEDs->SetAllColors(CColor::WHITE);
-     // break;
-   // }
-   // m_pcLEDs->SetAllColors(m_cColor);
 // }*/
 
 /****************************************/
