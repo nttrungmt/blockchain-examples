@@ -552,7 +552,7 @@ void CBlockchainVotingController::Rest() {
     //if(m_sStateData.TimeRested == 1) {
     //  m_pcRABA->SetData(0, LAST_EXPLORATION_NONE);
     //}
-    if(m_sStateData.TimeRested <= m_sStateData.maxTimeRest){
+    //if(m_sStateData.TimeRested <= m_sStateData.maxTimeRest){
       if((m_sStateData.DecisionAtExplore + m_sStateData.DecisionAtNest) < 0){
         m_cColor = CColor::GREEN;
       } else {
@@ -561,7 +561,7 @@ void CBlockchainVotingController::Rest() {
       m_pcLEDs->SetAllColors(m_cColor);
       //std::cout << "======Robot: " << GetId() 
       //    << " REST 2 m_sStateData.DecisionAtNest=" << m_sStateData.DecisionAtNest << endl;
-    }
+    //}
     /*
      * Social rule: listen to what other people have found and modify
      * probabilities accordingly
