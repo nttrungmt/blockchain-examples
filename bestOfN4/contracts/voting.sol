@@ -56,6 +56,11 @@ contract Voting {
     }
     return numOfVotes;
   }
+  
+  // This function returns the voted candidate of the specified robot
+  function getVotesFor(uint uid) view public returns (uint) {
+    return voters[uid];
+  }
 
   function consensus() view public returns (bool) {
     for(uint i = 0; i < candidateList.length; i++) {

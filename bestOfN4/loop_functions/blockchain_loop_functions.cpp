@@ -39,9 +39,9 @@ static const int maxTime = 200; /* Maximum amount of time per robot to wait unti
 static const int maxContractAddressTrials = 300; /* Repeats getting the contract address procedure (can be TypeError at 1st*/
 static const int trialsMiningNotWorking = 40; /* If after x trials the number of white votes is still zero  */
 
-std::string contractAddress;
+//std::string contractAddress;
 std::string minerAddressGlobal;
-std::string interface; // Smart contract interface
+//std::string interface; // Smart contract interface
 
 /****************************************/
 /****************************************/
@@ -569,9 +569,6 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   genesisPathStream << baseDirRaw << "/genesis/genesis" << basePort  << ".json";
   string genesisPath = genesisPathStream.str();
 
-  std::ostringstream fullCommandStream;
-  std::string minerAddress;
-
   // Start geth again after the preallocation
   cout << "[LoopFunctions::InitEthereum]unlockAccount and begin deploy contract" << endl;
   //Geth_Wrapper::geth_init(minerId, minerNode, basePort, blockchainPath, genesisPath);
@@ -580,10 +577,11 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   string command = "mkdir " + blockchainPath;
   system(command.c_str());
   Geth_Wrapper::unlockAccount(minerId, "test", minerNode, basePort, blockchainPath);
-  minerAddress = Geth_Wrapper::getCoinbase(minerId, minerNode, basePort, blockchainPath);
+  string minerAddress = Geth_Wrapper::getCoinbase(minerId, minerNode, basePort, blockchainPath);
   Geth_Wrapper::start_mining(minerId, 4, minerNode, blockchainPath);
 
-  interface = Geth_Wrapper::readAllFromFile(baseDirRaw + "/Voting.abi");
+  string interface = Geth_Wrapper::readAllFromFile(baseDirRaw + "/Voting.abi");
+  string binaryCode = Geth_Wrapper::readAllFromFile(baseDirRaw + "/Voting.bin");
 
   // Deploy contract
   cout << "[LoopFunctions::InitEthereum]deploy_contract" << endl;
@@ -592,9 +590,28 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   //string dataPath = baseDirLoop + "data.txt";
   //string templatePath = baseDirLoop + "contractTemplate.txt";
   string scriptFilePath = baseDirRaw + "/voting.js";
-  string txHash;
+  ostringstream fullCommandStream;
+  fullCommandStream << "var candidateNames = [1,2];" << endl;
+  fullCommandStream << "var VotingContract = web3.eth.contract(" << interface << ");" << endl;
+  fullCommandStream << "var deployedContract = VotingContract.new(candidateNames, " << n_robots << "," << endl;
+  fullCommandStream << "  { from: web3.eth.accounts[0]," << endl;
+  fullCommandStream << "    data: '0x" << binaryCode << "'," << endl;
+  fullCommandStream << "    gas: 3000000" << endl;
+  fullCommandStream << "  }, function(e, contract){" << endl;
+  fullCommandStream << "    console.log(contract.transactionHash);" << endl;
+  fullCommandStream << "    if (typeof contract.address != 'undefined') {" << endl;
+  fullCommandStream << "      console.log('Contract mined! address: ' + contract.address" <<endl; 
+  fullCommandStream << "        + ' transactionHash: ' + contract.transactionHash);" << endl;
+  fullCommandStream << "    }" << endl;
+  fullCommandStream << "  });";
+  string fullCommand = fullCommandStream.str();
+  ofstream out(scriptFilePath.c_str());
+  out << fullCommand;
+  out.close();
+  
+  string contractAddress;
   //txHash = Geth_Wrapper::deploy_contract(minerId, interfacePath, dataPath, templatePath, minerNode, blockchainPath);
-  txHash = Geth_Wrapper::deploy_contract_script(minerId, minerNode, blockchainPath, scriptFilePath);
+  string txHash = Geth_Wrapper::deploy_contract_script(minerId, minerNode, blockchainPath, scriptFilePath);
   int u = 0;
   do {
     contractAddress = Geth_Wrapper::getContractAddress(minerId, txHash, minerNode, blockchainPath);

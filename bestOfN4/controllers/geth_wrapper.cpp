@@ -40,8 +40,8 @@ void Geth_Wrapper::initGethNode(int i, int nodeInt, int basePort, string datadir
   //check ether and do mining if need
   long long nEther = check_ether(i, nodeInt, datadirBase);
   unlockAccount(i, "test", nodeInt, basePort, datadirBase);
-  start_mining(i, 4, nodeInt, datadirBase);
-  while(nEther <= 100) {
+  start_mining(i, 1, nodeInt, datadirBase);
+  while(nEther <= 20) {
 	  exec_geth_cmd_helper(i, "admin.sleepBlocks(5)", nodeInt, datadirBase);
 	  nEther = check_ether(i, nodeInt, datadirBase);
   }
@@ -483,7 +483,8 @@ string Geth_Wrapper::smartContractInterfaceCall(int i, string interface, string 
 /* Calls are just executed locally but no transactions are send to the blockchain  */
 string Geth_Wrapper::smartContractInterfaceStringCall(int i, string interface, string contractAddress, string func, string args[], int argc, int v, int nodeInt, string datadirBase) {
   ostringstream fullCommandStream;
-  fullCommandStream << "var cC = web3.eth.contract(" << interface << ");var c = cC.at(" << contractAddress << ");c." << func << ".call(";
+  fullCommandStream << "var cC = web3.eth.contract(" << interface 
+    << ");var c = cC.at(" << contractAddress << ");c." << func << ".call(";
   for(int k = 0; k < argc; k++) {
     //fullCommandStream << args[k] << ",";  
     fullCommandStream << "\"" << args[k] << "\",";

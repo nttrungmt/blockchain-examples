@@ -461,6 +461,11 @@ private:
    //void readByzantineMapping();
    //void DistributeID(); 
    //void killGethAndRemoveFolders(std::string bcPath, std::string regenFile);
+   bool CheckConsensus(int id);
+   bool CheckConsensusUsingScript(int id);
+   bool CheckConsensusUsingOneCommand(int id);
+   bool VoteUsingGethCommands(int id, string option);
+   bool VoteUsingScript(int id, string option);
    
    //Real m_fWheelVelocity;
    /* Pointer to the differential steering actuator */
@@ -518,6 +523,7 @@ private:
    int  nUnchagedTimes;
    clock_t start, end;
    double elapsed_secs;
+   bool bGenerateCheckConsensusScript;
    bool bFinishedOutput;
    
    Movement movement;
