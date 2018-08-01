@@ -914,6 +914,8 @@ bool CBlockchainVotingController::VoteUsingScript(int id, string option) {
   }
 }
 
+/****************************************/
+/****************************************/
 void CBlockchainVotingController::Explore() {
   bool bReturnToNest(false);
   int id = Geth_Wrapper::Id2Int(GetId());
