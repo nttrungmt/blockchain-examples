@@ -7,11 +7,11 @@ function dummy() {
 }
 while(nEther <= 10) {
 	//sleep(50);
-	/*var date = new Date();
+	var date = new Date();
 	var curDate = null;
 	do { curDate = new Date(); }
-	while(curDate-date < 200);*/
-	setTimeout(dummy, 200);
+	while(curDate-date < 200);
+	//setTimeout(dummy, 200);
 	nEther=web3.fromWei(eth.getBalance(eth.coinbase),"ether");
 	console.log("Current ether=" + nEther);
 }
@@ -21,11 +21,11 @@ c.voteForCandidate(5,2,{ from: eth.coinbase, gas: '3000000'});
 //web3.admin.sleepBlocks(1);
 while(true) {
 	//sleep(50);
-	/*var date = new Date();
+	var date = new Date();
 	var curDate = null;
 	do { curDate = new Date(); }
-	while(curDate-date < 200);*/
-	setTimeout(dummy, 200);
+	while(curDate-date < 200);
+	//setTimeout(dummy, 200);
 	nPendingTxLen = web3.eth.pendingTransactions.length;
 	console.log("Current PendingTxLen=" + nPendingTxLen);
 	if(nPendingTxLen <= 0) 
