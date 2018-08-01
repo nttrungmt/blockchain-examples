@@ -2,8 +2,9 @@ web3.personal.unlockAccount(eth.coinbase, "test");
 nEther=web3.fromWei(eth.getBalance(eth.coinbase),"ether");
 web3.miner.start(1);
 while(nEther <= 10) {
-	//sleep(5);
+	admin.sleep(1);
 	nEther=web3.fromWei(eth.getBalance(eth.coinbase),"ether");
+	//console.log("Current ether=" + nEther);
 }
 var candidateNames = [1,2];
 var VotingContract = web3.eth.contract([{"constant":true,"inputs":[{"name":"candidate","type":"uint256"}],"name":"validCandidate","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"numVoters","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"uid","type":"uint256"},{"name":"candidate","type":"uint256"}],"name":"voteForCandidate","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getNumOfVoters","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"consensus","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"candidate","type":"uint256"}],"name":"totalVotesFor","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"candidateList","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"uid","type":"uint256"}],"name":"getVotesFor","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"maxVoters","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getNumOfCandidates","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"","type":"uint256"}],"name":"votesReceived","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"candidateNames","type":"uint256[]"},{"name":"maxNumVoters","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"}]);
@@ -18,5 +19,12 @@ var deployedContract = VotingContract.new(candidateNames, 6,
         + ' transactionHash: ' + contract.transactionHash);
     }
   });
-web3.admin.sleepBlocks(2);
+//web3.admin.sleepBlocks(1);
+while(true) {
+	admin.sleep(1);
+	nPendingTxLen = web3.eth.pendingTransactions.length;
+	//console.log("Current PendingTxLen=" + nPendingTxLen);
+	if(nPendingTxLen <= 0) 
+		break;
+}
 web3.miner.stop();
