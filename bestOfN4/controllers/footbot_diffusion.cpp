@@ -839,11 +839,11 @@ bool CBlockchainVotingController::CheckConsensusUsingOneCommand(int id) {
     nodeInt, simulationParams.blockchainPath);
   //cout << "[CheckConsensusUsingOneCommand] res: " << testConsensus << endl;
   if(testConsensus.find("Consensus=true") != string::npos){
-    std::cout << "++++++++ Stop:+++++++: " << testConsensus << std::endl;
+    std::cout << "Robot " << id << "+++ Stop:+++: " << endl << testConsensus << std::endl;
     m_sStateData.State = SStateData::STATE_FINISH;
     return true;
   } else {
-    std::cout << "++++++++ Not Stop:+++++++: " << testConsensus << std::endl;
+    std::cout << "Robot " << id << "+++ Not Stop:+++: " << endl << testConsensus << std::endl;
     return false;
   }
 }
