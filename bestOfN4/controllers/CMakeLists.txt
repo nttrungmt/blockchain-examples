@@ -5,6 +5,7 @@ include_directories(${CMAKE_SOURCE_DIR}/controllers)
 add_library(footbot_diffusion SHARED 
 	footbot_diffusion.h 
 	footbot_diffusion.cpp
+	thread_pool.h
 	geth_wrapper.h
 	geth_wrapper.cpp)
 	

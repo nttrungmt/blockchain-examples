@@ -60,6 +60,7 @@
 #include <iostream>
 
 #include "geth_wrapper.h" /* Use geth from C++ */
+#include "thread_pool.h"
 
 /*
  * All the ARGoS stuff in the 'argos' namespace.
@@ -73,18 +74,6 @@ using namespace std;
  */
 class CBlockchainVotingController : public CCI_Controller {
 public:
-    /*
-    * This structure holds data about food collecting by the robots
-    */
-    struct SFoodData {
-      bool HasFoodItem;      // true when the robot is carrying a food item
-      size_t FoodItemIdx;    // the index of the current food item in the array of available food items
-      size_t TotalFoodItems; // the total number of food items carried by this robot during the experiment
- 
-      SFoodData();
-      void Reset();
-    };
-    
     /*
     * The following variables are used as parameters for the
     * diffusion algorithm. You can set their value in the <parameters>
@@ -324,30 +313,23 @@ public:
    inline bool IsFinished() const {
       return m_sStateData.State == SStateData::STATE_FINISH && bFinishedOutput;
    }
- 
-   /*
-    * Returns the food data
-    */
-   inline SFoodData& GetFoodData() {
-      return m_sFoodData;
-   }
 
    //virtual void RandomWalk();
    //void Explore();
    //void Move();
    //void TurnLeds();
 
-   inline Movement & GetMovement() {
-      return movement;
-   }
+   //inline Movement & GetMovement() {
+   //   return movement;
+   //}
    
    inline std::string & GetAddress() {
       return address;
    }
 
-   inline std::string & GetMinerAddress() {
-      return minerAddress;
-   }
+   //inline std::string & GetMinerAddress() {
+   //   return minerAddress;
+   //}
    
    inline bool isMining() {
      return mining;
@@ -377,18 +359,7 @@ public:
       return m_lStepCnt;
    }
    
-   //inline void setColor(CColor color) {
-   //  m_cColor = color;
-   //}
    void setColor(CColor color);
-
-   inline void setSquareRadius(Real r) {
-     m_fFoodSquareRadius = r;
-   }
-
-   inline void setFoodPos(std::vector<CVector2> cFoodPos) {
-     m_cFoodPos = cFoodPos;
-   }
 
    inline void setCurrentPos(CVector2 cPos) {
      m_cPos = cPos;
@@ -477,8 +448,6 @@ private:
    
    /* Pointer to the range and bearing sensor */
    CCI_RangeAndBearingSensor* m_pcRABS;
-   CDegrees m_cAlpha;                         // OBST. AVOID.
-   Real m_fDelta;                             // OBST. AVOID.
    /* Pointer to the foot-bot proximity sensor */
    CCI_FootBotProximitySensor* m_pcProximity;
    /* Pointer to the foot-bot light sensor */
@@ -487,7 +456,6 @@ private:
    CCI_FootBotMotorGroundSensor* m_pcGround;
    /* Pointer to the omnidirectional camera sensor */
    CCI_ColoredBlobOmnidirectionalCameraSensor* m_pcCamera;
-   CRange<CRadians> m_cGoStraightAngleRange;  // OBST. AVOID.
       
    CRandom::CRNG* m_pcRNG;
    
@@ -505,15 +473,13 @@ private:
    SWheelTurningParams m_sWheelTurningParams;
    /* The diffusion parameters */
    SDiffusionParams m_sDiffusionParams;
-   /* The food data */
-   SFoodData m_sFoodData;
 
    /* All others used variables */
+   ThreadPool* m_pThreadPool;
    bool useClassicalApproach;
    SimulationState simulationParams;
-   
-   Real m_fFoodSquareRadius;
-   std::vector<CVector2> m_cFoodPos;
+
+   long long m_lStepCnt;
    CVector2 m_cPos;
    CColor m_cColor;
    CColor m_cPrevColor;
@@ -526,25 +492,23 @@ private:
    bool bGenerateCheckConsensusScript;
    bool bFinishedOutput;
    
-   Movement movement;
+   //Movement movement;
    std::string address;
-   std::string minerAddress;
+   //std::string minerAddress;
    std::string contractAddress;
-   std::string rawTx;
-   std::set<int> neighbors;
+   //std::string rawTx;
+   //std::set<int> neighbors;
    std::string enode;
 
-   std::string blockchainPath;
-   blockWithHash bwh;
+   //std::string blockchainPath;
+   //blockWithHash bwh;
    bool beginning;
    int nodeInt;
-   std::map<int, int> robotIdToNode;  
+   //std::map<int, int> robotIdToNode;
    bool mining;
-   int byzantineStyle;
-   bool threadCurrentlyRunning;
-   int eventTrials;
-
-   long long m_lStepCnt;
+   //int byzantineStyle;
+   //bool threadCurrentlyRunning;
+   //int eventTrials;
 };
 
 #endif
