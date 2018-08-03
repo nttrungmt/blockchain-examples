@@ -1,0 +1,289 @@
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.11:34:19 AM
+======Robot: fb0 Finish experiment in 417.812 seconds ======
+======Robot: fb1 Finish experiment in 396.469 seconds ======
+======Robot: fb2 Finish experiment in 478.516 seconds ======
+======Robot: fb3 Finish experiment in 453.922 seconds ======
+======Robot: fb4 Finish experiment in 526.047 seconds ======
+======Robot: fb5 Finish experiment in 398.297 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.11:51:02 AM
+======Robot: fb0 Finish experiment in 315.438 seconds ======
+======Robot: fb1 Finish experiment in 448.766 seconds ======
+======Robot: fb2 Finish experiment in 632.125 seconds ======
+======Robot: fb3 Finish experiment in 327.469 seconds ======
+======Robot: fb4 Finish experiment in 346.422 seconds ======
+======Robot: fb5 Finish experiment in 365.25 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.01:56:25 PM
+======Robot: fb0 Finish experiment in 254.969 seconds ======
+======Robot: fb1 Finish experiment in 375.422 seconds ======
+======Robot: fb2 Finish experiment in 386.797 seconds ======
+======Robot: fb3 Finish experiment in 321.969 seconds ======
+======Robot: fb4 Finish experiment in 265.438 seconds ======
+======Robot: fb5 Finish experiment in 313.453 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.02:16:09 PM
+======Robot: fb0 Finish experiment in 311.688 seconds ======
+======Robot: fb1 Finish experiment in 646.75 seconds ======
+======Robot: fb2 Finish experiment in 404.312 seconds ======
+======Robot: fb3 Finish experiment in 379 seconds ======
+======Robot: fb4 Finish experiment in 410.094 seconds ======
+======Robot: fb5 Finish experiment in 494.234 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.02:28:29 PM
+======Robot: fb0 Finish experiment in 417.609 seconds ======
+======Robot: fb1 Finish experiment in 440.953 seconds ======
+======Robot: fb2 Finish experiment in 315.641 seconds ======
+======Robot: fb3 Finish experiment in 335.219 seconds ======
+======Robot: fb4 Finish experiment in 447.703 seconds ======
+======Robot: fb5 Finish experiment in 301.656 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.02:47:51 PM
+======Robot: fb0 Finish experiment in 636.109 seconds ======
+======Robot: fb1 Finish experiment in 442.406 seconds ======
+======Robot: fb2 Finish experiment in 371.469 seconds ======
+======Robot: fb3 Finish experiment in 376.078 seconds ======
+======Robot: fb4 Finish experiment in 285.219 seconds ======
+======Robot: fb5 Finish experiment in 347.219 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.03:02:59 PM
+======Robot: fb0 Finish experiment in 349 seconds ======
+======Robot: fb1 Finish experiment in 287.562 seconds ======
+======Robot: fb2 Finish experiment in 338.906 seconds ======
+======Robot: fb3 Finish experiment in 441.5 seconds ======
+======Robot: fb4 Finish experiment in 411.891 seconds ======
+======Robot: fb5 Finish experiment in 310.812 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.03:16:04 PM
+======Robot: fb0 Finish experiment in 377.328 seconds ======
+======Robot: fb1 Finish experiment in 428 seconds ======
+======Robot: fb2 Finish experiment in 304.703 seconds ======
+======Robot: fb3 Finish experiment in 271.266 seconds ======
+======Robot: fb4 Finish experiment in 321.266 seconds ======
+======Robot: fb5 Finish experiment in 313.125 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.03:39:20 PM
+======Robot: fb0 Finish experiment in 280.891 seconds ======
+======Robot: fb1 Finish experiment in 261.219 seconds ======
+======Robot: fb2 Finish experiment in 267.266 seconds ======
+======Robot: fb3 Finish experiment in 337.844 seconds ======
+======Robot: fb4 Finish experiment in 397.203 seconds ======
+======Robot: fb5 Finish experiment in 334.969 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.03:51:09 PM
+======Robot: fb0 Finish experiment in 312.094 seconds ======
+======Robot: fb1 Finish experiment in 311.969 seconds ======
+======Robot: fb2 Finish experiment in 296.031 seconds ======
+======Robot: fb3 Finish experiment in 338.859 seconds ======
+======Robot: fb4 Finish experiment in 316.25 seconds ======
+======Robot: fb5 Finish experiment in 325.703 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.04:10:46 PM
+======Robot: fb0 Finish experiment in 334.062 seconds ======
+======Robot: fb1 Finish experiment in 348.312 seconds ======
+======Robot: fb2 Finish experiment in 338.438 seconds ======
+======Robot: fb3 Finish experiment in 296.641 seconds ======
+======Robot: fb4 Finish experiment in 278.562 seconds ======
+======Robot: fb5 Finish experiment in 334.906 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.04:36:13 PM
+======Robot: fb0 Finish experiment in 445.625 seconds ======
+======Robot: fb1 Finish experiment in 369.547 seconds ======
+======Robot: fb2 Finish experiment in 513.109 seconds ======
+======Robot: fb3 Finish experiment in 330.156 seconds ======
+======Robot: fb4 Finish experiment in 328.359 seconds ======
+======Robot: fb5 Finish experiment in 318.891 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.05:10:59 PM
+======Robot: fb0 Finish experiment in 360.047 seconds ======
+======Robot: fb1 Finish experiment in 288.125 seconds ======
+======Robot: fb2 Finish experiment in 486.938 seconds ======
+======Robot: fb3 Finish experiment in 366.922 seconds ======
+======Robot: fb4 Finish experiment in 342.359 seconds ======
+======Robot: fb5 Finish experiment in 400.109 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.05:23:20 PM
+======Robot: fb0 Finish experiment in 351.703 seconds ======
+======Robot: fb1 Finish experiment in 360.969 seconds ======
+======Robot: fb2 Finish experiment in 401.141 seconds ======
+======Robot: fb3 Finish experiment in 317.031 seconds ======
+======Robot: fb4 Finish experiment in 481.656 seconds ======
+======Robot: fb5 Finish experiment in 457.906 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.05:36:47 PM
+======Robot: fb0 Finish experiment in 375.453 seconds ======
+======Robot: fb1 Finish experiment in 319.703 seconds ======
+======Robot: fb2 Finish experiment in 484.094 seconds ======
+======Robot: fb3 Finish experiment in 393.266 seconds ======
+======Robot: fb4 Finish experiment in 371.844 seconds ======
+======Robot: fb5 Finish experiment in 423.312 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.05:58:45 PM
+======Robot: fb0 Finish experiment in 338.703 seconds ======
+======Robot: fb1 Finish experiment in 939.516 seconds ======
+======Robot: fb2 Finish experiment in 712.031 seconds ======
+======Robot: fb3 Finish experiment in 401.266 seconds ======
+======Robot: fb4 Finish experiment in 417.953 seconds ======
+======Robot: fb5 Finish experiment in 529.594 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.07:22:40 PM
+======Robot: fb0 Finish experiment in 406.469 seconds ======
+======Robot: fb1 Finish experiment in 355.906 seconds ======
+======Robot: fb2 Finish experiment in 329.875 seconds ======
+======Robot: fb3 Finish experiment in 314.219 seconds ======
+======Robot: fb4 Finish experiment in 334.594 seconds ======
+======Robot: fb5 Finish experiment in 330.312 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-30.07:42:58 PM
+======Robot: fb0 Finish experiment in 360.422 seconds ======
+======Robot: fb1 Finish experiment in 371.828 seconds ======
+======Robot: fb2 Finish experiment in 333.484 seconds ======
+======Robot: fb3 Finish experiment in 339.625 seconds ======
+======Robot: fb4 Finish experiment in 335.406 seconds ======
+======Robot: fb5 Finish experiment in 314.172 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-31.12:16:11 PM
+======Robot: fb0 Finish experiment in 332.375 seconds ======
+======Robot: fb1 Finish experiment in 357.016 seconds ======
+======Robot: fb2 Finish experiment in 321.844 seconds ======
+======Robot: fb3 Finish experiment in 304.422 seconds ======
+======Robot: fb4 Finish experiment in 322.672 seconds ======
+======Robot: fb5 Finish experiment in 310.703 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-31.12:28:48 PM
+======Robot: fb0 Finish experiment in 316.75 seconds ======
+======Robot: fb1 Finish experiment in 316.516 seconds ======
+======Robot: fb2 Finish experiment in 288.859 seconds ======
+======Robot: fb3 Finish experiment in 282.344 seconds ======
+======Robot: fb4 Finish experiment in 305.781 seconds ======
+======Robot: fb5 Finish experiment in 318.922 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-31.12:39:21 PM
+======Robot: fb0 Finish experiment in 286.438 seconds ======
+======Robot: fb1 Finish experiment in 277.938 seconds ======
+======Robot: fb2 Finish experiment in 357.25 seconds ======
+======Robot: fb3 Finish experiment in 283.875 seconds ======
+======Robot: fb4 Finish experiment in 264.234 seconds ======
+======Robot: fb5 Finish experiment in 360.688 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-31.12:48:45 PM
+======Robot: fb0 Finish experiment in 307.297 seconds ======
+======Robot: fb1 Finish experiment in 327.906 seconds ======
+======Robot: fb2 Finish experiment in 311.859 seconds ======
+======Robot: fb3 Finish experiment in 300.578 seconds ======
+======Robot: fb4 Finish experiment in 316 seconds ======
+======Robot: fb5 Finish experiment in 324.094 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-31.01:33:43 PM
+======Robot: fb0 Finish experiment in 508.734 seconds ======
+======Robot: fb1 Finish experiment in 292.922 seconds ======
+======Robot: fb2 Finish experiment in 466.469 seconds ======
+======Robot: fb3 Finish experiment in 337.031 seconds ======
+======Robot: fb4 Finish experiment in 300.844 seconds ======
+======Robot: fb5 Finish experiment in 341.516 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-31.01:51:23 PM
+======Robot: fb0 Finish experiment in 296.562 seconds ======
+======Robot: fb1 Finish experiment in 309.297 seconds ======
+======Robot: fb2 Finish experiment in 313.281 seconds ======
+======Robot: fb3 Finish experiment in 310.578 seconds ======
+======Robot: fb4 Finish experiment in 295.297 seconds ======
+======Robot: fb5 Finish experiment in 293.906 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-07-31.02:06:44 PM
+======Robot: fb0 Finish experiment in 351.422 seconds ======
+======Robot: fb1 Finish experiment in 351.812 seconds ======
+======Robot: fb2 Finish experiment in 458.047 seconds ======
+======Robot: fb3 Finish experiment in 383.875 seconds ======
+======Robot: fb4 Finish experiment in 425.531 seconds ======
+======Robot: fb5 Finish experiment in 371.562 seconds ======
+
+===============================================================
+ ----------------- BLOCKCHAIN APPROACH -----------------
+2018-07-31.02:43:23 PM
+======Robot: fb0 Finish experiment in 378.828 seconds ======
+======Robot: fb1 Finish experiment in 384.562 seconds ======
+======Robot: fb2 Finish experiment in 377.562 seconds ======
+======Robot: fb3 Finish experiment in 367.281 seconds ======
+======Robot: fb4 Finish experiment in 369.5 seconds ======
+======Robot: fb5 Finish experiment in 363.844 seconds ======
+
+===============================================================
+ ----------------- BLOCKCHAIN APPROACH -----------------
+2018-07-31.04:21:57 PM
+======Robot: fb0 Finish experiment in 533.297 seconds ======
+======Robot: fb1 Finish experiment in 700.375 seconds ======
+======Robot: fb2 Finish experiment in 562.953 seconds ======
+======Robot: fb3 Finish experiment in 477.203 seconds ======
+======Robot: fb4 Finish experiment in 562.594 seconds ======
+======Robot: fb5 Finish experiment in 515.734 seconds ======
+
+===============================================================
+ ----------------- BLOCKCHAIN APPROACH -----------------
+2018-07-31.05:13:02 PM
+======Robot: fb0 Finish experiment in 353.156 seconds ======
+======Robot: fb1 Finish experiment in 427.359 seconds ======
+======Robot: fb2 Finish experiment in 434.969 seconds ======
+======Robot: fb3 Finish experiment in 431.484 seconds ======
+======Robot: fb4 Finish experiment in 400.047 seconds ======
+======Robot: fb5 Finish experiment in 414.516 seconds ======
+
+===============================================================
+ ----------------- BLOCKCHAIN APPROACH -----------------
+2018-07-31.05:50:47 PM
+======Robot: fb0 Finish experiment in 274.25 seconds ======
+======Robot: fb1 Finish experiment in 230.109 seconds ======
+======Robot: fb2 Finish experiment in 224.5 seconds ======
+======Robot: fb3 Finish experiment in 268.875 seconds ======
+======Robot: fb4 Finish experiment in 222.891 seconds ======
+======Robot: fb5 Finish experiment in 228.797 seconds ======
