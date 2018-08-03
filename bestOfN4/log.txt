@@ -608,3 +608,13 @@
 ======Robot: fb4 Finish experiment in 160.812 seconds ======
 ======Robot: fb5 Finish experiment in 171.203 seconds ======
 
+===============================================================
+ ----------------- BLOCKCHAIN APPROACH -----------------
+2018-08-02.08:05:19 PM
+======Robot: fb0 Finish experiment in 365.125 seconds ======
+======Robot: fb1 Finish experiment in 361.797 seconds ======
+======Robot: fb2 Finish experiment in 382.922 seconds ======
+======Robot: fb3 Finish experiment in 349.219 seconds ======
+======Robot: fb4 Finish experiment in 362.156 seconds ======
+======Robot: fb5 Finish experiment in 394.281 seconds ======
+

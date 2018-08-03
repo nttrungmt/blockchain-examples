@@ -483,15 +483,15 @@ void CBlockchainVotingController::SetWheelSpeedsFromVector(const CVector2& c_hea
 /************************************************* EXPLORING STATE *********************************************/
 /***************************************************************************************************************/
 Real CBlockchainVotingController::getInfluenceFactor(CColor option) {
-	if(option == CColor::GRAY50) 
-		return 0;
-	else if (option == CColor::GREEN) { //GREEN
+	if (option == CColor::GREEN) { //GREEN
 		return simulationParams.green_quality*simulationParams.weight_quality 
 			+ (1000 - nExploreStepsCnt)*simulationParams.weight_cost;
 	} else if (option == CColor::BLUE) { //BLUE
 		return simulationParams.blue_quality*simulationParams.weight_quality 
 			+ (1000 - nExploreStepsCnt)*simulationParams.weight_cost;
-	}
+	} else if(option == CColor::GRAY50) {
+		return 0;
+    }
 }
 
 void CBlockchainVotingController::Rest() {
