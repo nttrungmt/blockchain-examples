@@ -227,6 +227,11 @@ public:
       bool profiling;
       bool useMultipleNodes;
       bool useBackgroundGethCalls;
+      //
+      int  blue_quality;
+      int  green_quality;
+      Real weight_quality;
+      Real weight_cost;
       //std::string radix;
       std::string baseDir; /* Basedir of the controller folder */
       std::string baseDirRaw; /* Basedir of the controller folder */
@@ -435,8 +440,14 @@ private:
    bool CheckConsensus(int id);
    bool CheckConsensusUsingScript(int id);
    bool CheckConsensusUsingOneCommand(int id);
-   bool VoteUsingGethCommands(int id, string option);
-   bool VoteUsingScript(int id, string option);
+   static bool VoteUsingGethCommands(int id, string option, int nodeInt, int basePort, 
+                   string blockchainPath, string interface, string contractAddress);
+   static bool VoteUsingScript(int id, string option, int nodeInt, int basePort, 
+                   string blockchainPath, string interface, string contractAddress, string baseDirRaw);
+   static bool VoteUsingOneCommand(int id, string option, int nodeInt, int basePort, 
+                   string blockchainPath, string interface, string contractAddress);
+    
+   Real getInfluenceFactor(CColor option);
    
    //Real m_fWheelVelocity;
    /* Pointer to the differential steering actuator */
@@ -483,10 +494,12 @@ private:
    CVector2 m_cPos;
    CColor m_cColor;
    CColor m_cPrevColor;
+   Real   m_fPrevInfFactor;
    bool bHasOpinion;
    bool bMakeTurnOnce;
    int  nTurnStepsElapsed;
    int  nUnchagedTimes;
+   int  nExploreStepsCnt;
    clock_t start, end;
    double elapsed_secs;
    bool bGenerateCheckConsensusScript;

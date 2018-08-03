@@ -576,9 +576,9 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   //Geth_Wrapper::start_geth(minerId, minerNode, basePort, blockchainPath);
   string command = "mkdir " + blockchainPath;
   system(command.c_str());
-  Geth_Wrapper::unlockAccount(minerId, "test", minerNode, basePort, blockchainPath);
+  //Geth_Wrapper::unlockAccount(minerId, "test", minerNode, basePort, blockchainPath);
   string minerAddress = Geth_Wrapper::getCoinbase(minerId, minerNode, basePort, blockchainPath);
-  Geth_Wrapper::start_mining(minerId, 4, minerNode, blockchainPath);
+  //Geth_Wrapper::start_mining(minerId, 4, minerNode, blockchainPath);
 
   string interface = Geth_Wrapper::readAllFromFile(baseDirRaw + "/Voting.abi");
   string binaryCode = Geth_Wrapper::readAllFromFile(baseDirRaw + "/Voting.bin");
@@ -591,6 +591,14 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   //string templatePath = baseDirLoop + "contractTemplate.txt";
   string scriptFilePath = baseDirRaw + "/voting.js";
   ostringstream fullCommandStream;
+  fullCommandStream << "web3.personal.unlockAccount(eth.coinbase, \"test\");" << endl;
+  fullCommandStream << "nEther=web3.fromWei(eth.getBalance(eth.coinbase),\"ether\");" << endl;
+  fullCommandStream << "web3.miner.start(1);" << endl;
+  fullCommandStream << "while(nEther <= 10) {" << endl;
+  fullCommandStream << "  admin.sleep(1);" << endl;
+  fullCommandStream << "  nEther=web3.fromWei(eth.getBalance(eth.coinbase),\"ether\");" << endl;
+  fullCommandStream << "  //console.log(\"Current ether=\" + nEther);" << endl;
+  fullCommandStream << "}" << endl;
   fullCommandStream << "var candidateNames = [1,2];" << endl;
   fullCommandStream << "var VotingContract = web3.eth.contract(" << interface << ");" << endl;
   fullCommandStream << "var deployedContract = VotingContract.new(candidateNames, " << n_robots << "," << endl;
@@ -603,7 +611,15 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
   fullCommandStream << "      console.log('Contract mined! address: ' + contract.address" <<endl; 
   fullCommandStream << "        + ' transactionHash: ' + contract.transactionHash);" << endl;
   fullCommandStream << "    }" << endl;
-  fullCommandStream << "  });";
+  fullCommandStream << "  });" << endl;
+  fullCommandStream << "while(true) {" << endl;
+  fullCommandStream << "  admin.sleep(1);" << endl;
+  fullCommandStream << "  nPendingTxLen = web3.eth.pendingTransactions.length;" << endl;
+  fullCommandStream << "  //console.log(\"Current PendingTxLen=\" + nPendingTxLen);" << endl;
+  fullCommandStream << "  if(nPendingTxLen <= 0) " << endl;
+  fullCommandStream << "    break;" << endl;
+  fullCommandStream << "}" << endl;
+  //fullCommandStream << "web3.miner.stop();" << endl;
   string fullCommand = fullCommandStream.str();
   ofstream out(scriptFilePath.c_str());
   out << fullCommand;
@@ -625,10 +641,8 @@ void CBlockchainVotingLoopFunctions::InitEthereum() {
     //}
     u++;
   } while (u < maxContractAddressTrials && contractAddress.find("TypeError") == 0);
-
   // Remove space in contract address
   contractAddress.erase(std::remove(contractAddress.begin(), contractAddress.end(), '\n'), contractAddress.end());
-
   // Set the address of the deployed contract in each robot
   setContractAddressAndDistributeEther(contractAddress, minerAddress);
   // int l1 = Geth_Wrapper::getBlockChainLength(minerId, minerNode, blockchainPath);

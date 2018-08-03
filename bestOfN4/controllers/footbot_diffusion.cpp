@@ -107,9 +107,12 @@ void CBlockchainVotingController::SimulationState::Init(TConfigurationNode& t_no
     GetNodeAttribute(t_node, "turn", turn);
     //GetNodeAttribute(t_node, "decision_rule", decision_rule);
     GetNodeAttribute(t_node, "exitFlag", exitFlag);
-    //GetNodeAttribute(t_node, "percent_white", percentRed);
-    //GetNodeAttribute(t_node, "percent_black", percentBlue);
-    //GetNodeAttribute(t_node, "num_pack_saved", numPackSaved);
+	////////////////////////////////////////////////////////////
+	GetNodeAttribute(t_node, "blue_quality", blue_quality);
+	GetNodeAttribute(t_node, "green_quality", green_quality);
+	GetNodeAttribute(t_node, "weight_quality", weight_quality);
+	GetNodeAttribute(t_node, "weight_cost", weight_cost);
+    ////////////////////////////////////////////////////////////
     GetNodeAttribute(t_node, "base_dir", baseDir);
     GetNodeAttribute(t_node, "base_dir_raw", baseDirRaw);
     GetNodeAttribute(t_node, "interface_path", interfacePath);
@@ -133,7 +136,9 @@ CBlockchainVotingController::CBlockchainVotingController() :
     nodeInt(0),
     m_cColor(CColor::WHITE),
     m_cPrevColor(CColor::WHITE),
+    m_fPrevInfFactor(0),
     m_lStepCnt(0),
+    nExploreStepsCnt(0),
     bMakeTurnOnce(false),
     nTurnStepsElapsed(0),
     bGenerateCheckConsensusScript(false),
@@ -257,10 +262,18 @@ void CBlockchainVotingController::Reset() {
     
     m_cColor = CColor::GRAY50;
     m_cPrevColor = m_cColor;
+    m_fPrevInfFactor = 0;
     m_pcLEDs->SetAllColors(m_cColor);
     
     nUnchagedTimes = 0;
     bHasOpinion = false;
+    nExploreStepsCnt = 0;
+    m_lStepCnt = 0;
+    bMakeTurnOnce = false;
+    nTurnStepsElapsed = 0;
+    bGenerateCheckConsensusScript = false;
+    beginning = false;
+    mining = false;
 }
 
 /****************************************/
@@ -469,6 +482,18 @@ void CBlockchainVotingController::SetWheelSpeedsFromVector(const CVector2& c_hea
 
 /************************************************* EXPLORING STATE *********************************************/
 /***************************************************************************************************************/
+Real CBlockchainVotingController::getInfluenceFactor(CColor option) {
+	if(option == CColor::GRAY50) 
+		return 0;
+	else if (option == CColor::GREEN) { //GREEN
+		return simulationParams.green_quality*simulationParams.weight_quality 
+			+ (1000 - nExploreStepsCnt)*simulationParams.weight_cost;
+	} else if (option == CColor::BLUE) { //BLUE
+		return simulationParams.blue_quality*simulationParams.weight_quality 
+			+ (1000 - nExploreStepsCnt)*simulationParams.weight_cost;
+	}
+}
+
 void CBlockchainVotingController::Rest() {
   /* If we have stayed here enough, probabilistically switch to 'exploring' */
   int id = Geth_Wrapper::Id2Int(GetId());
@@ -495,16 +520,36 @@ void CBlockchainVotingController::Rest() {
   if(m_sStateData.TimeRested <= m_sStateData.maxTimeRest){
     if(m_sStateData.TimeRested == 0) {
       if((m_sStateData.DecisionAtExplore + m_sStateData.DecisionAtNest) > 0){
-        m_cColor = CColor::BLUE;
-        if(m_cPrevColor == m_cColor)
-          nUnchagedTimes++;
-        else
-          nUnchagedTimes = 0;
+        if(useClassicalApproach) {
+          m_cColor = CColor::BLUE;
+          if(m_cPrevColor == m_cColor)
+            nUnchagedTimes++;
+          else
+            nUnchagedTimes = 0;
+          m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.blueFractionTime;
+          std::cout << "=== Robot: " << GetId() 
+            << " REST => RESTING and BLUE (decision>0)" << endl;
+        } else {
+          Real preInfFactor = m_fPrevInfFactor;
+          Real newInfFactor = getInfluenceFactor(CColor::BLUE);
+          std::cout << "=== Robot: " << GetId() 
+            << " REST => CurInf=" << preInfFactor << " vs BLUE Inf=" << newInfFactor << endl;
+          if(preInfFactor <= newInfFactor) {
+            m_cColor = CColor::BLUE;
+            m_fPrevInfFactor = newInfFactor;
+          } else {
+            m_cColor = m_cPrevColor; //DONOT CHANGE OPTION IF NOT BETTER
+          }
+          if(m_cColor == CColor::BLUE)
+            m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.blueFractionTime;
+          else
+            m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.greenFractionTime;
+        }
         m_pcLEDs->SetAllColors(m_cColor);
-        m_sStateData.DecisionAtExplore = 0;
-        m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.blueFractionTime;
-        std::cout << "======Robot: " << GetId() 
-          << " REST => RESTING and BLUE (decision>0)" << endl;
+        //m_sStateData.DecisionAtExplore = 0;
+        //m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.blueFractionTime;
+        //std::cout << "=== Robot: " << GetId() 
+        //  << " REST => RESTING and BLUE (decision>0)" << endl;
         if(!useClassicalApproach) {
           if(m_cPrevColor != m_cColor) {
             //VoteUsingGethCommands(id, "2");
@@ -515,7 +560,7 @@ void CBlockchainVotingController::Rest() {
             auto result = m_pThreadPool->enqueue(
               [](int id, string option, int nodeInt, int basePort, 
                    string blockchainPath, string interface, string contractAddress) { 
-                std::string strId = std::to_string(id);
+                /*std::string strId = std::to_string(id);
                 string args[2] = {strId, option};
                 Geth_Wrapper::unlockAccount(id, "test", nodeInt, basePort, blockchainPath);
                 long long nEther = Geth_Wrapper::check_ether(id, nodeInt, blockchainPath);
@@ -540,7 +585,11 @@ void CBlockchainVotingController::Rest() {
                 ss << "Robot " << id << " - VoteUsingGethCommands: current=" 
                    << votedCand << " <> " << option << endl;
                 Geth_Wrapper::stop_mining(id, nodeInt, blockchainPath);
-                return ss.str();
+                return ss.str();*/
+                //return CBlockchainVotingController::VoteUsingGethCommands(id, option, nodeInt,
+                //         basePort, blockchainPath, interface, contractAddress);
+                return CBlockchainVotingController::VoteUsingOneCommand(id, option, nodeInt,
+                         basePort, blockchainPath, interface, contractAddress);
               }, 
               id, "2", nodeInt, simulationParams.basePort, simulationParams.blockchainPath, 
               interface, contractAddress
@@ -559,19 +608,39 @@ void CBlockchainVotingController::Rest() {
           m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.greenFractionTime;
         }
         m_pcLEDs->SetAllColors(m_cColor);
-        std::cout << "======Robot: " << GetId() 
+        std::cout << "=== Robot: " << GetId() 
           << " REST => RESTING (decision=0)" << endl;
       } else {
-        m_cColor = CColor::GREEN;
-        if(m_cPrevColor == m_cColor)
-          nUnchagedTimes++;
-        else
-          nUnchagedTimes = 0;
+        if(useClassicalApproach) {
+          m_cColor = CColor::GREEN;
+          if(m_cPrevColor == m_cColor)
+            nUnchagedTimes++;
+          else
+            nUnchagedTimes = 0;
+          m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.greenFractionTime;
+          std::cout << "=== Robot: " << GetId() 
+            << " REST => RESTING and GREEN (decision>0)" << endl;
+        } else {
+          Real preInfFactor = m_fPrevInfFactor;
+          Real newInfFactor = getInfluenceFactor(CColor::GREEN);
+          std::cout << "=== Robot: " << GetId() 
+            << " REST => CurInf=" << preInfFactor << " vs GREEN Inf=" << newInfFactor << endl;
+          if(preInfFactor <= newInfFactor) {
+            m_cColor = CColor::GREEN;
+            m_fPrevInfFactor = newInfFactor;
+          } else {
+            m_cColor = m_cPrevColor; //DONOT CHANGE OPTION IF NOT BETTER
+          }
+          if(m_cColor == CColor::BLUE)
+            m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.blueFractionTime;
+          else
+            m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.greenFractionTime;
+        }
         m_pcLEDs->SetAllColors(m_cColor);
-        m_sStateData.DecisionAtExplore = 0;
-        m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.greenFractionTime;
-        std::cout << "======Robot: " << GetId() 
-          << " REST => RESTING and GREEN (decision<0)" << endl;
+        //m_sStateData.DecisionAtExplore = 0;
+        //m_sStateData.maxTimeRest = m_sStateData.cosnatantTime * m_sStateData.greenFractionTime;
+        //std::cout << "=== Robot: " << GetId() 
+        //  << " REST => RESTING and GREEN (decision<0)" << endl;
         if(!useClassicalApproach) {
           if(m_cPrevColor != m_cColor) {
             //VoteUsingGethCommands(id, "1");
@@ -580,7 +649,7 @@ void CBlockchainVotingController::Rest() {
             auto result = m_pThreadPool->enqueue(
               [](int id, string option, int nodeInt, int basePort, 
                    string blockchainPath, string interface, string contractAddress) { 
-                std::string strId = std::to_string(id);
+                /*std::string strId = std::to_string(id);
                 string args[2] = {strId, option};
                 Geth_Wrapper::unlockAccount(id, "test", nodeInt, basePort, blockchainPath);
                 long long nEther = Geth_Wrapper::check_ether(id, nodeInt, blockchainPath);
@@ -605,7 +674,11 @@ void CBlockchainVotingController::Rest() {
                 ss << "Robot " << id << " - VoteUsingGethCommands: current=" 
                    << votedCand << " <> " << option << endl;
                 Geth_Wrapper::stop_mining(id, nodeInt, blockchainPath);
-                return ss.str();
+                return ss.str();*/
+                //return CBlockchainVotingController::VoteUsingGethCommands(id, option, nodeInt,
+                //         basePort, blockchainPath, interface, contractAddress);
+                return CBlockchainVotingController::VoteUsingOneCommand(id, option, nodeInt,
+                         basePort, blockchainPath, interface, contractAddress);
               }, 
               id, "1", nodeInt, simulationParams.basePort, simulationParams.blockchainPath, 
               interface, contractAddress
@@ -620,13 +693,15 @@ void CBlockchainVotingController::Rest() {
     
     m_sStateData.TimeRested++;
     //m_pcLEDs->SetAllColors(m_cColor);
-    if(m_sStateData.TimeRested % 100 ==0)
+    if(m_sStateData.TimeRested % 150 ==0)
       CheckConsensusUsingOneCommand(id);
   } else {
     UpdateState();
     m_sStateData.State = SStateData::STATE_EXPLORING;
     m_sStateData.TimeRested = 0;
-    std::cout << "======Robot: " << GetId() << " REST => EXPLORING" << endl;
+    m_sStateData.DecisionAtExplore = 0;
+    nExploreStepsCnt = 0;
+    std::cout << "=== Robot: " << GetId() << " REST => EXPLORING" << endl;
     /*if(m_sStateData.DecisionAtExplore + m_sStateData.DecisionAtNest > 0){
       m_cColor = CColor::BLUE;
       if(m_cPrevColor == m_cColor)
@@ -848,8 +923,9 @@ bool CBlockchainVotingController::CheckConsensusUsingOneCommand(int id) {
   }
 }
 
-bool CBlockchainVotingController::VoteUsingGethCommands(int id, string option) {
-  std::string strId = std::to_string(id);
+bool CBlockchainVotingController::VoteUsingGethCommands(int id, string option, int nodeInt, int basePort, 
+                   string blockchainPath, string interface, string contractAddress) {
+  /*std::string strId = std::to_string(id);
   string args[2] = {strId, option};
   Geth_Wrapper::unlockAccount(id, "test", nodeInt, simulationParams.basePort, simulationParams.blockchainPath);
   long long nEther = Geth_Wrapper::check_ether(id, nodeInt, simulationParams.blockchainPath);
@@ -874,12 +950,47 @@ bool CBlockchainVotingController::VoteUsingGethCommands(int id, string option) {
     //}
   //}
   Geth_Wrapper::stop_mining(id, nodeInt, simulationParams.blockchainPath);
+  return true;*/
+  std::string strId = std::to_string(id);
+  string args[2] = {strId, option};
+  Geth_Wrapper::unlockAccount(id, "test", nodeInt, basePort, blockchainPath);
+  long long nEther = Geth_Wrapper::check_ether(id, nodeInt, blockchainPath);
+  Geth_Wrapper::start_mining(id, 1, nodeInt, blockchainPath);
+  while(nEther <= 10) {
+    Geth_Wrapper::exec_geth_cmd_helper(id, "admin.sleep(1)", nodeInt, blockchainPath);
+    nEther = Geth_Wrapper::check_ether(id, nodeInt, blockchainPath);
+  }
+  Geth_Wrapper::smartContractInterfaceStringBg(id, interface, contractAddress, 
+    "voteForCandidate", args, 2, -1, nodeInt, blockchainPath);
+  //Geth_Wrapper::exec_geth_cmd_helper(id, "admin.sleepBlocks(2)", nodeInt, blockchainPath);
+  //make sure the transaction is submitted and mined
+  long long nPendingTxLen = 0;
+  while(true) {
+    Geth_Wrapper::exec_geth_cmd_helper(id, "admin.sleep(1)", nodeInt, blockchainPath);
+    nPendingTxLen = Geth_Wrapper::check_pendingTxLen(id, nodeInt, blockchainPath);
+    if(nPendingTxLen <= 0)
+      break;
+  }
+  //string args1[1] = {strId};
+  //while(true) {
+    //string votedCand = Geth_Wrapper::smartContractInterfaceStringCall(id, interface, contractAddress, 
+    //  "getVotesFor", args1, 1, -1, nodeInt, blockchainPath);
+    //votedCand = Geth_Wrapper::replaceAll(votedCand, "\n", "");
+    //std::cout << "Robot " << id << " - VoteUsingGethCommands: current=" 
+    //    << votedCand << " <> " << option << endl;
+  //}
+  //ostringstream ss;
+  //ss << "Robot " << id << " - VoteUsingGethCommands: current=" 
+  //   << votedCand << " <> " << option << endl;
+  Geth_Wrapper::stop_mining(id, nodeInt, blockchainPath);
+  //return ss.str();
   return true;
 }
 
-bool CBlockchainVotingController::VoteUsingScript(int id, string option) {
+bool CBlockchainVotingController::VoteUsingScript(int id, string option, int nodeInt, int basePort, 
+                   string blockchainPath, string interface, string contractAddress, string baseDirRaw) {
   std::string strId = std::to_string(id);
-  string tmpPath = simulationParams.baseDirRaw + "/submitVote"+ strId + ".js";
+  string tmpPath = baseDirRaw + "/submitVote"+ strId + ".js";
   //std::ifstream inFile(tmpPath.c_str());
   //if(!inFile.good()) {
     ostringstream fullCommandStream;
@@ -887,13 +998,20 @@ bool CBlockchainVotingController::VoteUsingScript(int id, string option) {
     fullCommandStream << "nEther=web3.fromWei(eth.getBalance(eth.coinbase),\"ether\");" << endl;
     fullCommandStream << "web3.miner.start(1);" << endl;
     fullCommandStream << "while(nEther <= 10) {" << endl;
-    fullCommandStream << "  sleep(5);" << endl;
+    fullCommandStream << "  admin.sleep(1);" << endl;
     fullCommandStream << "  nEther=web3.fromWei(eth.getBalance(eth.coinbase),\"ether\");" << endl;
     fullCommandStream << "}" << endl;
     fullCommandStream << "var cC = web3.eth.contract(" << interface << ");"  << endl;
     fullCommandStream << "var c = cC.at(" << contractAddress << ");" << endl;
     fullCommandStream << "c.voteForCandidate(\""<< strId << "\",\"" << option << "\",";
     fullCommandStream << "  {from: eth.coinbase, gas: 3000000});" << endl;
+    fullCommandStream << "while(true) {" << endl;
+    fullCommandStream << "  admin.sleep(1);" << endl;
+    fullCommandStream << "  nPendingTxLen = web3.eth.pendingTransactions.length;" << endl;
+    fullCommandStream << "  //console.log(\"Current PendingTxLen=\" + nPendingTxLen);" << endl;
+    fullCommandStream << "  if(nPendingTxLen <= 0) " << endl;
+    fullCommandStream << "    break;" << endl;
+    fullCommandStream << "}" << endl;
     fullCommandStream << "web3.miner.stop();";
     string fullCommand = fullCommandStream.str();
     ofstream out(tmpPath.c_str());
@@ -904,7 +1022,42 @@ bool CBlockchainVotingController::VoteUsingScript(int id, string option) {
   //}
 
   string res = Geth_Wrapper::exec_geth_cmd_helper(id, "loadScript(\"" + tmpPath + "\")", 
-    nodeInt, simulationParams.blockchainPath);
+    nodeInt, blockchainPath);
+  //cout << "[smartContractInterfaceFuncCallScript] res: " << res << endl;
+  //return res;
+  if(res.find("true") != string::npos){
+    return true;
+  } else {
+    return false;
+  }
+}
+
+bool CBlockchainVotingController::VoteUsingOneCommand(int id, string option, int nodeInt, int basePort, 
+                   string blockchainPath, string interface, string contractAddress) {
+  std::string strId = std::to_string(id);
+  ostringstream fullCommandStream;
+  fullCommandStream << "web3.personal.unlockAccount(eth.coinbase, \"test\");" << endl;
+  fullCommandStream << "nEther=web3.fromWei(eth.getBalance(eth.coinbase),\"ether\");" << endl;
+  fullCommandStream << "web3.miner.start(1);" << endl;
+  fullCommandStream << "while(nEther <= 10) {" << endl;
+  fullCommandStream << "  admin.sleep(1);" << endl;
+  fullCommandStream << "  nEther=web3.fromWei(eth.getBalance(eth.coinbase),\"ether\");" << endl;
+  fullCommandStream << "}" << endl;
+  fullCommandStream << "var cC = web3.eth.contract(" << interface << ");"  << endl;
+  fullCommandStream << "var c = cC.at(" << contractAddress << ");" << endl;
+  fullCommandStream << "c.voteForCandidate(\""<< strId << "\",\"" << option << "\",";
+  fullCommandStream << "  {from: eth.coinbase, gas: 3000000});" << endl;
+  fullCommandStream << "while(true) {" << endl;
+  fullCommandStream << "  admin.sleep(1);" << endl;
+  fullCommandStream << "  nPendingTxLen = web3.eth.pendingTransactions.length;" << endl;
+  fullCommandStream << "  //console.log(\"Current PendingTxLen=\" + nPendingTxLen);" << endl;
+  fullCommandStream << "  if(nPendingTxLen <= 0) " << endl;
+  fullCommandStream << "    break;" << endl;
+  fullCommandStream << "}" << endl;
+  fullCommandStream << "web3.miner.stop();";
+  string fullCommand = fullCommandStream.str();
+
+  string res = Geth_Wrapper::exec_geth_cmd(id, fullCommand, nodeInt, blockchainPath);
   //cout << "[smartContractInterfaceFuncCallScript] res: " << res << endl;
   //return res;
   if(res.find("true") != string::npos){
@@ -968,6 +1121,7 @@ void CBlockchainVotingController::Explore() {
   }
 
   /* No, perform the actual exploration */
+  nExploreStepsCnt++;
   ++m_sStateData.TimeExploringUnsuccessfully;
   UpdateState();
   /* Get the diffusion vector to perform obstacle avoidance */
@@ -1034,8 +1188,9 @@ void CBlockchainVotingController::Explore() {
         m_sStateData.TimeExploringUnsuccessfully = 0;
         m_sStateData.TimeSearchingForPlaceInNest = 0;
         m_sStateData.State = SStateData::STATE_RETURN_TO_NEST;
-        std::cout << "======Robot: " << GetId() 
-          << " EXPLORE SUCCESSFUL => STATE_RETURN_TO_NEST - DecisionAtExplore=" 
+        m_sStateData.DecisionAtNest = 0;
+        std::cout << "=== Robot: " << GetId() 
+          << " EXPLORE => RETURN_TO_NEST - DecisionAtExplore=" 
           << m_sStateData.DecisionAtExplore << endl;
       }
     } else if((tGroundReads[1].Value > 0.4 && tGroundReads[1].Value < 0.6 ) 
@@ -1071,8 +1226,9 @@ void CBlockchainVotingController::Explore() {
         m_sStateData.TimeExploringUnsuccessfully = 0;
         m_sStateData.TimeSearchingForPlaceInNest = 0;
         m_sStateData.State = SStateData::STATE_RETURN_TO_NEST;
-        std::cout << "======Robot: " << GetId() 
-          << " EXPLORE SUCCESSFUL => STATE_RETURN_TO_NEST - DecisionAtExplore=" 
+        m_sStateData.DecisionAtNest = 0;
+        std::cout << "=== Robot: " << GetId() 
+          << " EXPLORE => STATE_RETURN_TO_NEST - DecisionAtExplore=" 
           << m_sStateData.DecisionAtExplore << endl;
       }
     } else {
@@ -1105,11 +1261,12 @@ void CBlockchainVotingController::ReturnToNest() {
       m_sStateData.TimeRested = 0;
       m_eLastExplorationResult = LAST_EXPLORATION_NONE;
       std::cout << "======Robot: " << GetId() 
-          << " ReturnToNest SUCCESSFUL => STATE_RESTING" << endl;
+          << " ReturnToNest => STATE_RESTING, cost=" << nExploreStepsCnt << endl;
       return;
     } else {
       /* No, keep looking */
       ++m_sStateData.TimeSearchingForPlaceInNest;
+      nExploreStepsCnt++;
       m_pcLEDs->SetSingleColor(12, CColor::RED);
       const CCI_ColoredBlobOmnidirectionalCameraSensor::SReadings& sReadings = m_pcCamera->GetReadings();
       for(size_t i = 0; i < sReadings.BlobList.size(); ++i) {
@@ -1129,6 +1286,7 @@ void CBlockchainVotingController::ReturnToNest() {
   } else {
     /* Still outside the nest */
     m_sStateData.TimeSearchingForPlaceInNest = 0;
+    nExploreStepsCnt++;
     //  m_pcWheels->SetLinearVelocity(20.0f, 0.0f);
   }
   /* Keep going */

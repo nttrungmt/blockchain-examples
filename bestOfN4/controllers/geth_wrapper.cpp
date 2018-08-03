@@ -638,6 +638,20 @@ long long Geth_Wrapper::check_gasPrice(int i, int nodeInt, string datadirBase) {
   return gasPrice;
 }
 
+/* Check pending transaction length of robot i */
+long long Geth_Wrapper::check_pendingTxLen(int i, int nodeInt, string datadirBase) {
+  string cmd = "eth.pendingTransactions.length";
+  string res = exec_geth_cmd(i, cmd, nodeInt, datadirBase);
+  long long pendingTxLen;
+  if (res.find("true") != string::npos || res.find("Error") != string::npos) {
+    pendingTxLen = 0;
+  } else {  
+    istringstream ss(res);
+    ss >> pendingTxLen;
+  }
+  return pendingTxLen;
+}
+
 // Get blockchain length of robot i
 int Geth_Wrapper::getBlockChainLength(int i, int nodeInt, string datadirBase) {
   string cmd = "eth.blockNumber";
