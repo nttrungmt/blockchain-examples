@@ -693,7 +693,7 @@ void CBlockchainVotingController::Rest() {
     
     m_sStateData.TimeRested++;
     //m_pcLEDs->SetAllColors(m_cColor);
-    if(m_sStateData.TimeRested % 150 ==0)
+    if(!useClassicalApproach && m_sStateData.TimeRested % 150 ==0)
       CheckConsensusUsingOneCommand(id);
   } else {
     UpdateState();
@@ -1260,7 +1260,7 @@ void CBlockchainVotingController::ReturnToNest() {
       m_sStateData.TimeSearchingForPlaceInNest = 0;
       m_sStateData.TimeRested = 0;
       m_eLastExplorationResult = LAST_EXPLORATION_NONE;
-      std::cout << "======Robot: " << GetId() 
+      std::cout << "=== Robot: " << GetId() 
           << " ReturnToNest => STATE_RESTING, cost=" << nExploreStepsCnt << endl;
       return;
     } else {
