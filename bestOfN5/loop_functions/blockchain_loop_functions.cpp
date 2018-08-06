@@ -241,8 +241,9 @@ bool CBlockchainVotingLoopFunctions::IsExperimentFinished() {
           break;
       } else {
           runningTimeStream << "======Robot: " << cController.GetId() 
-              << " Finish experiment in " << cController.getElapsedSeconds() 
-              << " seconds ======" << endl;
+              << " Finish experiment in " << cController.getElapsedSeconds() << " seconds" 
+              << " finalColor=" << ((cController.GetColor() == CColor::BLUE) ? "BLUE":"GREEN")
+              << " ======" << endl;
       }
     }
     

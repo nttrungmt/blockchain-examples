@@ -1,0 +1,180 @@
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-03.03:49:43 PM => GREEN
+======Robot: fb0 Finish experiment in 1004.66 seconds ======
+======Robot: fb1 Finish experiment in 464.953 seconds ======
+======Robot: fb2 Finish experiment in 395.922 seconds ======
+======Robot: fb3 Finish experiment in 1197.78 seconds ======
+======Robot: fb4 Finish experiment in 942.656 seconds ======
+======Robot: fb5 Finish experiment in 1115.17 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-03.04:23:20 PM
+======Robot: fb0 Finish experiment in 1161 seconds ======
+======Robot: fb1 Finish experiment in 1335.14 seconds ======
+======Robot: fb2 Finish experiment in 952.375 seconds ======
+======Robot: fb3 Finish experiment in 655.938 seconds ======
+======Robot: fb4 Finish experiment in 595.625 seconds ======
+======Robot: fb5 Finish experiment in 849.781 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-03.05:37:52 PM => GREEN
+======Robot: fb0 Finish experiment in 521.547 seconds ======
+======Robot: fb1 Finish experiment in 496.047 seconds ======
+======Robot: fb2 Finish experiment in 758.031 seconds ======
+======Robot: fb3 Finish experiment in 533.688 seconds ======
+======Robot: fb4 Finish experiment in 589.016 seconds ======
+======Robot: fb5 Finish experiment in 1113.25 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-03.05:51:03 PM => GREEN
+======Robot: fb0 Finish experiment in 478.828 seconds ======
+======Robot: fb1 Finish experiment in 536.891 seconds ======
+======Robot: fb2 Finish experiment in 499.828 seconds ======
+======Robot: fb3 Finish experiment in 502.922 seconds ======
+======Robot: fb4 Finish experiment in 521.781 seconds ======
+======Robot: fb5 Finish experiment in 471.688 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-03.06:34:56 PM => GREEN
+======Robot: fb0 Finish experiment in 350.328 seconds ======
+======Robot: fb1 Finish experiment in 371.812 seconds ======
+======Robot: fb2 Finish experiment in 375.156 seconds ======
+======Robot: fb3 Finish experiment in 328.672 seconds ======
+======Robot: fb4 Finish experiment in 574.703 seconds ======
+======Robot: fb5 Finish experiment in 343.438 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-03.06:55:07 PM
+======Robot: fb0 Finish experiment in 840.234 seconds ======
+======Robot: fb1 Finish experiment in 862.922 seconds ======
+======Robot: fb2 Finish experiment in 1127.03 seconds ======
+======Robot: fb3 Finish experiment in 500.656 seconds ======
+======Robot: fb4 Finish experiment in 955.625 seconds ======
+======Robot: fb5 Finish experiment in 836.062 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-03.08:06:43 PM
+======Robot: fb0 Finish experiment in 1226.92 seconds ======
+======Robot: fb1 Finish experiment in 181.266 seconds ======
+======Robot: fb2 Finish experiment in 1159.47 seconds ======
+======Robot: fb3 Finish experiment in 1187.03 seconds ======
+======Robot: fb4 Finish experiment in 349.016 seconds ======
+======Robot: fb5 Finish experiment in 409.312 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.11:28:38 AM
+======Robot: fb0 Finish experiment in 618.438 seconds ======
+======Robot: fb1 Finish experiment in 620.25 seconds ======
+======Robot: fb2 Finish experiment in 538.484 seconds ======
+======Robot: fb3 Finish experiment in 557.672 seconds ======
+======Robot: fb4 Finish experiment in 669.953 seconds ======
+======Robot: fb5 Finish experiment in 665.859 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.11:45:21 AM
+======Robot: fb0 Finish experiment in 191.234 seconds ======
+======Robot: fb1 Finish experiment in 150.984 seconds ======
+======Robot: fb2 Finish experiment in 341.391 seconds ======
+======Robot: fb3 Finish experiment in 162.906 seconds ======
+======Robot: fb4 Finish experiment in 285.438 seconds ======
+======Robot: fb5 Finish experiment in 169.891 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.12:04:46 PM => GREEN
+======Robot: fb0 Finish experiment in 650.062 seconds ======
+======Robot: fb1 Finish experiment in 833.578 seconds ======
+======Robot: fb2 Finish experiment in 427.859 seconds ======
+======Robot: fb3 Finish experiment in 621.078 seconds ======
+======Robot: fb4 Finish experiment in 384.859 seconds ======
+======Robot: fb5 Finish experiment in 952.016 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.12:23:11 PM => GREEN
+======Robot: fb0 Finish experiment in 502.609 seconds ======
+======Robot: fb1 Finish experiment in 559.703 seconds ======
+======Robot: fb2 Finish experiment in 428.203 seconds ======
+======Robot: fb3 Finish experiment in 552.219 seconds ======
+======Robot: fb4 Finish experiment in 746.875 seconds ======
+======Robot: fb5 Finish experiment in 706.672 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.12:51:08 PM => GREEN
+======Robot: fb0 Finish experiment in 454.047 seconds ======
+======Robot: fb1 Finish experiment in 539.656 seconds ======
+======Robot: fb2 Finish experiment in 570.094 seconds ======
+======Robot: fb3 Finish experiment in 467.109 seconds ======
+======Robot: fb4 Finish experiment in 461.625 seconds ======
+======Robot: fb5 Finish experiment in 514.359 seconds ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.01:40:55 PM
+======Robot: fb0 Finish experiment in 470.312 seconds finalColor=GREEN ======
+======Robot: fb1 Finish experiment in 569.891 seconds finalColor=GREEN ======
+======Robot: fb2 Finish experiment in 457.188 seconds finalColor=GREEN ======
+======Robot: fb3 Finish experiment in 627.594 seconds finalColor=GREEN ======
+======Robot: fb4 Finish experiment in 477.938 seconds finalColor=GREEN ======
+======Robot: fb5 Finish experiment in 526.297 seconds finalColor=GREEN ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.02:26:15 PM
+======Robot: fb0 Finish experiment in 996.438 seconds finalColor=BLUE ======
+======Robot: fb1 Finish experiment in 1946.81 seconds finalColor=BLUE ======
+======Robot: fb2 Finish experiment in 397.547 seconds finalColor=GREEN ======
+======Robot: fb3 Finish experiment in 674.109 seconds finalColor=BLUE ======
+======Robot: fb4 Finish experiment in 727.438 seconds finalColor=BLUE ======
+======Robot: fb5 Finish experiment in 1548.25 seconds finalColor=BLUE ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.02:50:11 PM
+======Robot: fb0 Finish experiment in 1012.42 seconds finalColor=GREEN ======
+======Robot: fb1 Finish experiment in 444.234 seconds finalColor=GREEN ======
+======Robot: fb2 Finish experiment in 426.359 seconds finalColor=GREEN ======
+======Robot: fb3 Finish experiment in 511.828 seconds finalColor=GREEN ======
+======Robot: fb4 Finish experiment in 605.281 seconds finalColor=GREEN ======
+======Robot: fb5 Finish experiment in 1112.83 seconds finalColor=GREEN ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.03:26:36 PM
+======Robot: fb0 Finish experiment in 441.688 seconds finalColor=GREEN ======
+======Robot: fb1 Finish experiment in 737.453 seconds finalColor=GREEN ======
+======Robot: fb2 Finish experiment in 467.797 seconds finalColor=GREEN ======
+======Robot: fb3 Finish experiment in 517.469 seconds finalColor=GREEN ======
+======Robot: fb4 Finish experiment in 622.531 seconds finalColor=GREEN ======
+======Robot: fb5 Finish experiment in 446.516 seconds finalColor=GREEN ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.03:45:50 PM
+======Robot: fb0 Finish experiment in 165.156 seconds finalColor=GREEN ======
+======Robot: fb1 Finish experiment in 195.672 seconds finalColor=GREEN ======
+======Robot: fb2 Finish experiment in 157.812 seconds finalColor=GREEN ======
+======Robot: fb3 Finish experiment in 132.266 seconds finalColor=GREEN ======
+======Robot: fb4 Finish experiment in 305.875 seconds finalColor=GREEN ======
+======Robot: fb5 Finish experiment in 201.469 seconds finalColor=GREEN ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.04:07:10 PM
+======Robot: fb0 Finish experiment in 1168.53 seconds finalColor=GREEN ======
+======Robot: fb1 Finish experiment in 456.797 seconds finalColor=GREEN ======
+======Robot: fb2 Finish experiment in 456.625 seconds finalColor=GREEN ======
+======Robot: fb3 Finish experiment in 1112.16 seconds finalColor=GREEN ======
+======Robot: fb4 Finish experiment in 1107.31 seconds finalColor=GREEN ======
+======Robot: fb5 Finish experiment in 509.688 seconds finalColor=GREEN ======
+
