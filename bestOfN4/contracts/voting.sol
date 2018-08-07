@@ -7,10 +7,10 @@ contract Voting {
   an unsigned integer to store the vote count
   */
   // describes a Voter, which has an id and the ID of the candidate they voted for
-  struct Voter {
+  /*struct Voter {
     uint uid; 			// bytes32 type are basically strings
     uint candidateVote;
-  }
+  }*/
   
   /* Solidity doesn't let you pass in an array of strings in the constructor (yet).
   We will use an array of bytes32 instead to store the list of candidates
@@ -19,9 +19,11 @@ contract Voting {
   uint   public numVoters;
   uint   public maxVoters;
 
-  mapping (uint => uint) public votesReceived;
+  //mapping (uint => uint) public votesReceived;
   //mapping (uint => Voter) public voters;
   uint[] voters;
+  uint[] voterNewOpinion;
+  uint[] voterInfFactors;
 
   /* This is the constructor which will be called once when you
   deploy the contract to the blockchain. When we deploy the contract,
@@ -31,14 +33,43 @@ contract Voting {
     candidateList = candidateNames;
     maxVoters = maxNumVoters;
     voters = new uint[](maxVoters);
+    voterNewOpinion = new uint[](maxVoters); 
+    voterInfFactors = new uint[](maxVoters);
   }
 
   // This function increments the vote count for the specified candidate. This
   // is equivalent to casting a vote
+  function updateInfFactor(uint uid, uint newOpinion, uint infFactor) public {
+    voterNewOpinion[uid] = newOpinion;
+    voterInfFactors[uid] = infFactor;
+  }
+  
+  // This function returns the total votes a candidate has received so far
+  function getBestOpinionIdx() view public returns (uint) {
+    uint bestOpinionIdx = 0;
+    uint bestInfFactor = 0;
+    for (uint i = 0; i < maxVoters; i++) {
+      // if the voter votes for this specific candidate, we increment the number
+      if (voterInfFactors[i] > bestInfFactor) {
+        bestInfFactor = voterInfFactors[i];
+        bestOpinionIdx = i;
+      }
+    }
+    return bestOpinionIdx;
+  }
+  
+  function getBestOpinion(uint bestOpinionIdx) view public returns (uint) {
+    return voterNewOpinion[bestOpinionIdx];
+  }
+  
+  function getBestInfFactor(uint bestOpinionIdx) view public returns (uint) {
+    return voterInfFactors[bestOpinionIdx];
+  }
+  
+  // This function increments the vote count for the specified candidate. This
+  // is equivalent to casting a vote
   function voteForCandidate(uint uid, uint candidate) public {
     require(validCandidate(candidate));
-    votesReceived[candidate] += 1;
-    //uint voterID = numVoters++; //voterID is the return variable
     numVoters++;
     voters[uid] = candidate;
   }
@@ -46,7 +77,6 @@ contract Voting {
   // This function returns the total votes a candidate has received so far
   function totalVotesFor(uint candidate) view public returns (uint) {
     require(validCandidate(candidate));
-    //return votesReceived[candidate];
     uint numOfVotes = 0; // we will return this
     for (uint i = 0; i < maxVoters; i++) {
       // if the voter votes for this specific candidate, we increment the number

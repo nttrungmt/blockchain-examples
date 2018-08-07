@@ -446,7 +446,11 @@ private:
                    string blockchainPath, string interface, string contractAddress, string baseDirRaw);
    static bool VoteUsingOneCommand(int id, string option, int nodeInt, int basePort, 
                    string blockchainPath, string interface, string contractAddress);
-    
+   static bool UpdateInfFactorUsingOneCommand(int id, string option, string infFactor, int nodeInt, int basePort, 
+                   string blockchainPath, string interface, string contractAddress);
+   static bool GetBestNewOpinionBasedOnInfFactor(int id, int& bestOption, int& infFactor, int nodeInt, int basePort, 
+                   string blockchainPath, string interface, string contractAddress);
+       
    Real getInfluenceFactor(CColor option);
    
    //Real m_fWheelVelocity;
@@ -495,6 +499,7 @@ private:
    CColor m_cColor;
    CColor m_cPrevColor;
    Real   m_fPrevInfFactor;
+   bool bMakeVote;
    bool bHasOpinion;
    bool bMakeTurnOnce;
    int  nTurnStepsElapsed;
