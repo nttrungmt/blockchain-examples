@@ -178,3 +178,103 @@
 ======Robot: fb4 Finish experiment in 1107.31 seconds finalColor=GREEN ======
 ======Robot: fb5 Finish experiment in 509.688 seconds finalColor=GREEN ======
 
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.04:40:16 PM
+======Robot: fb0 Finish experiment in 245.625 seconds finalColor=BLUE ======
+======Robot: fb1 Finish experiment in 320.922 seconds finalColor=BLUE ======
+======Robot: fb2 Finish experiment in 334.297 seconds finalColor=BLUE ======
+======Robot: fb3 Finish experiment in 324.016 seconds finalColor=BLUE ======
+======Robot: fb4 Finish experiment in 283.938 seconds finalColor=BLUE ======
+======Robot: fb5 Finish experiment in 280.875 seconds finalColor=BLUE ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.04:56:29 PM
+======Robot: fb0 Finish experiment in 207.438 seconds finalColor=BLUE ======
+======Robot: fb1 Finish experiment in 272.031 seconds finalColor=BLUE ======
+======Robot: fb2 Finish experiment in 272.984 seconds finalColor=BLUE ======
+======Robot: fb3 Finish experiment in 223.094 seconds finalColor=BLUE ======
+======Robot: fb4 Finish experiment in 241.812 seconds finalColor=BLUE ======
+======Robot: fb5 Finish experiment in 231.984 seconds finalColor=BLUE ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.05:15:38 PM
+======Robot: fb0 Finish experiment in 248.453 seconds finalColor=BLUE ======
+======Robot: fb1 Finish experiment in 265.734 seconds finalColor=BLUE ======
+======Robot: fb2 Finish experiment in 306.531 seconds finalColor=BLUE ======
+======Robot: fb3 Finish experiment in 229.125 seconds finalColor=BLUE ======
+======Robot: fb4 Finish experiment in 228.266 seconds finalColor=BLUE ======
+======Robot: fb5 Finish experiment in 260.5 seconds finalColor=BLUE ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.05:35:01 PM
+======Robot: fb0 Finish experiment in 306.031 seconds finalColor=BLUE ======
+======Robot: fb1 Finish experiment in 365.328 seconds finalColor=BLUE ======
+======Robot: fb2 Finish experiment in 272.906 seconds finalColor=BLUE ======
+======Robot: fb3 Finish experiment in 224.094 seconds finalColor=BLUE ======
+======Robot: fb4 Finish experiment in 304.25 seconds finalColor=BLUE ======
+======Robot: fb5 Finish experiment in 282.156 seconds finalColor=BLUE ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.05:43:51 PM
+======Robot: fb0 Finish experiment in 182.031 seconds finalColor=GREEN ======
+======Robot: fb1 Finish experiment in 165.438 seconds finalColor=GREEN ======
+======Robot: fb2 Finish experiment in 188.594 seconds finalColor=GREEN ======
+======Robot: fb3 Finish experiment in 142.625 seconds finalColor=GREEN ======
+======Robot: fb4 Finish experiment in 195.578 seconds finalColor=GREEN ======
+======Robot: fb5 Finish experiment in 196.969 seconds finalColor=GREEN ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.05:55:29 PM
+======Robot: fb0 Finish experiment in 168.344 seconds finalColor=GREEN ======
+======Robot: fb1 Finish experiment in 168.688 seconds finalColor=GREEN ======
+======Robot: fb2 Finish experiment in 122.859 seconds finalColor=GREEN ======
+======Robot: fb3 Finish experiment in 246.734 seconds finalColor=GREEN ======
+======Robot: fb4 Finish experiment in 218.516 seconds finalColor=GREEN ======
+======Robot: fb5 Finish experiment in 237.641 seconds finalColor=GREEN ======
+
+===============================================================
+ --------------- NON BLOCKCHAIN APPROACH ---------------
+2018-08-06.06:11:28 PM
+======Robot: fb0 Finish experiment in 222.172 seconds finalColor=BLUE ======
+======Robot: fb1 Finish experiment in 269.562 seconds finalColor=BLUE ======
+======Robot: fb2 Finish experiment in 259.172 seconds finalColor=BLUE ======
+======Robot: fb3 Finish experiment in 257.625 seconds finalColor=BLUE ======
+======Robot: fb4 Finish experiment in 346.328 seconds finalColor=BLUE ======
+======Robot: fb5 Finish experiment in 315.812 seconds finalColor=BLUE ======
+
+===============================================================
+ ----------------- BLOCKCHAIN APPROACH -----------------
+2018-08-07.05:31:29 PM
+======Robot: fb0 Finish experiment in 115.047 seconds finalColor=BLUE ======
+======Robot: fb1 Finish experiment in 102.5 seconds finalColor=BLUE ======
+======Robot: fb2 Finish experiment in 198.594 seconds finalColor=BLUE ======
+======Robot: fb3 Finish experiment in 103.078 seconds finalColor=BLUE ======
+======Robot: fb4 Finish experiment in 319.969 seconds finalColor=BLUE ======
+======Robot: fb5 Finish experiment in 111.328 seconds finalColor=BLUE ======
+
+===============================================================
+ ----------------- BLOCKCHAIN APPROACH -----------------
+2018-08-07.05:45:19 PM
+======Robot: fb0 Finish experiment in 286.672 seconds finalColor=BLUE ======
+======Robot: fb1 Finish experiment in 223.516 seconds finalColor=BLUE ======
+======Robot: fb2 Finish experiment in 231.906 seconds finalColor=BLUE ======
+======Robot: fb3 Finish experiment in 227.656 seconds finalColor=BLUE ======
+======Robot: fb4 Finish experiment in 249.734 seconds finalColor=BLUE ======
+======Robot: fb5 Finish experiment in 245.359 seconds finalColor=BLUE ======
+
+===============================================================
+ ----------------- BLOCKCHAIN APPROACH -----------------
+2018-08-07.06:08:27 PM
+======Robot: fb0 Finish experiment in 185.609 seconds finalColor=BLUE ======
+======Robot: fb1 Finish experiment in 193.953 seconds finalColor=BLUE ======
+======Robot: fb2 Finish experiment in 198.016 seconds finalColor=BLUE ======
+======Robot: fb3 Finish experiment in 363.219 seconds finalColor=BLUE ======
+======Robot: fb4 Finish experiment in 199.469 seconds finalColor=BLUE ======
+======Robot: fb5 Finish experiment in 289.781 seconds finalColor=BLUE ======
+

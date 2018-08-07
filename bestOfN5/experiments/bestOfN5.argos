@@ -113,7 +113,7 @@
       miner_id="120"
       miner_node="0"
       base_port="33000"
-      use_classical_approach="true"
+      use_classical_approach="false"
       subswarm_consensus="false"
       regenerate_file="./regenerate0.sh"
       blockchain_path="./eth_data/data"/>
